@@ -287,7 +287,7 @@ export default function AppContent({ auth, appState, handlers }) {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 font-sans text-gray-800 flex">
+    <div className="min-h-screen bg-midnight font-sans text-slate-100 flex">
       <Sidebar
         activeView={activeView}
         setActiveView={navigateToView}
@@ -306,20 +306,20 @@ export default function AppContent({ auth, appState, handlers }) {
         {/* Header */}
         <header className="mb-6 flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <button className="lg:hidden p-2 rounded-md border border-gray-200" onClick={() => setSidebarOpen(true)} aria-label="Open menu">
-              <span className="block w-5 h-0.5 bg-gray-700 mb-1"></span>
-              <span className="block w-5 h-0.5 bg-gray-700 mb-1"></span>
-              <span className="block w-5 h-0.5 bg-gray-700"></span>
+            <button className="lg:hidden p-2 rounded-md border border-slate-700" onClick={() => setSidebarOpen(true)} aria-label="Open menu">
+              <span className="block w-5 h-0.5 bg-slate-300 mb-1"></span>
+              <span className="block w-5 h-0.5 bg-slate-300 mb-1"></span>
+              <span className="block w-5 h-0.5 bg-slate-300"></span>
             </button>
             <div className="flex items-center gap-3">
-              <h1 className="text-4xl font-bold text-gray-900 tracking-tight">Service Hub</h1>
+              <h1 className="text-4xl font-bold font-display text-slate-100 tracking-tight">Trellio</h1>
               {(() => {
                 const mode = import.meta.env.MODE;
-                if (mode === 'staging') return <span className="px-2 py-1 text-xs font-semibold rounded bg-yellow-100 text-yellow-800">Staging</span>;
+                if (mode === 'staging') return <span className="px-2 py-1 text-xs font-semibold rounded bg-harvest-amber/20 text-harvest-amber border border-harvest-amber/30">Staging</span>;
                 return null;
               })()}
             </div>
-            <p className="hidden md:block text-lg text-gray-600 mt-1">Your central dashboard for managing your business.</p>
+            <p className="hidden md:block text-lg text-slate-400 mt-1">Your central dashboard for managing your business.</p>
           </div>
           <div className="flex items-center gap-3 relative">
             <div className="hidden md:block">
@@ -328,18 +328,18 @@ export default function AppContent({ auth, appState, handlers }) {
                 onChange={(e)=>setGlobalQuery(e.target.value)}
                 onKeyDown={(e)=>{ if (e.key === 'Enter') { setActiveView('clients'); setClientSearchTerm(globalQuery); } }}
                 placeholder="Search clients..."
-                className="px-3 py-2 border border-gray-300 rounded-md text-sm w-64"
+                className="px-3 py-2 bg-charcoal border border-slate-700 rounded-lg text-sm text-slate-100 placeholder-slate-500 focus:border-trellio-teal focus:ring-2 focus:ring-trellio-teal/20 w-64 transition-all"
                 aria-label="Global search"
               />
             </div>
-            <button onClick={() => setShowNotifications(s => !s)} className="relative text-gray-500 hover:text-gray-700">
+            <button onClick={() => setShowNotifications(s => !s)} className="relative text-slate-400 hover:text-trellio-teal transition-colors">
               <BellIcon />
-              {unreadNotificationsCount > 0 && <span className="absolute -top-1 -right-1 flex h-4 w-4"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span><span className="relative inline-flex rounded-full h-4 w-4 bg-red-500 text-white text-xs items-center justify-center">{unreadNotificationsCount}</span></span>}
+              {unreadNotificationsCount > 0 && <span className="absolute -top-1 -right-1 flex h-4 w-4"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-signal-coral opacity-75"></span><span className="relative inline-flex rounded-full h-4 w-4 bg-signal-coral text-white text-xs items-center justify-center">{unreadNotificationsCount}</span></span>}
             </button>
             {showNotifications && (
-              <div className="fixed right-6 top-16 w-96 bg-white rounded-lg shadow-xl border border-gray-200 z-50 animate-fade-in-fast max-h-[60vh] overflow-y-auto">
-                <div className="p-3 border-b font-semibold text-sm">Notifications</div>
-                <ul className="divide-y divide-gray-100">{notifications.map(n => (<li key={n.id} className={`p-3 text-sm ${!n.read ? 'bg-blue-50' : ''}`}><p>{n.message}</p><div className="flex justify-between items-center mt-1"><p className="text-xs text-gray-500">{new Date(n.createdAt).toLocaleString()}</p>{!n.read && <button onClick={() => handleMarkNotificationAsRead(n.id)} className="text-xs font-semibold text-blue-600 hover:underline">Mark as read</button>}</div></li>))}</ul>
+              <div className="fixed right-6 top-16 w-96 bg-charcoal rounded-lg shadow-xl border border-slate-700/30 z-50 animate-fade-in-fast max-h-[60vh] overflow-y-auto">
+                <div className="p-3 border-b border-slate-700/30 font-semibold text-sm text-slate-100">Notifications</div>
+                <ul className="divide-y divide-slate-700/30">{notifications.map(n => (<li key={n.id} className={`p-3 text-sm ${!n.read ? 'bg-trellio-teal/10' : ''}`}><p className="text-slate-100">{n.message}</p><div className="flex justify-between items-center mt-1"><p className="text-xs text-slate-500">{new Date(n.createdAt).toLocaleString()}</p>{!n.read && <button onClick={() => handleMarkNotificationAsRead(n.id)} className="text-xs font-semibold text-trellio-teal hover:underline">Mark as read</button>}</div></li>))}</ul>
               </div>
             )}
           </div>

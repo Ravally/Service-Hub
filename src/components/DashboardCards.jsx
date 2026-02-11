@@ -3,17 +3,17 @@ import React, { useMemo } from 'react';
 import { UsersIcon, FileTextIcon, BriefcaseIcon, InvoiceIcon } from './icons';
 
 const Header = ({ icon, title, action, accent }) => (
-  <div className="card-header">
+  <div className="px-4 py-3 border-b border-slate-700/30 flex items-center justify-between">
     <div className="flex items-center gap-2">
-      <span className={`inline-flex items-center justify-center h-7 w-7 rounded-md ${accent.bg} ${accent.text}`}>{icon}</span>
-      <h3 className="text-sm font-semibold text-gray-900">{title}</h3>
+      <span className={`inline-flex items-center justify-center h-8 w-8 rounded-lg ${accent.bg} ${accent.text}`}>{icon}</span>
+      <h3 className="text-sm font-semibold text-slate-100">{title}</h3>
     </div>
     {action}
   </div>
 );
 
 const Card = ({ title, children, action, icon, accent }) => (
-  <div className="card relative"> 
+  <div className="bg-charcoal rounded-xl border border-slate-700/30 shadow-sm overflow-hidden hover:border-trellio-teal/30 transition-all relative">
     <div className={`absolute top-0 left-0 right-0 h-1 ${accent?.bar || ''}`} />
     <Header icon={icon} title={title} action={action} accent={accent} />
     <div className="p-4">
@@ -24,10 +24,10 @@ const Card = ({ title, children, action, icon, accent }) => (
 
 const StatRow = ({ label, value, sub, pill }) => (
   <div className="flex items-center justify-between py-1.5">
-    <div className="text-sm text-gray-600">{label}</div>
+    <div className="text-sm text-slate-400">{label}</div>
     <div className="text-right">
-      <div className="text-base font-semibold text-gray-900">{value}</div>
-      {sub && <div className="text-xs text-gray-500">{sub}</div>}
+      <div className="text-lg font-display font-semibold text-slate-100">{value}</div>
+      {sub && <div className="text-xs text-slate-500 font-mono">{sub}</div>}
     </div>
     {pill}
   </div>
@@ -99,10 +99,10 @@ const DashboardCards = ({ quotes = [], jobs = [], invoices = [], onNewQuote, onN
   return (
     <div className="space-y-4 mb-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-gray-900">Home</h2>
+        <h2 className="text-3xl font-bold font-display text-slate-100">Home</h2>
         <div className="hidden md:flex items-center gap-2">
-          <button className="px-3 py-1.5 text-sm font-semibold rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200">View Insights</button>
-          <button className="px-3 py-1.5 text-sm font-semibold rounded-md bg-gray-50 text-gray-700 border border-gray-200">More Actions</button>
+          <button className="px-3 py-1.5 text-sm font-semibold rounded-lg bg-trellio-teal/10 text-trellio-teal border border-trellio-teal/30 hover:bg-trellio-teal/20 transition-colors">View Insights</button>
+          <button className="px-3 py-1.5 text-sm font-semibold rounded-lg bg-charcoal text-slate-300 border border-slate-700 hover:bg-slate-dark transition-colors">More Actions</button>
         </div>
       </div>
 
@@ -110,60 +110,60 @@ const DashboardCards = ({ quotes = [], jobs = [], invoices = [], onNewQuote, onN
         <Card
           title="Requests"
           icon={<UsersIcon className="h-4 w-4 block" />}
-          accent={{ bg: 'bg-sky-100', text: 'text-sky-700', bar: 'bg-sky-500' }}
-          action={<div className="hidden sm:flex items-center gap-2"><span className="chip border-sky-300 text-sky-700">New Request</span><span className="chip border-sky-300 text-sky-700">Schedule Assessments</span></div>}
+          accent={{ bg: 'bg-blue-500/10', text: 'text-blue-400', bar: 'bg-blue-500' }}
+          action={<div className="hidden sm:flex items-center gap-2"><span className="chip border-blue-400/30 text-blue-400 bg-blue-500/10">New Request</span><span className="chip border-blue-400/30 text-blue-400 bg-blue-500/10">Schedule Assessments</span></div>}
         >
           <StatRow label="New" value={<span>0</span>} />
           <StatRow label="Assessment completed" value={<span>0</span>} />
           <StatRow label="Overdue" value={<span>0</span>} />
-          <div className="mt-3 text-xs text-gray-500">Last 7 Days</div>
+          <div className="mt-3 text-xs text-slate-500">Last 7 Days</div>
         </Card>
 
         <Card
           title="Quotes"
           icon={<FileTextIcon className="h-4 w-4 block" />}
-          accent={{ bg: 'bg-purple-100', text: 'text-purple-700', bar: 'bg-purple-500' }}
-          action={<div className="hidden sm:flex items-center gap-2"><button onClick={onNewQuote} className="chip border-purple-300 text-purple-700">New Quote</button></div>}
+          accent={{ bg: 'bg-signal-coral/10', text: 'text-signal-coral', bar: 'bg-signal-coral' }}
+          action={<div className="hidden sm:flex items-center gap-2"><button onClick={onNewQuote} className="chip border-signal-coral/30 text-signal-coral bg-signal-coral/10 hover:bg-signal-coral/20 transition-colors">New Quote</button></div>}
         >
-          <StatRow label="Approved" value={<span>{data.accepted}</span>} sub={<span>{data.fmt(data.acceptedSum)}</span>} />
+          <StatRow label="Approved" value={<span>{data.accepted}</span>} sub={<span className="text-trellio-teal">{data.fmt(data.acceptedSum)}</span>} />
           <StatRow label="Changes requested" value={<span>0</span>} />
           <StatRow label="Draft" value={<span>{data.draftQu}</span>} />
-          <div className="mt-3 text-xs text-gray-500">Last 7 Days</div>
-          <div className="mt-2 text-xs text-gray-500 flex items-center gap-4">
-            <span><span className="legend-dot bg-pink-400 mr-1"></span>Sent {data.sentQu}</span>
-            <span><span className="legend-dot bg-purple-400 mr-1"></span>Converted {data.convertedQu}</span>
+          <div className="mt-3 text-xs text-slate-500">Last 7 Days</div>
+          <div className="mt-2 text-xs text-slate-400 flex items-center gap-4">
+            <span><span className="legend-dot bg-signal-coral-light mr-1"></span>Sent {data.sentQu}</span>
+            <span><span className="legend-dot bg-signal-coral mr-1"></span>Converted {data.convertedQu}</span>
           </div>
         </Card>
 
         <Card
           title="Jobs"
           icon={<BriefcaseIcon className="h-4 w-4 block" />}
-          accent={{ bg: 'bg-lime-100', text: 'text-lime-700', bar: 'bg-lime-500' }}
-          action={<div className="hidden sm:flex items-center gap-2"><button onClick={onNewJob} className="chip border-lime-300 text-lime-700">New Job</button><span className="chip border-lime-300 text-lime-700">Batch Invoice</span></div>}
+          accent={{ bg: 'bg-harvest-amber/10', text: 'text-harvest-amber', bar: 'bg-harvest-amber' }}
+          action={<div className="hidden sm:flex items-center gap-2"><button onClick={onNewJob} className="chip border-harvest-amber/30 text-harvest-amber bg-harvest-amber/10 hover:bg-harvest-amber/20 transition-colors">New Job</button><span className="chip border-harvest-amber/30 text-harvest-amber bg-harvest-amber/10">Batch Invoice</span></div>}
         >
           <StatRow label="Requires scheduling" value={<span>{data.requiresScheduling}</span>} />
-          <StatRow label="Requires invoicing" value={<span>{data.requiresInvoicing}</span>} sub={<span>{data.fmt(data.requiresInvoicingSum)}</span>} />
+          <StatRow label="Requires invoicing" value={<span>{data.requiresInvoicing}</span>} sub={<span className="text-harvest-amber">{data.fmt(data.requiresInvoicingSum)}</span>} />
           <StatRow label="Active" value={<span>{data.activeJobs}</span>} />
-          <div className="mt-3 text-xs text-gray-500">Last 7 Days</div>
-          <div className="mt-2 text-xs text-gray-500 flex items-center gap-4">
-            <span><span className="legend-dot bg-amber-400 mr-1"></span>Started {data.startedJobs}</span>
-            <span><span className="legend-dot bg-lime-400 mr-1"></span>Completed {data.completedJobs}</span>
+          <div className="mt-3 text-xs text-slate-500">Last 7 Days</div>
+          <div className="mt-2 text-xs text-slate-400 flex items-center gap-4">
+            <span><span className="legend-dot bg-harvest-amber-light mr-1"></span>Started {data.startedJobs}</span>
+            <span><span className="legend-dot bg-harvest-amber mr-1"></span>Completed {data.completedJobs}</span>
           </div>
         </Card>
 
         <Card
           title="Invoices"
           icon={<InvoiceIcon className="h-4 w-4 block" />}
-          accent={{ bg: 'bg-green-100', text: 'text-green-700', bar: 'bg-green-500' }}
-          action={<span className="hidden sm:inline chip border-green-300 text-green-700">New Invoice</span>}
+          accent={{ bg: 'bg-trellio-teal/10', text: 'text-trellio-teal', bar: 'bg-trellio-teal' }}
+          action={<span className="hidden sm:inline chip border-trellio-teal/30 text-trellio-teal bg-trellio-teal/10 hover:bg-trellio-teal/20 transition-colors cursor-pointer">New Invoice</span>}
         >
-          <StatRow label="Past Due" value={<span>{data.pastDueCount}</span>} sub={<span>{data.fmt(data.pastDueSum)}</span>} />
-          <StatRow label="Awaiting payment" value={<span>{data.awaitingCount}</span>} sub={<span>{data.fmt(data.awaitingSum)}</span>} />
+          <StatRow label="Past Due" value={<span>{data.pastDueCount}</span>} sub={<span className="text-signal-coral">{data.fmt(data.pastDueSum)}</span>} />
+          <StatRow label="Awaiting payment" value={<span>{data.awaitingCount}</span>} sub={<span className="text-harvest-amber">{data.fmt(data.awaitingSum)}</span>} />
           <StatRow label="Draft" value={<span>{data.draftInv}</span>} />
-          <div className="mt-3 text-xs text-gray-500">Last 30 Days</div>
-          <div className="mt-2 text-xs text-gray-500 flex items-center gap-4">
+          <div className="mt-3 text-xs text-slate-500">Last 30 Days</div>
+          <div className="mt-2 text-xs text-slate-400 flex items-center gap-4">
             <span><span className="legend-dot bg-blue-400 mr-1"></span>Sent {data.sentInv}</span>
-            <span><span className="legend-dot bg-green-400 mr-1"></span>Paid {data.paidInv}</span>
+            <span><span className="legend-dot bg-trellio-teal mr-1"></span>Paid {data.paidInv}</span>
           </div>
         </Card>
       </div>

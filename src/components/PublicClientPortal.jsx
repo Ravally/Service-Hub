@@ -40,9 +40,7 @@ const PublicClientPortal = ({ uid, clientId, company }) => {
 
         const qJobs = query(collection(db, `users/${uid}/jobs`), where('clientId', '==', clientId));
         const unsubJ = onSnapshot(qJobs, (snap) => {
-          const now = new Date();
-          const arr = snap.docs.map(d => ({ id: d.id, ...d.data() }))
-            .filter(j => j.start ? new Date(j.start) >= now : true);
+          const arr = snap.docs.map(d => ({ id: d.id, ...d.data() }));
           arr.sort((a,b) => new Date(a.start || 0) - new Date(b.start || 0));
           setJobs(arr);
         });
@@ -64,6 +62,7 @@ const PublicClientPortal = ({ uid, clientId, company }) => {
     return () => unsubs.forEach(u => u());
   }, [uid, clientId]);
 
+  // Computed values
   const creditsByInvoice = useMemo(() => {
     const map = new Map();
     invoices.forEach(inv => {
@@ -72,6 +71,46 @@ const PublicClientPortal = ({ uid, clientId, company }) => {
       }
     });
     return map;
+  }, [invoices]);
+
+  const upcomingJobs = useMemo(() => {
+    const now = new Date();
+    return jobs.filter(j => {
+      if (j.status === 'Completed') return false;
+      if (!j.start) return true; // unscheduled jobs count as upcoming
+      return new Date(j.start) >= now;
+    });
+  }, [jobs]);
+
+  const pastJobs = useMemo(() => {
+    const now = new Date();
+    return jobs.filter(j => {
+      if (j.status === 'Completed') return false;
+      if (!j.start) return false;
+      return new Date(j.start) < now;
+    });
+  }, [jobs]);
+
+  const completedJobs = useMemo(() => {
+    return jobs
+      .filter(j => j.status === 'Completed')
+      .sort((a, b) => new Date(b.completedAt || b.start || 0) - new Date(a.completedAt || a.start || 0));
+  }, [jobs]);
+
+  const paymentHistory = useMemo(() => {
+    const payments = [];
+    invoices.forEach(inv => {
+      if (inv.payments && Array.isArray(inv.payments)) {
+        inv.payments.forEach(payment => {
+          payments.push({
+            ...payment,
+            invoiceId: inv.id,
+            invoiceNumber: inv.invoiceNumber,
+          });
+        });
+      }
+    });
+    return payments.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
   }, [invoices]);
 
   useEffect(() => {

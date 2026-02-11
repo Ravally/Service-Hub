@@ -39,7 +39,13 @@ export function AuthProvider({ children }) {
           setUser(firebaseUser);
           setUserProfile(userDocSnap.data());
         } else {
-          // Check for an invite
+          // Check for an invite (skip for anonymous users who don't have email)
+          if (!firebaseUser.email) {
+            // Anonymous user - no profile needed
+            setUser(firebaseUser);
+            setUserProfile(null);
+            return;
+          }
           const invitesQuery = query(collection(db, 'invites'), where("email", "==", firebaseUser.email.toLowerCase()));
           const invitesSnapshot = await getDocs(invitesQuery);
 

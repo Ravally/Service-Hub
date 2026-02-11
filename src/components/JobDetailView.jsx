@@ -1,15 +1,9 @@
 // src/components/JobDetailView.jsx
 import React, { useMemo, useState, useEffect } from 'react';
 import { ChevronLeftIcon, EditIcon, MapPinIcon, PhoneIcon, AtSignIcon, DollarSignIcon } from './icons';
+import { formatCurrency, formatDate, formatDateTime } from '../utils';
+import { STATUS_COLORS } from '../constants';
 
-const currency = (n) => {
-  const num = Number(n || 0);
-  try { return new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }).format(num); }
-  catch { return `$${num.toFixed(2)}`; }
-};
-
-const formatDate = (iso) => iso ? new Date(iso).toLocaleDateString() : 'Not set';
-const formatDateTime = (iso) => iso ? new Date(iso).toLocaleString() : 'Not scheduled';
 const toLocalInput = (iso) => {
   if (!iso) return '';
   const hasZone = iso.endsWith('Z') || /[+-]\d{2}:\d{2}$/.test(iso);
@@ -341,7 +335,7 @@ export default function JobDetailView({
     setShowChemicalForm(false);
   };
 
-  const jobStatusClass = statusColors?.[job.status] || 'bg-gray-100 text-gray-700';
+  const jobStatusClass = statusColors?.[job.status] || STATUS_COLORS[job.status] || 'bg-gray-100 text-gray-700';
   const isToday = job?.start && new Date(job.start).toDateString() === new Date().toDateString();
   const canEditLineItems = userRole === 'admin' || userRole === 'manager';
 
@@ -506,23 +500,23 @@ export default function JobDetailView({
             <div className="flex flex-wrap gap-6 text-sm text-gray-700">
               <div>
                 <div className="text-xs uppercase text-gray-500">Total price</div>
-                <div className="font-semibold">{currency(profitability.totalPrice)}</div>
+                <div className="font-semibold">{formatCurrency(profitability.totalPrice)}</div>
               </div>
               <div>
                 <div className="text-xs uppercase text-gray-500">Line item cost</div>
-                <div className="font-semibold">-{currency(profitability.lineItemCost)}</div>
+                <div className="font-semibold">-{formatCurrency(profitability.lineItemCost)}</div>
               </div>
               <div>
                 <div className="text-xs uppercase text-gray-500">Labour</div>
-                <div className="font-semibold">-{currency(profitability.laborCost)}</div>
+                <div className="font-semibold">-{formatCurrency(profitability.laborCost)}</div>
               </div>
               <div>
                 <div className="text-xs uppercase text-gray-500">Expenses</div>
-                <div className="font-semibold">-{currency(profitability.expenseCost)}</div>
+                <div className="font-semibold">-{formatCurrency(profitability.expenseCost)}</div>
               </div>
               <div>
                 <div className="text-xs uppercase text-gray-500">Profit</div>
-                <div className="font-semibold">{currency(profitability.profit)}</div>
+                <div className="font-semibold">{formatCurrency(profitability.profit)}</div>
               </div>
             </div>
             <div className="flex justify-end">
@@ -631,14 +625,14 @@ export default function JobDetailView({
                     {item.note && <div className="text-xs text-gray-500">{item.note}</div>}
                   </td>
                   <td className="py-3 text-right">{item.qty || 0}</td>
-                  <td className="py-3 text-right">{currency(item.price)}</td>
-                  <td className="py-3 text-right font-semibold">{currency((Number(item.qty || 0) * Number(item.price || 0)))}</td>
+                  <td className="py-3 text-right">{formatCurrency(item.price)}</td>
+                  <td className="py-3 text-right font-semibold">{formatCurrency((Number(item.qty || 0) * Number(item.price || 0)))}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         )}
-        <div className="mt-4 text-right font-semibold text-gray-900">{currency(profitability.totalPrice)}</div>
+        <div className="mt-4 text-right font-semibold text-gray-900">{formatCurrency(profitability.totalPrice)}</div>
       </div>
 
       <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
@@ -725,7 +719,7 @@ export default function JobDetailView({
                   <td className="py-3 text-gray-600">{entry.note || '-'}</td>
                   <td className="py-3 text-gray-600">{formatDateTime(entry.start)}</td>
                   <td className="py-3 text-right text-gray-700">{entry.hours || '-'}</td>
-                  <td className="py-3 text-right font-semibold text-gray-900">{currency(entry.cost || entry.amount || 0)}</td>
+                  <td className="py-3 text-right font-semibold text-gray-900">{formatCurrency(entry.cost || entry.amount || 0)}</td>
                 </tr>
               ))}
             </tbody>
@@ -791,7 +785,7 @@ export default function JobDetailView({
                   <div className="font-semibold text-gray-800">{expense.title || 'Expense'}</div>
                   <div className="text-xs text-gray-500">{expense.note || ''}</div>
                 </div>
-                <div className="font-semibold text-gray-900">{currency(expense.amount || expense.cost || 0)}</div>
+                <div className="font-semibold text-gray-900">{formatCurrency(expense.amount || expense.cost || 0)}</div>
               </div>
             ))}
           </div>
@@ -1009,7 +1003,7 @@ export default function JobDetailView({
                     return (
                       <tr key={inv.id} className="border-b last:border-b-0">
                         <td className="py-3">
-                          <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${statusColors?.[inv.status] || 'bg-gray-100 text-gray-600'}`}>
+                          <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${statusColors?.[inv.status] || STATUS_COLORS[inv.status] || 'bg-gray-100 text-gray-600'}`}>
                             {inv.status}
                           </span>
                         </td>
@@ -1017,8 +1011,8 @@ export default function JobDetailView({
                         <td className="py-3 text-gray-600">{inv.subject || 'For Services Rendered'}</td>
                         <td className="py-3 text-gray-600">{formatDate(inv.issueDate || inv.createdAt)}</td>
                         <td className="py-3 text-gray-600">{formatDate(inv.dueDate)}</td>
-                        <td className="py-3 text-right font-semibold text-gray-900">{currency(inv.total || 0)}</td>
-                        <td className="py-3 text-right font-semibold text-gray-900">{currency(balance)}</td>
+                        <td className="py-3 text-right font-semibold text-gray-900">{formatCurrency(inv.total || 0)}</td>
+                        <td className="py-3 text-right font-semibold text-gray-900">{formatCurrency(balance)}</td>
                       </tr>
                     );
                   })}

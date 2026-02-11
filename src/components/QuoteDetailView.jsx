@@ -2,41 +2,8 @@
 // src/components/QuoteDetailView.jsx
 import React, { useEffect, useMemo, useState } from 'react';
 import { ChevronLeftIcon, EditIcon, FileTextIcon, PlusCircleIcon } from './icons';
-
-const currency = (n) => {
-  const num = Number(n || 0);
-  try { return new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }).format(num); }
-  catch { return `$${num.toFixed(2)}`; }
-};
-
-const formatDate = (iso) => iso ? new Date(iso).toLocaleDateString() : 'Not set';
-
-const computeTotals = (q) => {
-  const items = q.lineItems || [];
-  let subtotalBeforeDiscount = 0;
-  let lineDiscountTotal = 0;
-  items.forEach(it => {
-    const itemType = it?.type || 'line_item';
-    if (itemType === 'text' || it?.isOptional) return;
-    const qty = parseFloat(it.qty) || 0;
-    const price = parseFloat(it.price) || 0;
-    const lineSub = qty * price;
-    subtotalBeforeDiscount += lineSub;
-    const ldType = it.discountType || 'amount';
-    const ldValueNum = parseFloat(it.discountValue || 0);
-    const ldAmt = ldType === 'percent' ? (lineSub * (ldValueNum / 100)) : ldValueNum;
-    lineDiscountTotal += (Number.isFinite(ldAmt) ? ldAmt : 0);
-  });
-  const quoteDiscType = q.quoteDiscountType || q.discountType || 'amount';
-  const quoteDiscValue = parseFloat(q.quoteDiscountValue ?? q.discountValue ?? 0);
-  const discountedSubtotal = Math.max(0, subtotalBeforeDiscount - lineDiscountTotal);
-  const quoteDiscAmt = quoteDiscType === 'percent' ? (discountedSubtotal * (quoteDiscValue / 100)) : quoteDiscValue;
-  const afterAllDiscounts = Math.max(0, discountedSubtotal - (Number.isFinite(quoteDiscAmt) ? quoteDiscAmt : 0));
-  const taxRate = parseFloat(q.taxRate || 0);
-  const taxAmount = afterAllDiscounts * (taxRate / 100);
-  const total = afterAllDiscounts + taxAmount;
-  return { subtotalBeforeDiscount, taxAmount, total };
-};
+import { formatCurrency, formatDate, computeTotals } from '../utils';
+import { STATUS_COLORS } from '../constants';
 
 const SectionHeader = ({ title, onEdit, isEditing }) => (
   <div className="flex items-center justify-between mb-4">
@@ -162,7 +129,7 @@ export default function QuoteDetailView({
   const totals = useMemo(() => computeTotals({ ...quote, ...financialDraft, lineItems: lineItemsDraft }), [quote, financialDraft, lineItemsDraft]);
   const requiredDeposit = financialDraft.depositRequiredAmount || (financialDraft.depositRequiredPercent ? (totals.total * (financialDraft.depositRequiredPercent / 100)) : 0);
 
-  const statusClass = statusColors?.[quote.status] || 'bg-gray-100 text-gray-700';
+  const statusClass = STATUS_COLORS?.[quote.status] || 'bg-gray-100 text-gray-700';
   const canEdit = userRole === 'admin' || userRole === 'manager';
 
   const addCustomField = () => setOverviewDraft(prev => ({ ...prev, customFields: [...prev.customFields, { key: '', value: '' }] }));
@@ -342,7 +309,7 @@ export default function QuoteDetailView({
                 </div>
                 <div>
                   <div className="text-xs text-gray-500">Required Deposit</div>
-                  <div className="font-semibold">{currency(requiredDeposit)}</div>
+                  <div className="font-semibold">{formatCurrency(requiredDeposit)}</div>
                 </div>
                 {overviewDraft.customFields.map((field, idx) => (
                   <div key={`${field.key}-${idx}`}>
@@ -516,8 +483,8 @@ export default function QuoteDetailView({
                             {item.isOptional && <div className="text-xs text-amber-600">Optional line item</div>}
                           </td>
                           <td className="py-3 text-right">{item.qty}</td>
-                          <td className="py-3 text-right">{currency(item.price)}</td>
-                          <td className="py-3 text-right font-semibold">{currency((item.qty || 0) * (item.price || 0))}</td>
+                          <td className="py-3 text-right">{formatCurrency(item.price)}</td>
+                          <td className="py-3 text-right font-semibold">{formatCurrency((item.qty || 0) * (item.price || 0))}</td>
                         </tr>
                       );
                     })}
@@ -525,9 +492,9 @@ export default function QuoteDetailView({
                 </table>
                 <div className="flex justify-end mt-4">
                   <div className="w-full max-w-sm space-y-2 text-sm">
-                    <div className="flex justify-between"><span>Subtotal</span><span>{currency(totals.subtotalBeforeDiscount)}</span></div>
-                    <div className="flex justify-between font-semibold text-lg"><span>Total</span><span>{currency(totals.total)}</span></div>
-                    <div className="flex justify-between text-xs text-gray-500"><span>Required deposit</span><span>{currency(requiredDeposit)}</span></div>
+                    <div className="flex justify-between"><span>Subtotal</span><span>{formatCurrency(totals.subtotalBeforeDiscount)}</span></div>
+                    <div className="flex justify-between font-semibold text-lg"><span>Total</span><span>{formatCurrency(totals.total)}</span></div>
+                    <div className="flex justify-between text-xs text-gray-500"><span>Required deposit</span><span>{formatCurrency(requiredDeposit)}</span></div>
                   </div>
                 </div>
               </>
@@ -592,11 +559,11 @@ export default function QuoteDetailView({
                 </div>
                 <div>
                   <div className="text-xs text-gray-500">Discount</div>
-                  <div className="font-semibold">{financialDraft.quoteDiscountType === 'percent' ? `${financialDraft.quoteDiscountValue || 0}%` : currency(financialDraft.quoteDiscountValue || 0)}</div>
+                  <div className="font-semibold">{financialDraft.quoteDiscountType === 'percent' ? `${financialDraft.quoteDiscountValue || 0}%` : formatCurrency(financialDraft.quoteDiscountValue || 0)}</div>
                 </div>
                 <div>
                   <div className="text-xs text-gray-500">Required deposit</div>
-                  <div className="font-semibold">{currency(requiredDeposit)}</div>
+                  <div className="font-semibold">{formatCurrency(requiredDeposit)}</div>
                 </div>
               </div>
             )}

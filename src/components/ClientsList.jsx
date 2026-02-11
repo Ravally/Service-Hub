@@ -1,5 +1,7 @@
 // src/components/ClientsList.jsx
 import React, { useMemo, useState } from 'react';
+import { STATUS_COLORS } from '../constants/statusConstants';
+import { inRange } from '../utils/dateUtils';
 
 const Chip = ({ children, onClick, active = false, className = '' }) => (
   <button
@@ -11,11 +13,7 @@ const Chip = ({ children, onClick, active = false, className = '' }) => (
 );
 
 const StatusPill = ({ label }) => {
-  const map = {
-    Active: 'bg-green-100 text-green-800',
-    Lead: 'bg-yellow-100 text-yellow-800',
-  };
-  const cls = map[label] || 'bg-gray-100 text-gray-800';
+  const cls = STATUS_COLORS[label] || 'bg-gray-100 text-gray-800';
   return <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${cls}`}>{label}</span>;
 };
 
@@ -41,7 +39,7 @@ const withinDays = (date, days) => {
   const now = new Date();
   const back = new Date(now);
   back.setDate(now.getDate() - days);
-  return d >= back && d <= now;
+  return inRange(date, back, now);
 };
 
 const formatLastSeen = (iso) => {
@@ -121,8 +119,6 @@ export default function ClientsList({
     const prev30Start = new Date(now); prev30Start.setDate(now.getDate() - 60);
     const prev30End = new Date(now); prev30End.setDate(now.getDate() - 31);
 
-    const isInRange = (d, a, b) => d && new Date(d) >= a && new Date(d) <= b;
-
     const created = augmented.filter(c => !!c.createdAt);
     const leads = created.filter(c => c._status === 'Lead');
 
@@ -130,8 +126,8 @@ export default function ClientsList({
     const newClients30 = created.filter(c => withinDays(c.createdAt, 30) && c._status !== 'Lead').length;
     const ytdNew = created.filter(c => new Date(c.createdAt) >= startYtd).length;
 
-    const prevLeads = leads.filter(c => isInRange(c.createdAt, prev30Start, prev30End)).length || 0;
-    const prevClients = created.filter(c => c._status !== 'Lead' && isInRange(c.createdAt, prev30Start, prev30End)).length || 0;
+    const prevLeads = leads.filter(c => inRange(c.createdAt, prev30Start, prev30End)).length || 0;
+    const prevClients = created.filter(c => c._status !== 'Lead' && inRange(c.createdAt, prev30Start, prev30End)).length || 0;
 
     const pct = (cur, prev) => {
       if (prev === 0) return { text: '—', pos: true };

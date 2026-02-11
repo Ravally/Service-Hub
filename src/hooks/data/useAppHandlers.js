@@ -375,7 +375,7 @@ export function useAppHandlers(userId, userProfile, appState) {
           portalTokenCreatedAt: now,
         });
       }
-      const link = `${window.location.origin}${window.location.pathname}?portalToken=${encodeURIComponent(token)}`;
+      const link = `${window.location.origin}/?portalToken=${encodeURIComponent(token)}`;
       try { window.open(link, '_blank', 'noopener'); } catch (_) {}
       window.prompt('Copy portal link:', link);
     } catch (err) {
@@ -407,7 +407,7 @@ export function useAppHandlers(userId, userProfile, appState) {
   const viewAsClient = (c) => {
     try {
       const token = `${userId}.${c.id}`;
-      const link = `${window.location.origin}${window.location.pathname}?portalToken=${encodeURIComponent(token)}`;
+      const link = `${window.location.origin}/?portalToken=${encodeURIComponent(token)}`;
       window.open(link, '_blank');
     } catch {}
   };
@@ -700,7 +700,7 @@ export function useAppHandlers(userId, userProfile, appState) {
         tokenCreatedAt: now,
       });
     }
-    const link = `${window.location.origin}${window.location.pathname}?quoteToken=${encodeURIComponent(token)}`;
+    const link = `${window.location.origin}/?quoteToken=${encodeURIComponent(token)}`;
     window.open(link, '_blank', 'noopener,noreferrer');
   };
 
@@ -727,7 +727,7 @@ export function useAppHandlers(userId, userProfile, appState) {
           tokenCreatedAt: now,
         });
       }
-      const link = `${window.location.origin}${window.location.pathname}?quoteToken=${encodeURIComponent(token)}`;
+      const link = `${window.location.origin}/?quoteToken=${encodeURIComponent(token)}`;
       window.prompt('Copy approval link:', link);
     } catch (err) {
       console.error('Generate approval link error:', err);

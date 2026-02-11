@@ -18,30 +18,30 @@ const PublicQuoteApproval = ({ quote, client, company, onApprove, onDecline, mes
 
   if (!quote) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
-        <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200 max-w-lg w-full text-center">
-          <p className="text-gray-700">Loading quote…</p>
+      <div className="min-h-screen bg-midnight flex items-center justify-center p-6">
+        <div className="bg-charcoal rounded-xl shadow-lg p-6 border border-slate-700/30 max-w-lg w-full text-center">
+          <p className="text-slate-100">Loading quote…</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
-      <div className="bg-white rounded-xl shadow-lg p-6 md:p-8 border border-gray-200 max-w-2xl w-full">
+    <div className="min-h-screen bg-midnight flex items-center justify-center p-6">
+      <div className="bg-charcoal rounded-xl shadow-lg p-6 md:p-8 border border-slate-700/30 max-w-2xl w-full">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">{company?.name || 'Your Company'}</h1>
-          <p className="text-gray-600">Quote {quote.quoteNumber || `#${(quote.id || '').substring(0,6)}…`}</p>
+          <h1 className="text-2xl font-bold text-slate-100">{company?.name || 'Your Company'}</h1>
+          <p className="text-slate-400">Quote {quote.quoteNumber || `#${(quote.id || '').substring(0,6)}…`}</p>
         </div>
 
         <div className="mb-4">
-          <p className="text-lg text-gray-700">To: <span className="font-semibold">{client?.name || 'Client'}</span></p>
-          <p className="text-sm text-gray-500">{client?.email}</p>
+          <p className="text-lg text-slate-100">To: <span className="font-semibold">{client?.name || 'Client'}</span></p>
+          <p className="text-sm text-slate-400">{client?.email}</p>
         </div>
 
         <div className="mb-6">
           <table className="w-full">
-            <thead className="bg-gray-50">
+            <thead className="bg-midnight">
               <tr>
                 <th className="text-left font-semibold p-2">Description</th>
                 <th className="text-center font-semibold p-2">Qty</th>
@@ -87,12 +87,12 @@ const PublicQuoteApproval = ({ quote, client, company, onApprove, onDecline, mes
 
         <div className="space-y-3">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
-            <input value={name} onChange={(e)=>setName(e.target.value)} placeholder="Type your full name" className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"/>
+            <label className="block text-sm font-medium text-slate-100 mb-1">Your Name</label>
+            <input value={name} onChange={(e)=>setName(e.target.value)} placeholder="Type your full name" className="w-full px-3 py-2 border border-slate-700 rounded-md shadow-sm"/>
           </div>
           <div className="flex gap-2 justify-end">
-            <button onClick={() => onDecline && onDecline(name)} className="px-4 py-2 text-sm font-semibold text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">Decline</button>
-            <button onClick={() => onApprove && onApprove(name)} className="px-4 py-2 text-sm font-semibold text-white bg-green-600 rounded-lg hover:bg-green-700">Approve</button>
+            <button onClick={() => onDecline && onDecline(name)} className="px-4 py-2 text-sm font-semibold text-slate-100 bg-gray-100 rounded-lg hover:bg-gray-200">Decline</button>
+            <button onClick={() => onApprove && onApprove(name)} className="px-4 py-2 text-sm font-semibold text-white bg-trellio-teal rounded-lg hover:bg-green-700">Approve</button>
           </div>
         </div>
 

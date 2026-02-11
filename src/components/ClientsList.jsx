@@ -6,25 +6,25 @@ import { inRange } from '../utils/dateUtils';
 const Chip = ({ children, onClick, active = false, className = '' }) => (
   <button
     onClick={onClick}
-    className={`px-3 py-1 rounded-full text-sm border ${active ? 'bg-gray-800 text-white border-gray-800' : 'bg-white text-gray-700 border-gray-300'} ${className}`}
+    className={`px-3 py-1 rounded-full text-sm border ${active ? 'bg-trellio-teal text-midnight border-trellio-teal' : 'bg-charcoal text-slate-100 border-slate-700/30'} ${className}`}
   >
     {children}
   </button>
 );
 
 const StatusPill = ({ label }) => {
-  const cls = STATUS_COLORS[label] || 'bg-gray-100 text-gray-800';
+  const cls = STATUS_COLORS[label] || 'bg-gray-100 text-slate-100';
   return <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${cls}`}>{label}</span>;
 };
 
 const KpiCard = ({ title, sub, value, deltaText, deltaPositive = true }) => (
-  <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
-    <div className="text-sm text-gray-600">{title}</div>
-    <div className="text-xs text-gray-400 mb-2">{sub}</div>
-    <div className="text-3xl font-bold text-gray-900">{value}</div>
+  <div className="bg-charcoal rounded-xl border border-slate-700/30 shadow-sm p-4">
+    <div className="text-sm text-slate-400">{title}</div>
+    <div className="text-xs text-slate-500 mb-2">{sub}</div>
+    <div className="text-3xl font-bold text-slate-100">{value}</div>
     {typeof deltaText === 'string' && (
-      <div className={`inline-flex items-center mt-2 text-xs font-medium ${deltaPositive ? 'text-green-700' : 'text-red-700'}`}>
-        <span className={`inline-block h-2 w-2 rounded-full mr-1 ${deltaPositive ? 'bg-green-400' : 'bg-red-400'}`} />
+      <div className={`inline-flex items-center mt-2 text-xs font-medium ${deltaPositive ? 'text-trellio-teal' : 'text-signal-coral'}`}>
+        <span className={`inline-block h-2 w-2 rounded-full mr-1 ${deltaPositive ? 'bg-trellio-teal' : 'bg-signal-coral'}`} />
         {deltaText}
       </div>
     )}
@@ -196,10 +196,10 @@ export default function ClientsList({
     <div>
       {/* Header */}
       <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-3xl font-bold text-gray-900">Clients</h2>
+        <h2 className="text-3xl font-bold text-slate-100">Clients</h2>
         <div className="flex items-center gap-2">
           <button onClick={onNewClientClick} className="px-4 py-2 rounded-md bg-green-600 text-white font-semibold hover:bg-green-700">New Client</button>
-          <button className="px-3 py-2 rounded-md bg-gray-100 text-gray-700 border border-gray-200">More Actions</button>
+          <button className="px-3 py-2 rounded-md bg-gray-100 text-slate-100 border border-slate-700/30">More Actions</button>
         </div>
       </div>
 
@@ -216,21 +216,21 @@ export default function ClientsList({
           <div className="relative">
             <Chip onClick={() => { setTagPopover((s) => !s); setStatusPopover(false); }}>Tags +</Chip>
             {tagPopover && (
-              <div className="absolute z-10 mt-2 w-64 bg-white border border-gray-200 rounded-md shadow p-2">
+              <div className="absolute z-10 mt-2 w-64 bg-charcoal border border-slate-700/30 rounded-md shadow p-2">
                 <input
                   value={tagSearch}
                   onChange={(e)=>setTagSearch(e.target.value)}
                   placeholder="Search tags"
                   className="w-full px-2 py-1 border border-gray-300 rounded mb-2 text-sm"
                 />
-                <div className="flex items-center justify-between px-2 py-1 text-xs text-gray-600">
+                <div className="flex items-center justify-between px-2 py-1 text-xs text-slate-400">
                   <span>Select tags</span>
                   <button
                     onClick={() => {
                       const visible = allTags.filter(t => t.toLowerCase().includes(tagSearch.trim().toLowerCase()));
                       setSelectedTags(visible);
                     }}
-                    className="text-green-700 font-semibold"
+                    className="text-trellio-teal font-semibold"
                   >Select all</button>
                 </div>
                 <div className="max-h-64 overflow-y-auto">
@@ -242,10 +242,10 @@ export default function ClientsList({
                       className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-50 ${selectedTags.includes(t) ? 'bg-gray-50' : ''}`}
                     >
                       <span className="inline-block mr-2 align-middle" style={{width:12}}>{selectedTags.includes(t) ? '✓' : ''}</span>
-                      {t} <span className="text-gray-500">({tagCounts.get(t) || 0})</span>
+                      {t} <span className="text-slate-400">({tagCounts.get(t) || 0})</span>
                     </button>
                   ))}
-                  {allTags.length === 0 && <div className="text-xs text-gray-500 p-2">No tags</div>}
+                  {allTags.length === 0 && <div className="text-xs text-slate-400 p-2">No tags</div>}
                 </div>
               </div>
             )}
@@ -253,7 +253,7 @@ export default function ClientsList({
           <div className="relative">
             <Chip onClick={() => { setStatusPopover((s) => !s); setTagPopover(false); }}>Status | {statusMode === 'all' ? 'All' : statusMode === 'la' ? 'Leads and Active' : statusMode === 'lead' ? 'Leads' : statusMode === 'active' ? 'Active' : 'Archived'}</Chip>
             {statusPopover && (
-              <div className="absolute z-10 mt-2 w-64 bg-white border border-gray-200 rounded-md shadow p-2">
+              <div className="absolute z-10 mt-2 w-64 bg-charcoal border border-slate-700/30 rounded-md shadow p-2">
                 <input placeholder="Search status" className="w-full px-2 py-1 border border-gray-300 rounded mb-2 text-sm" />
                 {[
                   { key: 'all', label: 'All' },
@@ -271,7 +271,7 @@ export default function ClientsList({
             )}
           </div>
           {(selectedTags.length > 0 || statusMode !== 'all') && (
-            <Chip onClick={() => { setSelectedTags([]); setStatusMode('all'); }} className="bg-gray-100 border-gray-200">Clear</Chip>
+            <Chip onClick={() => { setSelectedTags([]); setStatusMode('all'); }} className="bg-gray-100 border-slate-700/30">Clear</Chip>
           )}
         </div>
         <div className="relative">
@@ -284,12 +284,12 @@ export default function ClientsList({
         </div>
       </div>
 
-      <div className="text-sm text-gray-600 mb-3">All clients ({filtered.length} results)</div>
+      <div className="text-sm text-slate-400 mb-3">All clients ({filtered.length} results)</div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+      <div className="bg-charcoal rounded-xl shadow-lg border border-slate-700/30 overflow-hidden">
         {filtered.length === 0 ? (
-          <div className="text-center p-10 text-gray-500">No matching clients.</div>
+          <div className="text-center p-10 text-slate-400">No matching clients.</div>
         ) : (
           <table className="w-full">
             <thead className="bg-gray-50 text-sm">
@@ -310,25 +310,25 @@ export default function ClientsList({
                 <tr key={c.id} className="border-t hover:bg-gray-50">
                   <td className="p-3">
                     <button className="font-semibold text-blue-700 hover:underline" onClick={() => onSelectClient && onSelectClient(c)}>{c.name}</button>
-                    {c.company && <div className="text-xs text-gray-500">{c.company}</div>}
+                    {c.company && <div className="text-xs text-slate-400">{c.company}</div>}
                   </td>
-                  <td className="p-3 text-gray-700">
+                  <td className="p-3 text-slate-100">
                     {(c.address || '').length > 0 ? (
                       <div className="truncate max-w-xs">{c.address}</div>
-                    ) : <span className="text-gray-400">—</span>}
+                    ) : <span className="text-slate-500">—</span>}
                   </td>
                   <td className="p-3">
                     <div className="flex flex-wrap gap-1">
                       {(c.tags || []).slice(0,1).map((t, i) => (
-                        <span key={`${t}-${i}`} className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700">{t}</span>
+                        <span key={`${t}-${i}`} className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-slate-100">{t}</span>
                       ))}
                       {(c.tags || []).length > 1 && (
-                        <span className="text-xs text-gray-500">+{(c.tags || []).length - 1}</span>
+                        <span className="text-xs text-slate-400">+{(c.tags || []).length - 1}</span>
                       )}
                     </div>
                   </td>
                   <td className="p-3"><StatusPill label={c._status} /></td>
-                  <td className="p-3 text-gray-700">{formatLastSeen(c._last)}</td>
+                  <td className="p-3 text-slate-100">{formatLastSeen(c._last)}</td>
                 </tr>
               ))}
             </tbody>

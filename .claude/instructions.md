@@ -264,10 +264,21 @@ npm run build       # Must succeed
 1. Check if utility/constant exists first (import from `src/utils/` or `src/constants/`)
 2. Follow existing patterns in similar files
 3. Keep components under 200 lines
-4. Use Tailwind for styling (reference brand colors)
-5. Import hooks from `src/hooks/data/`
-6. Handle errors with try/catch
-7. Add JSDoc comments for new functions
+4. **Use Trellio brand colors** (trellio-teal, signal-coral, harvest-amber, midnight, charcoal)
+5. **Follow dark mode patterns** (bg-midnight/charcoal, text-slate-100/400, border-slate-700/30)
+6. Import hooks from `src/hooks/data/`
+7. Handle errors with try/catch
+8. Add JSDoc comments for new functions
+
+**Trellio Brand Guidelines**:
+- ✅ Primary actions: `btn-primary` (trellio-teal)
+- ✅ Secondary actions: `btn-secondary` (charcoal/slate)
+- ✅ Warning/Delete: `btn-accent-coral` (signal-coral)
+- ✅ Cards: `bg-charcoal`, borders: `border-slate-700/30`
+- ✅ Inputs: `bg-midnight border-slate-700 focus:border-trellio-teal`
+- ❌ NO gray-* colors (use midnight/charcoal/slate-*)
+- ❌ NO hardcoded hex colors (use Tailwind classes)
+- See [docs/TRELLIO_ARCHITECTURE.md#trellio-brand-system](docs/TRELLIO_ARCHITECTURE.md#trellio-brand-system) for full guidelines
 
 **When refactoring**:
 1. Maintain zero duplicate code

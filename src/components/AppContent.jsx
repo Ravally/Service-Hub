@@ -360,21 +360,21 @@ export default function AppContent({ auth, appState, handlers }) {
                   const active = todays.filter(j=>j.status==='In Progress').length;
                   const complete = todays.filter(j=>j.status==='Completed').length;
                   const toGo = Math.max(0, total - active - complete);
-                  const Box = ({color,title,count,val}) => (
-                    <div className="flex items-center gap-3 bg-gray-50 rounded-md p-3 border border-gray-100">
-                      <div className="h-8 w-8 rounded-md text-white flex items-center justify-center font-bold" style={{backgroundColor:color}}>{count}</div>
+                  const Box = ({bgColor,title,count,val}) => (
+                    <div className="flex items-center gap-3 bg-charcoal rounded-lg p-3 border border-slate-700/30">
+                      <div className={`h-8 w-8 rounded-lg text-white flex items-center justify-center font-bold font-display ${bgColor}`}>{count}</div>
                       <div>
-                        <div className="text-sm font-semibold">{title}</div>
-                        <div className="text-xs text-gray-500">{formatMoney(val)}</div>
+                        <div className="text-sm font-semibold text-slate-100">{title}</div>
+                        <div className="text-xs font-mono text-slate-500">{formatMoney(val)}</div>
                       </div>
                     </div>
                   );
                   return (
                     <div className="p-4 grid grid-cols-1 md:grid-cols-4 gap-4">
-                      <Box color="#1F2937" title="Total" count={total} val={totalVal} />
-                      <Box color="#6B7280" title="To Go" count={toGo} val={0} />
-                      <Box color="#3B82F6" title="Active" count={active} val={0} />
-                      <Box color="#22C55E" title="Complete" count={complete} val={0} />
+                      <Box bgColor="bg-slate-700" title="Total" count={total} val={totalVal} />
+                      <Box bgColor="bg-muted" title="To Go" count={toGo} val={0} />
+                      <Box bgColor="bg-blue-500" title="Active" count={active} val={0} />
+                      <Box bgColor="bg-trellio-teal" title="Complete" count={complete} val={0} />
                     </div>
                   );
                 })()}
@@ -484,7 +484,7 @@ export default function AppContent({ auth, appState, handlers }) {
 
           {/* Create Quote */}
           {activeView === 'createQuote' && (
-            <div className="-mx-4 sm:-mx-6 lg:-mx-8 bg-[#f8f5f0] border-t-4 border-[#7a2f2f] px-4 sm:px-6 lg:px-8 py-6">
+            <div className="-mx-4 sm:-mx-6 lg:-mx-8 bg-charcoal border-t-4 border-signal-coral px-4 sm:px-6 lg:px-8 py-6">
               <QuoteCreateForm
                 quote={newQuote} setQuote={setNewQuote}
                 clients={clients} staff={staff} quoteTemplates={quoteTemplates}

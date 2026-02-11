@@ -224,20 +224,20 @@ const PublicClientPortal = ({ uid, clientId, company }) => {
   };
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center text-gray-600">Loading...</div>;
+    return <div className="min-h-screen flex items-center justify-center text-slate-400">Loading...</div>;
   }
   if (error) {
     return <div className="min-h-screen flex items-center justify-center text-red-600">{error}</div>;
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-midnight">
       <div className="max-w-6xl mx-auto p-4 sm:p-6">
         {/* Header with Request Service Button */}
         <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">{company?.name || 'Your Company'} - Client Portal</h1>
-            <p className="text-gray-600 mt-1">Welcome, {client?.name}</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-slate-100">{company?.name || 'Your Company'} - Client Portal</h1>
+            <p className="text-slate-400 mt-1">Welcome, {client?.name}</p>
           </div>
           <button
             onClick={() => setShowServiceRequestModal(true)}
@@ -247,17 +247,17 @@ const PublicClientPortal = ({ uid, clientId, company }) => {
           </button>
         </div>
 
-        {(message) && <div className="mb-4 p-3 rounded bg-green-50 text-green-700 border border-green-200 text-sm sm:text-base">{message}</div>}
+        {(message) && <div className="mb-4 p-3 rounded bg-green-50 text-trellio-teal border border-green-200 text-sm sm:text-base">{message}</div>}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Contact Details */}
-          <div className="lg:col-span-1 bg-white rounded-xl shadow border border-gray-200 p-4">
+          <div className="lg:col-span-1 bg-charcoal rounded-xl shadow border border-slate-700/30 p-4">
             <h2 className="text-lg font-semibold mb-3">Your Details</h2>
             <div className="space-y-2">
-              <input value={edit?.name || ''} onChange={(e)=>setEdit({...edit, name: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="Full Name"/>
-              <input value={edit?.email || ''} onChange={(e)=>setEdit({...edit, email: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="Email"/>
-              <input value={edit?.phone || ''} onChange={(e)=>setEdit({...edit, phone: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="Phone"/>
-              <input value={edit?.address || ''} onChange={(e)=>setEdit({...edit, address: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="Address"/>
+              <input value={edit?.name || ''} onChange={(e)=>setEdit({...edit, name: e.target.value})} className="w-full px-3 py-2 border border-slate-700 rounded-md" placeholder="Full Name"/>
+              <input value={edit?.email || ''} onChange={(e)=>setEdit({...edit, email: e.target.value})} className="w-full px-3 py-2 border border-slate-700 rounded-md" placeholder="Email"/>
+              <input value={edit?.phone || ''} onChange={(e)=>setEdit({...edit, phone: e.target.value})} className="w-full px-3 py-2 border border-slate-700 rounded-md" placeholder="Phone"/>
+              <input value={edit?.address || ''} onChange={(e)=>setEdit({...edit, address: e.target.value})} className="w-full px-3 py-2 border border-slate-700 rounded-md" placeholder="Address"/>
               <div className="text-right">
                 <button onClick={handleSaveClient} className="px-4 py-2 bg-blue-600 text-white rounded-md">Save</button>
               </div>
@@ -265,25 +265,25 @@ const PublicClientPortal = ({ uid, clientId, company }) => {
           </div>
 
           {/* Quotes */}
-          <div className="lg:col-span-2 bg-white rounded-xl shadow border border-gray-200 p-4">
+          <div className="lg:col-span-2 bg-charcoal rounded-xl shadow border border-slate-700/30 p-4">
             <h2 className="text-lg font-semibold mb-3">Your Quotes</h2>
-            {quotes.length === 0 ? <p className="text-sm text-gray-500">No quotes yet.</p> : (
+            {quotes.length === 0 ? <p className="text-sm text-slate-400">No quotes yet.</p> : (
               <ul className="divide-y divide-gray-100">
                 {quotes.map(q => (
                   <li key={q.id} className="py-3">
                     <div className="flex justify-between items-center">
                       <div>
                         <p className="font-semibold">{q.quoteNumber || q.id.substring(0,6)}</p>
-                        <p className="text-xs text-gray-500">Total {formatCurrency(q.total || 0)}</p>
+                        <p className="text-xs text-slate-400">Total {formatCurrency(q.total || 0)}</p>
                       </div>
                       <div className="flex gap-2">
                         {(q.status === 'Draft' || q.status === 'Sent' || q.status === 'Awaiting Response') && (
                           <>
-                            <button onClick={() => { const n = window.prompt('Please type your full name to approve:'); if (!n) return; portalApproveQuote(q, n); }} className="px-3 py-1 text-sm bg-green-600 text-white rounded-md">Approve</button>
-                            <button onClick={() => { const n = window.prompt('Please type your full name to decline:'); if (!n) return; portalDeclineQuote(q, n); }} className="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-md">Decline</button>
+                            <button onClick={() => { const n = window.prompt('Please type your full name to approve:'); if (!n) return; portalApproveQuote(q, n); }} className="px-3 py-1 text-sm bg-trellio-teal text-white rounded-md">Approve</button>
+                            <button onClick={() => { const n = window.prompt('Please type your full name to decline:'); if (!n) return; portalDeclineQuote(q, n); }} className="px-3 py-1 text-sm bg-midnight text-slate-100 rounded-md">Decline</button>
                           </>
                         )}
-                        {(q.status === 'Approved' || q.status === 'Accepted') && <span className="px-2 py-0.5 rounded-full text-xs bg-green-100 text-green-700">Approved</span>}
+                        {(q.status === 'Approved' || q.status === 'Accepted') && <span className="px-2 py-0.5 rounded-full text-xs bg-green-100 text-trellio-teal">Approved</span>}
                       </div>
                     </div>
                   </li>
@@ -294,7 +294,7 @@ const PublicClientPortal = ({ uid, clientId, company }) => {
         </div>
 
         {/* Jobs with Tabs */}
-        <div className="mt-6 bg-white rounded-xl shadow border border-gray-200 p-4">
+        <div className="mt-6 bg-charcoal rounded-xl shadow border border-slate-700/30 p-4">
           <div className="flex justify-between items-center mb-3">
             <h2 className="text-lg font-semibold">Your Jobs</h2>
             <div className="flex gap-2">
@@ -303,7 +303,7 @@ const PublicClientPortal = ({ uid, clientId, company }) => {
                 className={`px-3 py-1 text-sm rounded-md font-medium ${
                   jobsTab === 'upcoming'
                     ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    : 'bg-midnight text-slate-100 hover:bg-gray-200'
                 }`}
               >
                 Upcoming ({upcomingJobs.length})
@@ -313,7 +313,7 @@ const PublicClientPortal = ({ uid, clientId, company }) => {
                 className={`px-3 py-1 text-sm rounded-md font-medium ${
                   jobsTab === 'past'
                     ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    : 'bg-midnight text-slate-100 hover:bg-gray-200'
                 }`}
               >
                 Past ({pastJobs.length})
@@ -323,17 +323,17 @@ const PublicClientPortal = ({ uid, clientId, company }) => {
 
           {jobsTab === 'upcoming' ? (
             upcomingJobs.length === 0 ? (
-              <p className="text-sm text-gray-500">No upcoming jobs scheduled.</p>
+              <p className="text-sm text-slate-400">No upcoming jobs scheduled.</p>
             ) : (
               <ul className="divide-y divide-gray-100">
                 {upcomingJobs.map(j => (
                   <li key={j.id} className="py-3">
                     <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
                       <div>
-                        <p className="font-medium text-gray-900">{j.title}</p>
-                        <p className="text-xs text-gray-500">{j.status}</p>
+                        <p className="font-medium text-slate-100">{j.title}</p>
+                        <p className="text-xs text-slate-400">{j.status}</p>
                       </div>
-                      <span className="text-sm text-gray-700 sm:text-right">{j.start ? formatDateTime(j.start) : 'Not scheduled'}</span>
+                      <span className="text-sm text-slate-100 sm:text-right">{j.start ? formatDateTime(j.start) : 'Not scheduled'}</span>
                     </div>
                   </li>
                 ))}
@@ -341,17 +341,17 @@ const PublicClientPortal = ({ uid, clientId, company }) => {
             )
           ) : (
             pastJobs.length === 0 ? (
-              <p className="text-sm text-gray-500">No past jobs.</p>
+              <p className="text-sm text-slate-400">No past jobs.</p>
             ) : (
               <ul className="divide-y divide-gray-100">
                 {pastJobs.map(j => (
                   <li key={j.id} className="py-3">
                     <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
                       <div>
-                        <p className="font-medium text-gray-900">{j.title}</p>
-                        <p className="text-xs text-gray-500">{j.status}</p>
+                        <p className="font-medium text-slate-100">{j.title}</p>
+                        <p className="text-xs text-slate-400">{j.status}</p>
                       </div>
-                      <span className="text-sm text-gray-700 sm:text-right">{j.start ? formatDateTime(j.start) : 'Not scheduled'}</span>
+                      <span className="text-sm text-slate-100 sm:text-right">{j.start ? formatDateTime(j.start) : 'Not scheduled'}</span>
                     </div>
                   </li>
                 ))}
@@ -361,9 +361,9 @@ const PublicClientPortal = ({ uid, clientId, company }) => {
         </div>
 
         {/* Invoices */}
-        <div className="mt-6 bg-white rounded-xl shadow border border-gray-200 p-4">
+        <div className="mt-6 bg-charcoal rounded-xl shadow border border-slate-700/30 p-4">
           <h2 className="text-lg font-semibold mb-3">Your Invoices</h2>
-          {invoices.filter(i => !i.isCreditNote).length === 0 ? <p className="text-sm text-gray-500">No invoices yet.</p> : (
+          {invoices.filter(i => !i.isCreditNote).length === 0 ? <p className="text-sm text-slate-400">No invoices yet.</p> : (
             <ul className="divide-y divide-gray-100">
               {invoices.filter(i => !i.isCreditNote).map(i => {
                 const credits = creditsByInvoice.get(i.id) || 0;
@@ -374,7 +374,7 @@ const PublicClientPortal = ({ uid, clientId, company }) => {
                     <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
                       <div className="flex-1">
                         <p className="font-semibold">{i.invoiceNumber || i.id.substring(0,6)}</p>
-                        <p className="text-xs text-gray-500">Issued {formatDate(i.issueDate || i.createdAt)}</p>
+                        <p className="text-xs text-slate-400">Issued {formatDate(i.issueDate || i.createdAt)}</p>
                         {credits > 0 && <p className="text-xs text-purple-700">Credits applied: {formatCurrency(credits)}</p>}
                       </div>
                       <div className="flex items-center gap-3">
@@ -382,7 +382,7 @@ const PublicClientPortal = ({ uid, clientId, company }) => {
                           <p className="font-semibold">{formatCurrency(net)}</p>
                           {i.status !== 'Paid' ? (
                             !canPay ? (
-                              <span className="inline-block mt-1 px-2 py-0.5 rounded-full text-xs bg-gray-100 text-gray-600">Payments disabled</span>
+                              <span className="inline-block mt-1 px-2 py-0.5 rounded-full text-xs bg-midnight text-slate-400">Payments disabled</span>
                             ) :
                             i.paymentLink ? (
                               <a href={i.paymentLink} className="inline-block mt-1 px-3 py-1 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700">Pay Now</a>
@@ -390,12 +390,12 @@ const PublicClientPortal = ({ uid, clientId, company }) => {
                               <button onClick={() => portalPayInvoice(i)} className="inline-block mt-1 px-3 py-1 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700">Pay Now (test)</button>
                             )
                           ) : (
-                            <span className="inline-block mt-1 px-2 py-0.5 rounded-full text-xs bg-green-100 text-green-700">Paid</span>
+                            <span className="inline-block mt-1 px-2 py-0.5 rounded-full text-xs bg-green-100 text-trellio-teal">Paid</span>
                           )}
                         </div>
                         <button
                           onClick={() => handleDownloadInvoice(i)}
-                          className="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 whitespace-nowrap"
+                          className="px-3 py-1 text-sm bg-midnight text-slate-100 rounded-md hover:bg-gray-200 whitespace-nowrap"
                           title="Download PDF"
                         >
                           📄 PDF
@@ -411,25 +411,25 @@ const PublicClientPortal = ({ uid, clientId, company }) => {
 
         {/* Payment History */}
         {paymentHistory.length > 0 && (
-          <div className="mt-6 bg-white rounded-xl shadow border border-gray-200 p-4">
+          <div className="mt-6 bg-charcoal rounded-xl shadow border border-slate-700/30 p-4">
             <h2 className="text-lg font-semibold mb-3">Payment History</h2>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="bg-gray-50 border-b">
+                <thead className="bg-midnight border-b">
                   <tr>
-                    <th className="text-left p-2 font-medium text-gray-700">Date</th>
-                    <th className="text-left p-2 font-medium text-gray-700">Invoice</th>
-                    <th className="text-left p-2 font-medium text-gray-700">Method</th>
-                    <th className="text-right p-2 font-medium text-gray-700">Amount</th>
+                    <th className="text-left p-2 font-medium text-slate-100">Date</th>
+                    <th className="text-left p-2 font-medium text-slate-100">Invoice</th>
+                    <th className="text-left p-2 font-medium text-slate-100">Method</th>
+                    <th className="text-right p-2 font-medium text-slate-100">Amount</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {paymentHistory.map((payment, idx) => (
                     <tr key={idx}>
-                      <td className="p-2 text-gray-700">{formatDate(payment.createdAt)}</td>
-                      <td className="p-2 text-gray-700">{payment.invoiceNumber || payment.invoiceId.substring(0, 8)}</td>
-                      <td className="p-2 text-gray-500">{payment.method}</td>
-                      <td className="p-2 text-right font-medium text-gray-900">
+                      <td className="p-2 text-slate-100">{formatDate(payment.createdAt)}</td>
+                      <td className="p-2 text-slate-100">{payment.invoiceNumber || payment.invoiceId.substring(0, 8)}</td>
+                      <td className="p-2 text-slate-400">{payment.method}</td>
+                      <td className="p-2 text-right font-medium text-slate-100">
                         {formatCurrency((payment.amount || 0) + (payment.tip || 0))}
                       </td>
                     </tr>
@@ -442,7 +442,7 @@ const PublicClientPortal = ({ uid, clientId, company }) => {
 
         {/* Service History */}
         {completedJobs.length > 0 && (
-          <div className="mt-6 bg-white rounded-xl shadow border border-gray-200 p-4">
+          <div className="mt-6 bg-charcoal rounded-xl shadow border border-slate-700/30 p-4">
             <h2 className="text-lg font-semibold mb-3">Service History</h2>
             <ul className="space-y-3">
               {completedJobs.slice(0, 10).map(job => {
@@ -450,15 +450,15 @@ const PublicClientPortal = ({ uid, clientId, company }) => {
                 return (
                   <li key={job.id} className="flex flex-col sm:flex-row sm:justify-between pb-3 border-b border-gray-100 last:border-0">
                     <div>
-                      <p className="font-medium text-gray-900">{job.title}</p>
-                      <p className="text-xs text-gray-500">Completed: {formatDate(job.completedAt || job.start)}</p>
+                      <p className="font-medium text-slate-100">{job.title}</p>
+                      <p className="text-xs text-slate-400">Completed: {formatDate(job.completedAt || job.start)}</p>
                       {relatedInvoice && (
                         <p className="text-xs text-blue-600 mt-1">
                           Invoice: {relatedInvoice.invoiceNumber} ({relatedInvoice.status})
                         </p>
                       )}
                     </div>
-                    <div className="text-sm text-gray-500 mt-2 sm:mt-0 sm:text-right">
+                    <div className="text-sm text-slate-400 mt-2 sm:mt-0 sm:text-right">
                       {job.notes && <p className="text-xs italic">{job.notes.substring(0, 100)}{job.notes.length > 100 ? '...' : ''}</p>}
                     </div>
                   </li>
@@ -466,7 +466,7 @@ const PublicClientPortal = ({ uid, clientId, company }) => {
               })}
             </ul>
             {completedJobs.length > 10 && (
-              <p className="text-xs text-center text-gray-500 mt-3">Showing 10 most recent services</p>
+              <p className="text-xs text-center text-slate-400 mt-3">Showing 10 most recent services</p>
             )}
           </div>
         )}

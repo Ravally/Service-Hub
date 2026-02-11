@@ -7,9 +7,9 @@ import { STATUS_COLORS } from '../constants';
 
 const SectionHeader = ({ title, onEdit, isEditing }) => (
   <div className="flex items-center justify-between mb-4">
-    <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+    <h3 className="text-lg font-semibold text-slate-100">{title}</h3>
     {onEdit && (
-      <button onClick={onEdit} className="text-sm font-semibold text-green-700 hover:text-green-800">
+      <button onClick={onEdit} className="text-sm font-semibold text-trellio-teal hover:text-trellio-teal/80">
         <span className="inline-flex items-center gap-2"><EditIcon /> {isEditing ? 'Cancel' : 'Edit'}</span>
       </button>
     )}
@@ -24,7 +24,7 @@ const Toggle = ({ label, value, onChange }) => (
   <button
     type="button"
     onClick={() => onChange(!value)}
-    className={`w-12 h-6 rounded-full flex items-center px-1 transition-colors ${value ? 'bg-green-600' : 'bg-gray-200'}`}
+    className={`w-12 h-6 rounded-full flex items-center px-1 transition-colors ${value ? 'bg-trellio-teal' : 'bg-slate-700'}`}
   >
     <span className={`h-4 w-4 bg-white rounded-full transition-transform ${value ? 'translate-x-6' : ''}`} />
     <span className="sr-only">{label}</span>
@@ -190,12 +190,12 @@ export default function QuoteDetailView({
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <button onClick={onBack} className="flex items-center gap-2 text-sm font-semibold text-gray-600 hover:text-gray-800">
+      <button onClick={onBack} className="flex items-center gap-2 text-sm font-semibold text-slate-400 hover:text-trellio-teal">
         <ChevronLeftIcon />
         Back to all quotes
       </button>
 
-      <div className="bg-amber-50/60 border border-amber-100 rounded-2xl p-6">
+      <div className="bg-harvest-amber/10 border border-harvest-amber/30 rounded-2xl p-6">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <FileTextIcon />
@@ -204,44 +204,44 @@ export default function QuoteDetailView({
           <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={() => onConvertToJob && onConvertToJob(quote)}
-              className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-semibold hover:bg-green-700"
+              className="px-4 py-2 bg-trellio-teal text-midnight rounded-lg text-sm font-semibold hover:bg-trellio-teal/90"
             >
               Convert to Job
             </button>
             <div className="relative">
               <button
                 onClick={() => setMenuOpen(v => !v)}
-                className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-50"
+                className="px-4 py-2 bg-charcoal border border-slate-700/30 rounded-lg text-sm font-semibold text-slate-100 hover:bg-charcoal/80"
               >
                 More
               </button>
               {menuOpen && (
-                <div className="absolute right-0 mt-2 w-64 bg-white border border-gray-200 rounded-xl shadow-lg z-30 text-sm">
-                  <button className="w-full text-left px-4 py-2 hover:bg-gray-50" onClick={() => { onConvertToJob && onConvertToJob(quote); setMenuOpen(false); }}>Convert to Job</button>
-                  <button className="w-full text-left px-4 py-2 hover:bg-gray-50" onClick={() => { onCreateSimilar && onCreateSimilar(quote); setMenuOpen(false); }}>Create Similar Quote</button>
-                  <button className="w-full text-left px-4 py-2 hover:bg-gray-50" onClick={() => { onCollectDeposit && onCollectDeposit(quote); setMenuOpen(false); }}>Collect Deposit</button>
-                  <div className="px-4 pt-2 text-xs text-gray-400">Send as...</div>
-                  <button className="w-full text-left px-4 py-2 hover:bg-gray-50" onClick={() => { onSendEmail && onSendEmail(quote); setMenuOpen(false); }}>Email</button>
+                <div className="absolute right-0 mt-2 w-64 bg-charcoal border border-slate-700/30 rounded-xl shadow-lg z-30 text-sm">
+                  <button className="w-full text-left px-4 py-2 hover:bg-midnight text-slate-100" onClick={() => { onConvertToJob && onConvertToJob(quote); setMenuOpen(false); }}>Convert to Job</button>
+                  <button className="w-full text-left px-4 py-2 hover:bg-midnight text-slate-100" onClick={() => { onCreateSimilar && onCreateSimilar(quote); setMenuOpen(false); }}>Create Similar Quote</button>
+                  <button className="w-full text-left px-4 py-2 hover:bg-midnight text-slate-100" onClick={() => { onCollectDeposit && onCollectDeposit(quote); setMenuOpen(false); }}>Collect Deposit</button>
+                  <div className="px-4 pt-2 text-xs text-slate-500">Send as...</div>
+                  <button className="w-full text-left px-4 py-2 hover:bg-midnight text-slate-100" onClick={() => { onSendEmail && onSendEmail(quote); setMenuOpen(false); }}>Email</button>
                   {(/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) && (
-                    <button className="w-full text-left px-4 py-2 hover:bg-gray-50" onClick={() => { onSendText && onSendText(quote); setMenuOpen(false); }}>Text (SMS)</button>
+                    <button className="w-full text-left px-4 py-2 hover:bg-midnight text-slate-100" onClick={() => { onSendText && onSendText(quote); setMenuOpen(false); }}>Text (SMS)</button>
                   )}
-                  <div className="px-4 pt-2 text-xs text-gray-400">Mark as...</div>
-                  <button className="w-full text-left px-4 py-2 hover:bg-gray-50" onClick={() => { onMarkAwaiting && onMarkAwaiting(quote); setMenuOpen(false); }}>Awaiting Response</button>
-                  <button className="w-full text-left px-4 py-2 hover:bg-gray-50" onClick={() => { onMarkApproved && onMarkApproved(quote); setMenuOpen(false); }}>Approved</button>
-                  <button className="w-full text-left px-4 py-2 hover:bg-gray-50" onClick={() => { onArchiveQuote && onArchiveQuote(quote); setMenuOpen(false); }}>Archived</button>
-                  <div className="px-4 pt-2 text-xs text-gray-400">Client view</div>
-                  <button className="w-full text-left px-4 py-2 hover:bg-gray-50" onClick={() => { onPreviewClient && onPreviewClient(quote); setMenuOpen(false); }}>Preview as Client</button>
-                  <button className="w-full text-left px-4 py-2 hover:bg-gray-50" onClick={() => { onCollectSignature && onCollectSignature(quote); setMenuOpen(false); }}>Collect Signature</button>
-                  <div className="px-4 pt-2 text-xs text-gray-400">Documents</div>
-                  <button className="w-full text-left px-4 py-2 hover:bg-gray-50" onClick={() => { onPrint && onPrint(quote); setMenuOpen(false); }}>Download PDF</button>
+                  <div className="px-4 pt-2 text-xs text-slate-500">Mark as...</div>
+                  <button className="w-full text-left px-4 py-2 hover:bg-midnight text-slate-100" onClick={() => { onMarkAwaiting && onMarkAwaiting(quote); setMenuOpen(false); }}>Awaiting Response</button>
+                  <button className="w-full text-left px-4 py-2 hover:bg-midnight text-slate-100" onClick={() => { onMarkApproved && onMarkApproved(quote); setMenuOpen(false); }}>Approved</button>
+                  <button className="w-full text-left px-4 py-2 hover:bg-midnight text-slate-100" onClick={() => { onArchiveQuote && onArchiveQuote(quote); setMenuOpen(false); }}>Archived</button>
+                  <div className="px-4 pt-2 text-xs text-slate-500">Client view</div>
+                  <button className="w-full text-left px-4 py-2 hover:bg-midnight text-slate-100" onClick={() => { onPreviewClient && onPreviewClient(quote); setMenuOpen(false); }}>Preview as Client</button>
+                  <button className="w-full text-left px-4 py-2 hover:bg-midnight text-slate-100" onClick={() => { onCollectSignature && onCollectSignature(quote); setMenuOpen(false); }}>Collect Signature</button>
+                  <div className="px-4 pt-2 text-xs text-slate-500">Documents</div>
+                  <button className="w-full text-left px-4 py-2 hover:bg-midnight text-slate-100" onClick={() => { onPrint && onPrint(quote); setMenuOpen(false); }}>Download PDF</button>
                 </div>
               )}
             </div>
           </div>
         </div>
 
-        <h1 className="text-3xl font-bold text-gray-900 mt-4">{overviewDraft.title || `Quote for ${client?.name || 'Client'}`}</h1>
-        <div className="mt-2 flex flex-wrap gap-4 text-sm text-gray-600">
+        <h1 className="text-3xl font-bold text-slate-100 mt-4">{overviewDraft.title || `Quote for ${client?.name || 'Client'}`}</h1>
+        <div className="mt-2 flex flex-wrap gap-4 text-sm text-slate-400">
           <span>Quote #{overviewDraft.quoteNumber || quote.quoteNumber || quote.id?.slice(0, 6)}</span>
           <span>Created {formatDate(quote.createdAt)}</span>
           {quote.approvedAt && <span>Approved {formatDate(quote.approvedAt)}</span>}
@@ -250,7 +250,7 @@ export default function QuoteDetailView({
 
       <div className="grid grid-cols-1 xl:grid-cols-[2.5fr_1fr] gap-6">
         <div className="space-y-6">
-          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+          <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-6">
             <SectionHeader
               title="Overview"
               onEdit={canEdit ? () => setEditingSection(editingSection === 'overview' ? '' : 'overview') : null}
@@ -262,60 +262,60 @@ export default function QuoteDetailView({
                   value={overviewDraft.title}
                   onChange={(e) => setOverviewDraft({ ...overviewDraft, title: e.target.value })}
                   placeholder="Quote title"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  className="w-full px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-trellio-teal focus:ring-1 focus:ring-trellio-teal/20"
                 />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <input
                     value={overviewDraft.quoteNumber}
                     onChange={(e) => setOverviewDraft({ ...overviewDraft, quoteNumber: e.target.value })}
                     placeholder="Quote number"
-                    className="px-3 py-2 border border-gray-300 rounded-md"
+                    className="px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-trellio-teal focus:ring-1 focus:ring-trellio-teal/20"
                   />
                   <input
                     value={overviewDraft.salesperson}
                     onChange={(e) => setOverviewDraft({ ...overviewDraft, salesperson: e.target.value })}
                     placeholder="Assigned salesperson"
-                    className="px-3 py-2 border border-gray-300 rounded-md"
+                    className="px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-trellio-teal focus:ring-1 focus:ring-trellio-teal/20"
                   />
                 </div>
                 <div>
-                  <div className="text-xs text-gray-500 mb-2">Custom fields</div>
+                  <div className="text-xs text-slate-400 mb-2">Custom fields</div>
                   {overviewDraft.customFields.map((field, idx) => (
                     <div key={`${field.key}-${idx}`} className="grid grid-cols-[1fr_1fr_auto] gap-2 mb-2">
                       <input
                         value={field.key}
                         onChange={(e) => updateCustomField(idx, 'key', e.target.value)}
                         placeholder="Field name"
-                        className="px-3 py-2 border border-gray-300 rounded-md"
+                        className="px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-trellio-teal focus:ring-1 focus:ring-trellio-teal/20"
                       />
                       <input
                         value={field.value}
                         onChange={(e) => updateCustomField(idx, 'value', e.target.value)}
                         placeholder="Value"
-                        className="px-3 py-2 border border-gray-300 rounded-md"
+                        className="px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-trellio-teal focus:ring-1 focus:ring-trellio-teal/20"
                       />
-                      <button onClick={() => removeCustomField(idx)} className="text-red-600 text-xs font-semibold">Remove</button>
+                      <button onClick={() => removeCustomField(idx)} className="text-signal-coral text-xs font-semibold hover:text-signal-coral/80">Remove</button>
                     </div>
                   ))}
-                  <button onClick={addCustomField} className="text-sm font-semibold text-green-700 hover:text-green-800">+ Add field</button>
+                  <button onClick={addCustomField} className="text-sm font-semibold text-trellio-teal hover:text-trellio-teal/80">+ Add field</button>
                 </div>
                 <div className="text-right">
-                  <button onClick={saveOverview} className="px-4 py-2 bg-green-600 text-white rounded-md text-sm font-semibold hover:bg-green-700">Save</button>
+                  <button onClick={saveOverview} className="px-4 py-2 bg-trellio-teal text-midnight rounded-md text-sm font-semibold hover:bg-trellio-teal/90">Save</button>
                 </div>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-100">
                 <div>
-                  <div className="text-xs text-gray-500">Salesperson</div>
+                  <div className="text-xs text-slate-400">Salesperson</div>
                   <div className="font-semibold">{overviewDraft.salesperson || 'Unassigned'}</div>
                 </div>
                 <div>
-                  <div className="text-xs text-gray-500">Required Deposit</div>
+                  <div className="text-xs text-slate-400">Required Deposit</div>
                   <div className="font-semibold">{formatCurrency(requiredDeposit)}</div>
                 </div>
                 {overviewDraft.customFields.map((field, idx) => (
                   <div key={`${field.key}-${idx}`}>
-                    <div className="text-xs text-gray-500">{field.key || 'Custom field'}</div>
+                    <div className="text-xs text-slate-400">{field.key || 'Custom field'}</div>
                     <div className="font-semibold">{field.value || '-'}</div>
                   </div>
                 ))}
@@ -323,7 +323,7 @@ export default function QuoteDetailView({
             )}
           </div>
 
-          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+          <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-6">
             <SectionHeader
               title="Client Data"
               onEdit={canEdit ? () => setEditingSection(editingSection === 'client' ? '' : 'client') : null}
@@ -334,14 +334,14 @@ export default function QuoteDetailView({
                 <select
                   value={clientDraft.clientId}
                   onChange={(e) => setClientDraft({ ...clientDraft, clientId: e.target.value })}
-                  className="px-3 py-2 border border-gray-300 rounded-md"
+                  className="px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-trellio-teal focus:ring-1 focus:ring-trellio-teal/20"
                 >
                   {clientOptions.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                 </select>
                 <select
                   value={clientDraft.propertyId}
                   onChange={(e) => setClientDraft({ ...clientDraft, propertyId: e.target.value })}
-                  className="px-3 py-2 border border-gray-300 rounded-md"
+                  className="px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-trellio-teal focus:ring-1 focus:ring-trellio-teal/20"
                 >
                   <option value="">Select property</option>
                   {propertyOptions.map((p, idx) => (
@@ -351,7 +351,7 @@ export default function QuoteDetailView({
                 <select
                   value={clientDraft.contactId}
                   onChange={(e) => setClientDraft({ ...clientDraft, contactId: e.target.value })}
-                  className="px-3 py-2 border border-gray-300 rounded-md"
+                  className="px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-trellio-teal focus:ring-1 focus:ring-trellio-teal/20"
                 >
                   <option value="">Select contact</option>
                   {contactOptions.map((c, idx) => (
@@ -359,28 +359,28 @@ export default function QuoteDetailView({
                   ))}
                 </select>
                 <div className="text-right md:col-span-2">
-                  <button onClick={saveClient} className="px-4 py-2 bg-green-600 text-white rounded-md text-sm font-semibold hover:bg-green-700">Save</button>
+                  <button onClick={saveClient} className="px-4 py-2 bg-trellio-teal text-midnight rounded-md text-sm font-semibold hover:bg-trellio-teal/90">Save</button>
                 </div>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-100">
                 <div>
-                  <div className="text-xs text-gray-500">Client</div>
-                  <button onClick={() => onOpenClient && onOpenClient(quote.clientId)} className="font-semibold text-green-700 hover:underline">
+                  <div className="text-xs text-slate-400">Client</div>
+                  <button onClick={() => onOpenClient && onOpenClient(quote.clientId)} className="font-semibold text-trellio-teal hover:underline">
                     {client?.name || 'Client'}
                   </button>
-                  <div className="text-xs text-gray-500 mt-2">Property</div>
+                  <div className="text-xs text-slate-400 mt-2">Property</div>
                   <div>{propertyAddress || 'No property on file'}</div>
                 </div>
                 <div>
-                  <div className="text-xs text-gray-500">Contact</div>
+                  <div className="text-xs text-slate-400">Contact</div>
                   <div>{client?.phone || client?.phones?.[0]?.number || 'No phone'}</div>
-                  <div className="text-green-700">{client?.email || client?.emails?.[0]?.address || 'No email'}</div>
+                  <div className="text-trellio-teal">{client?.email || client?.emails?.[0]?.address || 'No email'}</div>
                 </div>
               </div>
             )}
           </div>
-          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+          <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-6">
             <SectionHeader
               title="Product / Service"
               onEdit={canEdit ? () => setEditingSection(editingSection === 'lineItems' ? '' : 'lineItems') : null}
@@ -389,13 +389,13 @@ export default function QuoteDetailView({
             {editingSection === 'lineItems' ? (
               <div className="space-y-4 text-sm">
                 {lineItemsDraft.map((item, idx) => (
-                  <div key={`${item.description}-${idx}`} className="border border-gray-200 rounded-lg p-3 space-y-3">
+                  <div key={`${item.description}-${idx}`} className="border border-slate-700/30 rounded-lg p-3 space-y-3">
                   <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
                     <input
                       value={item.name || ''}
                       onChange={(e) => updateLineItem(idx, 'name', e.target.value)}
                       placeholder="Name"
-                      className="px-3 py-2 border border-gray-300 rounded-md"
+                      className="px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-trellio-teal focus:ring-1 focus:ring-trellio-teal/20"
                     />
                     <input
                       type="number"
@@ -403,7 +403,7 @@ export default function QuoteDetailView({
                       value={item.qty || 0}
                       onChange={(e) => updateLineItem(idx, 'qty', e.target.value)}
                       placeholder="Quantity"
-                      className="px-3 py-2 border border-gray-300 rounded-md"
+                      className="px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-trellio-teal focus:ring-1 focus:ring-trellio-teal/20"
                     />
                     <input
                       type="number"
@@ -411,7 +411,7 @@ export default function QuoteDetailView({
                       value={item.unitCost || 0}
                       onChange={(e) => updateLineItem(idx, 'unitCost', e.target.value)}
                       placeholder="Unit cost"
-                      className="px-3 py-2 border border-gray-300 rounded-md"
+                      className="px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-trellio-teal focus:ring-1 focus:ring-trellio-teal/20"
                     />
                     <input
                       type="number"
@@ -419,22 +419,22 @@ export default function QuoteDetailView({
                       value={item.price || 0}
                       onChange={(e) => updateLineItem(idx, 'price', e.target.value)}
                       placeholder="Unit price"
-                      className="px-3 py-2 border border-gray-300 rounded-md"
+                      className="px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-trellio-teal focus:ring-1 focus:ring-trellio-teal/20"
                     />
                     <input
                         value={item.imageUrl || ''}
                         onChange={(e) => updateLineItem(idx, 'imageUrl', e.target.value)}
                         placeholder="Image URL"
-                        className="px-3 py-2 border border-gray-300 rounded-md"
+                        className="px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-trellio-teal focus:ring-1 focus:ring-trellio-teal/20"
                       />
                     </div>
                     <textarea
                       value={item.description || item.note || ''}
                       onChange={(e) => updateLineItem(idx, 'description', e.target.value)}
                       placeholder="Description"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                      className="w-full px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-trellio-teal focus:ring-1 focus:ring-trellio-teal/20"
                     />
-                    <label className="flex items-center gap-2 text-xs text-gray-600">
+                    <label className="flex items-center gap-2 text-xs text-slate-400">
                       <input
                         type="checkbox"
                         checked={!!item.isOptional}
@@ -443,21 +443,21 @@ export default function QuoteDetailView({
                       Mark as optional
                     </label>
                     <div className="text-right">
-                      <button onClick={() => removeLineItem(idx)} className="text-xs font-semibold text-red-600">Remove</button>
+                      <button onClick={() => removeLineItem(idx)} className="text-xs font-semibold text-signal-coral hover:text-signal-coral/80">Remove</button>
                     </div>
                   </div>
                 ))}
-                <button onClick={addLineItem} className="flex items-center gap-2 text-sm font-semibold text-green-700 hover:text-green-800">
+                <button onClick={addLineItem} className="flex items-center gap-2 text-sm font-semibold text-trellio-teal hover:text-trellio-teal/80">
                   <PlusCircleIcon /> Add Line Item
                 </button>
                 <div className="text-right">
-                  <button onClick={saveLineItems} className="px-4 py-2 bg-green-600 text-white rounded-md text-sm font-semibold hover:bg-green-700">Save</button>
+                  <button onClick={saveLineItems} className="px-4 py-2 bg-trellio-teal text-midnight rounded-md text-sm font-semibold hover:bg-trellio-teal/90">Save</button>
                 </div>
               </div>
             ) : (
               <>
                 <table className="w-full text-sm">
-                  <thead className="text-xs text-gray-500 border-b">
+                  <thead className="text-xs text-slate-400 border-b">
                     <tr>
                       <th className="text-left py-2">Line Item</th>
                       <th className="text-right py-2">Quantity</th>
@@ -481,7 +481,7 @@ export default function QuoteDetailView({
                         <tr key={`${item.description}-${idx}`} className="border-b last:border-b-0">
                           <td className="py-3">
                             <div className="font-semibold text-gray-900">{item.name || item.description}</div>
-                            {item.description && <div className="text-xs text-gray-500">{item.description}</div>}
+                            {item.description && <div className="text-xs text-slate-400">{item.description}</div>}
                             {item.isOptional && <div className="text-xs text-amber-600">Optional line item</div>}
                           </td>
                           <td className="py-3 text-right">{item.qty}</td>
@@ -496,14 +496,14 @@ export default function QuoteDetailView({
                   <div className="w-full max-w-sm space-y-2 text-sm">
                     <div className="flex justify-between"><span>Subtotal</span><span>{formatCurrency(totals.subtotalBeforeDiscount)}</span></div>
                     <div className="flex justify-between font-semibold text-lg"><span>Total</span><span>{formatCurrency(totals.total)}</span></div>
-                    <div className="flex justify-between text-xs text-gray-500"><span>Required deposit</span><span>{formatCurrency(requiredDeposit)}</span></div>
+                    <div className="flex justify-between text-xs text-slate-400"><span>Required deposit</span><span>{formatCurrency(requiredDeposit)}</span></div>
                   </div>
                 </div>
               </>
             )}
           </div>
 
-          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+          <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-6">
             <SectionHeader
               title="Financials"
               onEdit={canEdit ? () => setEditingSection(editingSection === 'financials' ? '' : 'financials') : null}
@@ -516,13 +516,13 @@ export default function QuoteDetailView({
                   value={financialDraft.taxRate}
                   onChange={(e) => setFinancialDraft({ ...financialDraft, taxRate: e.target.value })}
                   placeholder="Tax rate (%)"
-                  className="px-3 py-2 border border-gray-300 rounded-md"
+                  className="px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-trellio-teal focus:ring-1 focus:ring-trellio-teal/20"
                 />
                 <div className="flex gap-2">
                   <select
                     value={financialDraft.quoteDiscountType}
                     onChange={(e) => setFinancialDraft({ ...financialDraft, quoteDiscountType: e.target.value })}
-                    className="px-3 py-2 border border-gray-300 rounded-md"
+                    className="px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-trellio-teal focus:ring-1 focus:ring-trellio-teal/20"
                   >
                     <option value="amount">Discount $</option>
                     <option value="percent">Discount %</option>
@@ -540,38 +540,38 @@ export default function QuoteDetailView({
                   value={financialDraft.depositRequiredAmount}
                   onChange={(e) => setFinancialDraft({ ...financialDraft, depositRequiredAmount: e.target.value })}
                   placeholder="Required deposit amount"
-                  className="px-3 py-2 border border-gray-300 rounded-md"
+                  className="px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-trellio-teal focus:ring-1 focus:ring-trellio-teal/20"
                 />
                 <input
                   type="number"
                   value={financialDraft.depositRequiredPercent}
                   onChange={(e) => setFinancialDraft({ ...financialDraft, depositRequiredPercent: e.target.value })}
                   placeholder="Required deposit %"
-                  className="px-3 py-2 border border-gray-300 rounded-md"
+                  className="px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-trellio-teal focus:ring-1 focus:ring-trellio-teal/20"
                 />
                 <div className="md:col-span-2 text-right">
-                  <button onClick={saveFinancials} className="px-4 py-2 bg-green-600 text-white rounded-md text-sm font-semibold hover:bg-green-700">Save</button>
+                  <button onClick={saveFinancials} className="px-4 py-2 bg-trellio-teal text-midnight rounded-md text-sm font-semibold hover:bg-trellio-teal/90">Save</button>
                 </div>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-700">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-slate-100">
                 <div>
-                  <div className="text-xs text-gray-500">Tax rate</div>
+                  <div className="text-xs text-slate-400">Tax rate</div>
                   <div className="font-semibold">{financialDraft.taxRate || 0}%</div>
                 </div>
                 <div>
-                  <div className="text-xs text-gray-500">Discount</div>
+                  <div className="text-xs text-slate-400">Discount</div>
                   <div className="font-semibold">{financialDraft.quoteDiscountType === 'percent' ? `${financialDraft.quoteDiscountValue || 0}%` : formatCurrency(financialDraft.quoteDiscountValue || 0)}</div>
                 </div>
                 <div>
-                  <div className="text-xs text-gray-500">Required deposit</div>
+                  <div className="text-xs text-slate-400">Required deposit</div>
                   <div className="font-semibold">{formatCurrency(requiredDeposit)}</div>
                 </div>
               </div>
             )}
           </div>
 
-          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+          <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-6">
             <SectionHeader
               title="Contract / Disclaimer"
               onEdit={canEdit ? () => setEditingSection(editingSection === 'legal' ? '' : 'legal') : null}
@@ -583,58 +583,58 @@ export default function QuoteDetailView({
                   value={legalDraft.contractTerms}
                   onChange={(e) => setLegalDraft({ ...legalDraft, contractTerms: e.target.value })}
                   placeholder="Contract terms"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  className="w-full px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-trellio-teal focus:ring-1 focus:ring-trellio-teal/20"
                   rows={4}
                 />
                 <textarea
                   value={legalDraft.disclaimers}
                   onChange={(e) => setLegalDraft({ ...legalDraft, disclaimers: e.target.value })}
                   placeholder="Disclaimers"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  className="w-full px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-trellio-teal focus:ring-1 focus:ring-trellio-teal/20"
                   rows={3}
                 />
                 <div className="text-right">
-                  <button onClick={saveLegal} className="px-4 py-2 bg-green-600 text-white rounded-md text-sm font-semibold hover:bg-green-700">Save</button>
+                  <button onClick={saveLegal} className="px-4 py-2 bg-trellio-teal text-midnight rounded-md text-sm font-semibold hover:bg-trellio-teal/90">Save</button>
                 </div>
               </div>
             ) : (
-              <div className="text-sm text-gray-700 space-y-3">
+              <div className="text-sm text-slate-100 space-y-3">
                 <div>{legalDraft.contractTerms || 'No contract terms added.'}</div>
                 <div>{legalDraft.disclaimers || 'No disclaimer set.'}</div>
               </div>
             )}
           </div>
 
-          <div className="flex flex-wrap items-center gap-2 text-sm text-gray-600">
-            <button className="px-3 py-1 rounded-full bg-gray-100 border border-gray-200">+ Add section</button>
-            <button className="px-3 py-1 rounded-full bg-white border border-gray-200">Introduction</button>
-            <button className="px-3 py-1 rounded-full bg-white border border-gray-200">Attachments</button>
-            <button className="px-3 py-1 rounded-full bg-white border border-gray-200">Images</button>
-            <button className="px-3 py-1 rounded-full bg-white border border-gray-200">Reviews</button>
-            <button className="px-3 py-1 rounded-full bg-white border border-gray-200">Client message</button>
+          <div className="flex flex-wrap items-center gap-2 text-sm text-slate-100">
+            <button className="px-3 py-1 rounded-full bg-gray-100 border border-slate-700/30">+ Add section</button>
+            <button className="px-3 py-1 rounded-full bg-white border border-slate-700/30">Introduction</button>
+            <button className="px-3 py-1 rounded-full bg-white border border-slate-700/30">Attachments</button>
+            <button className="px-3 py-1 rounded-full bg-white border border-slate-700/30">Images</button>
+            <button className="px-3 py-1 rounded-full bg-white border border-slate-700/30">Reviews</button>
+            <button className="px-3 py-1 rounded-full bg-white border border-slate-700/30">Client message</button>
           </div>
         </div>
 
         <div className="space-y-6">
-          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+          <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Customize</h3>
-            <div className="border border-gray-200 rounded-xl p-4 space-y-3">
+            <div className="border border-slate-700/30 rounded-xl p-4 space-y-3">
               <div className="text-sm font-semibold text-gray-800">Deposit payment settings</div>
-              <div className="flex items-center justify-between text-sm text-gray-700">
+              <div className="flex items-center justify-between text-sm text-slate-100">
                 <span>Accept card payments</span>
                 <Toggle label="Accept card payments" value={depositDraft.acceptCard} onChange={(v) => setDepositDraft(prev => ({ ...prev, acceptCard: v }))} />
               </div>
-              <div className="flex items-center justify-between text-sm text-gray-700">
+              <div className="flex items-center justify-between text-sm text-slate-100">
                 <span>Accept bank payments (ACH)</span>
                 <Toggle label="Accept bank payments" value={depositDraft.acceptBank} onChange={(v) => setDepositDraft(prev => ({ ...prev, acceptBank: v }))} />
               </div>
-              <div className="flex items-center justify-between text-sm text-gray-700">
+              <div className="flex items-center justify-between text-sm text-slate-100">
                 <span>Require payment method on file</span>
                 <Toggle label="Require payment method" value={depositDraft.requireMethodOnFile} onChange={(v) => setDepositDraft(prev => ({ ...prev, requireMethodOnFile: v }))} />
               </div>
-              <div className="text-xs text-gray-500">Updating this quote won't change default preferences.</div>
+              <div className="text-xs text-slate-400">Updating this quote won't change default preferences.</div>
               <div className="flex justify-end gap-2">
-                <button className="px-3 py-1.5 rounded-md border border-gray-200 text-sm font-semibold" onClick={() => setDepositDraft({
+                <button className="px-3 py-1.5 rounded-md border border-slate-700/30 text-sm font-semibold" onClick={() => setDepositDraft({
                   acceptCard: quote.depositSettings?.acceptCard ?? true,
                   acceptBank: quote.depositSettings?.acceptBank ?? false,
                   requireMethodOnFile: quote.depositSettings?.requireMethodOnFile ?? false,
@@ -644,18 +644,18 @@ export default function QuoteDetailView({
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+          <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Notes</h3>
             <div className="border-2 border-dashed border-gray-200 rounded-2xl p-4 text-center text-sm text-gray-500">
               <textarea
                 value={internalNotes}
                 onChange={(e) => setInternalNotes(e.target.value)}
                 placeholder="Leave an internal note for yourself or a team member"
-                className="w-full h-32 bg-transparent focus:outline-none text-sm text-gray-700"
+                className="w-full h-32 bg-transparent focus:outline-none text-sm text-slate-100"
               />
             </div>
             <div className="flex justify-end gap-2 mt-3">
-              <button className="px-3 py-1.5 rounded-md border border-gray-200 text-sm font-semibold" onClick={() => setInternalNotes(quote.internalNotes || '')}>Cancel</button>
+              <button className="px-3 py-1.5 rounded-md border border-slate-700/30 text-sm font-semibold" onClick={() => setInternalNotes(quote.internalNotes || '')}>Cancel</button>
               <button className="px-3 py-1.5 rounded-md bg-green-600 text-white text-sm font-semibold" onClick={saveNotes}>Save</button>
             </div>
           </div>

@@ -2,14 +2,14 @@
 import React, { useMemo, useState } from 'react';
 
 const KpiCard = ({ title, sub, value, money, delta, positive }) => (
-  <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
-    <div className="text-sm font-semibold text-gray-800">{title}</div>
-    <div className="text-xs text-gray-500 mb-2">{sub}</div>
-    <div className="text-3xl font-bold text-gray-900">{value}</div>
-    {typeof money === 'string' && <div className="text-xs text-gray-500">{money}</div>}
+  <div className="bg-charcoal rounded-xl border border-slate-700/30 shadow-sm p-4">
+    <div className="text-sm font-semibold text-slate-100">{title}</div>
+    <div className="text-xs text-slate-400 mb-2">{sub}</div>
+    <div className="text-3xl font-bold text-slate-100">{value}</div>
+    {typeof money === 'string' && <div className="text-xs text-slate-400">{money}</div>}
     {typeof delta === 'string' && (
-      <div className={`inline-flex items-center mt-2 text-xs font-medium ${positive ? 'text-green-700' : 'text-red-700'}`}>
-        <span className={`inline-block h-2 w-2 rounded-full mr-1 ${positive ? 'bg-green-400' : 'bg-red-400'}`} />
+      <div className={`inline-flex items-center mt-2 text-xs font-medium ${positive ? 'text-trellio-teal' : 'text-signal-coral'}`}>
+        <span className={`inline-block h-2 w-2 rounded-full mr-1 ${positive ? 'bg-trellio-teal' : 'bg-signal-coral'}`} />
         {delta}
       </div>
     )}
@@ -25,14 +25,14 @@ const STATUS_PILL = {
   Upcoming: 'bg-blue-100 text-blue-800',
   Today: 'bg-emerald-100 text-emerald-800',
   Late: 'bg-red-100 text-red-800',
-  Unscheduled: 'bg-gray-100 text-gray-800',
+  Unscheduled: 'bg-gray-100 text-slate-100',
   'Action Required': 'bg-yellow-100 text-yellow-800',
   'Requires Invoicing': 'bg-amber-100 text-amber-800',
   'Ending within 30 days': 'bg-orange-100 text-orange-800',
   Completed: 'bg-green-100 text-green-800',
   'In Progress': 'bg-yellow-100 text-yellow-800',
   Scheduled: 'bg-indigo-100 text-indigo-800',
-  Archived: 'bg-gray-100 text-gray-600',
+  Archived: 'bg-gray-100 text-slate-400',
 };
 
 function currency(n) {
@@ -169,14 +169,14 @@ export default function JobsList({
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-3xl font-bold text-gray-900">Jobs</h2>
+        <h2 className="text-3xl font-bold text-slate-100">Jobs</h2>
         <div className="flex items-center gap-2">
           <button onClick={onNewJobClick} className="px-4 py-2 rounded-md bg-green-600 text-white font-semibold hover:bg-green-700">New Job</button>
           <div className="relative">
-            <button onClick={()=>setJobTypeOpen(o=>!o)} className="px-3 py-2 rounded-md border bg-gray-100 text-gray-800">More Actions</button>
+            <button onClick={()=>setJobTypeOpen(o=>!o)} className="px-3 py-2 rounded-md border bg-gray-100 text-slate-100">More Actions</button>
             {jobTypeOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow z-20">
-                <button className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50" onClick={()=>{ setJobTypeOpen(false); onManageJobForms && onManageJobForms(); }}>Manage Job Forms</button>
+              <div className="absolute right-0 mt-2 w-48 bg-charcoal border border-slate-700/30 rounded-md shadow z-20">
+                <button className="w-full text-left px-3 py-2 text-sm hover:bg-midnight" onClick={()=>{ setJobTypeOpen(false); onManageJobForms && onManageJobForms(); }}>Manage Job Forms</button>
               </div>
             )}
           </div>
@@ -184,13 +184,13 @@ export default function JobsList({
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
-          <div className="text-sm font-semibold text-gray-800 mb-2">Overview</div>
+        <div className="bg-charcoal rounded-xl border border-slate-700/30 shadow-sm p-4">
+          <div className="text-sm font-semibold text-slate-100 mb-2">Overview</div>
           <div className="space-y-2 text-sm">
             {['Ending within 30 days','Late','Action Required','Requires Invoicing','Unscheduled'].map(s => (
               <div key={s} className="flex items-center justify-between">
-                <div className="flex items-center gap-2"><span className={`h-2 w-2 rounded-full ${s==='Late'?'bg-red-500': s==='Requires Invoicing'?'bg-amber-500': s==='Action Required'?'bg-yellow-500': s==='Unscheduled'?'bg-gray-500':'bg-orange-500'}`}></span>{s}</div>
-                <div className="text-gray-800 font-semibold">{kpis.counts[s]||0}</div>
+                <div className="flex items-center gap-2"><span className={`h-2 w-2 rounded-full ${s==='Late'?'bg-red-500': s==='Requires Invoicing'?'bg-amber-500': s==='Action Required'?'bg-yellow-500': s==='Unscheduled'?'bg-midnight0':'bg-orange-500'}`}></span>{s}</div>
+                <div className="text-slate-100 font-semibold">{kpis.counts[s]||0}</div>
               </div>
             ))}
           </div>
@@ -202,38 +202,38 @@ export default function JobsList({
       <div className="mb-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="relative">
-            <button onClick={()=>setStatusOpen(o=>!o)} className="px-3 py-1.5 rounded-full bg-gray-100 text-gray-800 text-sm border">Status | {status==='all'? 'All' : status}</button>
+            <button onClick={()=>setStatusOpen(o=>!o)} className="px-3 py-1.5 rounded-full bg-gray-100 text-slate-100 text-sm border">Status | {status==='all'? 'All' : status}</button>
             {statusOpen && (
-              <div className="absolute z-20 mt-2 w-64 bg-white border border-gray-200 rounded-md shadow p-2">
+              <div className="absolute z-20 mt-2 w-64 bg-charcoal border border-slate-700/30 rounded-md shadow p-2">
                 <input placeholder="Search status" className="w-full px-2 py-1 border border-gray-300 rounded mb-2 text-sm" />
-                <button className={`w-full text-left px-3 py-2 hover:bg-gray-50 ${status==='all'?'bg-gray-50':''}`} onClick={()=>{ setStatus('all'); setStatusOpen(false); }}>
+                <button className={`w-full text-left px-3 py-2 hover:bg-midnight ${status==='all'?'bg-midnight':''}`} onClick={()=>{ setStatus('all'); setStatusOpen(false); }}>
                   <span className="inline-block mr-2" style={{width:12}}>{status==='all'?'x':''}</span>
                   All
                 </button>
                 {statusOptions.map(s => (
-                  <button key={s} className={`w-full text-left px-3 py-2 hover:bg-gray-50 ${status===s?'bg-gray-50':''}`} onClick={()=>{ setStatus(s); setStatusOpen(false); }}>
+                  <button key={s} className={`w-full text-left px-3 py-2 hover:bg-midnight ${status===s?'bg-midnight':''}`} onClick={()=>{ setStatus(s); setStatusOpen(false); }}>
                     <span className="inline-block mr-2" style={{width:12}}>{status===s?'x':''}</span>
-                    {s} <span className="text-gray-500">({kpis.counts[s]||0})</span>
+                    {s} <span className="text-slate-400">({kpis.counts[s]||0})</span>
                   </button>
                 ))}
               </div>
             )}
           </div>
           <div className="relative">
-            <button className="px-3 py-1.5 rounded-full bg-gray-100 text-gray-800 text-sm border">Job Type | {jobType==='all'? 'All' : jobType}</button>
+            <button className="px-3 py-1.5 rounded-full bg-gray-100 text-slate-100 text-sm border">Job Type | {jobType==='all'? 'All' : jobType}</button>
           </div>
         </div>
         <input value={search} onChange={(e)=>setSearch(e.target.value)} placeholder="Search jobs..." className="px-3 py-2 border border-gray-300 rounded-md text-sm w-72"/>
       </div>
 
-      <div className="text-sm text-gray-700 mb-2">{(status!=='all' || jobType!=='all' || search) ? 'Filtered jobs' : 'All jobs'} ({filtered.length} results)</div>
+      <div className="text-sm text-slate-100 mb-2">{(status!=='all' || jobType!=='all' || search) ? 'Filtered jobs' : 'All jobs'} ({filtered.length} results)</div>
 
-      <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+      <div className="bg-charcoal rounded-xl shadow-lg border border-slate-700/30 overflow-hidden">
         {filtered.length === 0 ? (
-          <div className="text-center p-10 text-gray-500">No jobs found.</div>
+          <div className="text-center p-10 text-slate-400">No jobs found.</div>
         ) : (
           <table className="w-full">
-            <thead className="bg-gray-50 text-sm">
+            <thead className="bg-midnight text-sm">
               <tr>
                 <th className="text-left font-semibold p-3 cursor-pointer select-none" onClick={()=>toggleSort('client')}>Client{sortBy==='client' && (sortDir==='asc'?' ^':' v')}</th>
                 <th className="text-left font-semibold p-3 cursor-pointer select-none" onClick={()=>toggleSort('job')}>Job number{sortBy==='job' && (sortDir==='asc'?' ^':' v')}</th>
@@ -245,13 +245,13 @@ export default function JobsList({
             </thead>
             <tbody className="text-sm">
               {filtered.map(j => (
-                <tr key={j.id} className="border-t hover:bg-gray-50">
+                <tr key={j.id} className="border-t hover:bg-midnight">
                   <td className="p-3"><button onClick={()=>onOpenJob && onOpenJob(j)} className="font-semibold text-blue-700 hover:underline">{j._clientName}</button></td>
                   <td className="p-3"><button onClick={()=>onOpenJob && onOpenJob(j)} className="font-semibold text-blue-700 hover:underline">{j.jobNumber || ('#'+(j.id||'').slice(0,8))}</button></td>
                   <td className="p-3"><div className="truncate max-w-xs">{j._address || '--'}</div></td>
                   <td className="p-3">{j.start ? new Date(j.start).toLocaleDateString() : '--'}</td>
                   <td className="p-3"><Pill className={STATUS_PILL[j._status] || STATUS_PILL['Active']}>{j._status}</Pill></td>
-                  <td className="p-3 font-semibold text-gray-900">{currency(j._total)}</td>
+                  <td className="p-3 font-semibold text-slate-100">{currency(j._total)}</td>
                 </tr>
               ))}
             </tbody>

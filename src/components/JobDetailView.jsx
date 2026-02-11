@@ -336,14 +336,14 @@ export default function JobDetailView({
     setShowChemicalForm(false);
   };
 
-  const jobStatusClass = statusColors?.[job.status] || STATUS_COLORS[job.status] || 'bg-gray-100 text-gray-700';
+  const jobStatusClass = statusColors?.[job.status] || STATUS_COLORS[job.status] || 'bg-midnight text-slate-100';
   const isToday = job?.start && new Date(job.start).toDateString() === new Date().toDateString();
   const canEditLineItems = userRole === 'admin' || userRole === 'manager';
 
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <button onClick={onBack} className="flex items-center gap-2 text-sm font-semibold text-gray-600 hover:text-gray-800">
+        <button onClick={onBack} className="flex items-center gap-2 text-sm font-semibold text-slate-400 hover:text-slate-100">
           <ChevronLeftIcon />
           {backLabel}
         </button>
@@ -351,73 +351,73 @@ export default function JobDetailView({
           {onCreateInvoice && (
             <button
               onClick={() => onCreateInvoice(job)}
-              className="px-4 py-2 rounded-lg bg-green-600 text-white text-sm font-semibold hover:bg-green-700 inline-flex items-center gap-2"
+              className="px-4 py-2 rounded-lg bg-trellio-teal text-white text-sm font-semibold hover:bg-trellio-teal/90 inline-flex items-center gap-2"
             >
               <DollarSignIcon className="h-4 w-4" />
               Generate Invoice
             </button>
           )}
-          <button className="px-4 py-2 rounded-lg bg-green-600 text-white text-sm font-semibold hover:bg-green-700">
+          <button className="px-4 py-2 rounded-lg bg-trellio-teal text-white text-sm font-semibold hover:bg-trellio-teal/90">
             Text Booking Confirmation
           </button>
           <button
             onClick={() => setIsEditing((v) => !v)}
-            className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 text-sm font-semibold hover:bg-gray-50"
+            className="px-4 py-2 rounded-lg border border-slate-700 text-slate-100 text-sm font-semibold hover:bg-midnight"
           >
             <span className="inline-flex items-center gap-2"><EditIcon /> {isEditing ? 'Cancel Edit' : 'Edit'}</span>
           </button>
-          <button className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 text-sm font-semibold hover:bg-gray-50">
+          <button className="px-4 py-2 rounded-lg border border-slate-700 text-slate-100 text-sm font-semibold hover:bg-midnight">
             More Actions
           </button>
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+      <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-6">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-sm text-gray-500">
-              {isToday && <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">Today</span>}
+            <div className="flex items-center gap-2 text-sm text-slate-400">
+              {isToday && <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-trellio-teal">Today</span>}
               <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${jobStatusClass}`}>{job.status}</span>
             </div>
             <div className="mt-3 flex items-center gap-3">
-              <h1 className="text-3xl font-bold text-gray-900">{clientName}</h1>
+              <h1 className="text-3xl font-bold text-slate-100">{clientName}</h1>
               {onOpenClient && (
-                <button onClick={() => onOpenClient(job.clientId)} className="text-green-700 text-lg font-semibold hover:text-green-800">Link</button>
+                <button onClick={() => onOpenClient(job.clientId)} className="text-trellio-teal text-lg font-semibold hover:text-green-800">Link</button>
               )}
             </div>
-            {job.title && <p className="text-sm text-gray-500 mt-1">{job.title}</p>}
+            {job.title && <p className="text-sm text-slate-400 mt-1">{job.title}</p>}
           </div>
-          <div className="text-sm font-semibold text-gray-700">Job {job.jobNumber || `#${(job.id || '').substring(0, 6)}`}</div>
+          <div className="text-sm font-semibold text-slate-100">Job {job.jobNumber || `#${(job.id || '').substring(0, 6)}`}</div>
         </div>
 
         <div className="mt-6 grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <h3 className="text-sm font-semibold text-gray-700 mb-3">Property address</h3>
+              <h3 className="text-sm font-semibold text-slate-100 mb-3">Property address</h3>
               <div className="flex gap-3">
-                <div className="h-12 w-12 rounded-xl border border-gray-200 flex items-center justify-center text-green-700 bg-green-50">
+                <div className="h-12 w-12 rounded-xl border border-slate-700/30 flex items-center justify-center text-trellio-teal bg-green-50">
                   <MapPinIcon />
                 </div>
-                <div className="text-sm text-gray-700 space-y-1">
+                <div className="text-sm text-slate-100 space-y-1">
                   {addressLines.map((line, idx) => <div key={idx}>{line}</div>)}
                 </div>
               </div>
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-gray-700 mb-3">Contact details</h3>
-              <div className="space-y-2 text-sm text-gray-700">
+              <h3 className="text-sm font-semibold text-slate-100 mb-3">Contact details</h3>
+              <div className="space-y-2 text-sm text-slate-100">
                 <div className="flex items-center gap-2"><PhoneIcon /> <span>{contactPhone}</span></div>
-                <div className="flex items-center gap-2"><AtSignIcon /> <span className="text-green-700">{contactEmail}</span></div>
+                <div className="flex items-center gap-2"><AtSignIcon /> <span className="text-trellio-teal">{contactEmail}</span></div>
               </div>
             </div>
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-gray-700 mb-3">Job details</h3>
-            <div className="border border-gray-200 rounded-xl overflow-hidden">
+            <h3 className="text-sm font-semibold text-slate-100 mb-3">Job details</h3>
+            <div className="border border-slate-700/30 rounded-xl overflow-hidden">
               {detailRows.map((row, idx) => (
-                <div key={row.label} className={`flex items-center justify-between px-4 py-2 text-sm ${idx % 2 === 0 ? 'bg-gray-50' : 'bg-white'}`}>
-                  <span className="text-gray-600">{row.label}</span>
-                  <span className="font-semibold text-gray-800">{row.value || 'Not set'}</span>
+                <div key={row.label} className={`flex items-center justify-between px-4 py-2 text-sm ${idx % 2 === 0 ? 'bg-midnight' : 'bg-charcoal'}`}>
+                  <span className="text-slate-400">{row.label}</span>
+                  <span className="font-semibold text-slate-100">{row.value || 'Not set'}</span>
                 </div>
               ))}
             </div>
@@ -425,41 +425,41 @@ export default function JobDetailView({
         </div>
 
         {isEditing && (
-          <div className="mt-6 border-t border-gray-200 pt-6">
+          <div className="mt-6 border-t border-slate-700/30 pt-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700">Job Title</label>
+                <label className="block text-sm font-medium text-slate-100">Job Title</label>
                 <input
                   type="text"
                   value={editData.title || ''}
                   onChange={(e) => setEditData({ ...editData, title: e.target.value })}
-                  className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md"
+                  className="mt-1 w-full px-3 py-2 border border-slate-700 rounded-md"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Start time</label>
+                <label className="block text-sm font-medium text-slate-100">Start time</label>
                 <input
                   type="datetime-local"
                   value={toLocalInput(editData.start)}
                   onChange={(e) => setEditData({ ...editData, start: e.target.value })}
-                  className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md"
+                  className="mt-1 w-full px-3 py-2 border border-slate-700 rounded-md"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">End time</label>
+                <label className="block text-sm font-medium text-slate-100">End time</label>
                 <input
                   type="datetime-local"
                   value={toLocalInput(editData.end)}
                   onChange={(e) => setEditData({ ...editData, end: e.target.value })}
-                  className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md"
+                  className="mt-1 w-full px-3 py-2 border border-slate-700 rounded-md"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Assignees</label>
+                <label className="block text-sm font-medium text-slate-100 mb-1">Assignees</label>
                 <div className="flex flex-wrap gap-2">
-                  {staff.length === 0 && <span className="text-sm text-gray-500">No staff yet.</span>}
+                  {staff.length === 0 && <span className="text-sm text-slate-400">No staff yet.</span>}
                   {staff.map((s) => (
-                    <label key={s.id} className="inline-flex items-center text-sm bg-gray-50 px-2 py-1 rounded-md border">
+                    <label key={s.id} className="inline-flex items-center text-sm bg-midnight px-2 py-1 rounded-md border">
                       <input
                         type="checkbox"
                         checked={(editData.assignees || []).includes(s.id)}
@@ -477,7 +477,7 @@ export default function JobDetailView({
               </div>
             </div>
             <div className="mt-4 text-right">
-              <button onClick={handleSaveDetails} className="px-4 py-2 bg-green-600 text-white rounded-md text-sm font-semibold hover:bg-green-700">
+              <button onClick={handleSaveDetails} className="px-4 py-2 bg-trellio-teal text-white rounded-md text-sm font-semibold hover:bg-trellio-teal/90">
                 Save Changes
               </button>
             </div>
@@ -488,35 +488,35 @@ export default function JobDetailView({
       <div className="bg-amber-50/70 border border-amber-100 rounded-2xl p-5">
         <button
           onClick={() => setShowProfit((v) => !v)}
-          className="text-sm font-semibold text-gray-700"
+          className="text-sm font-semibold text-slate-100"
         >
           {showProfit ? 'Hide Profitability' : 'Show Profitability'}
         </button>
         {showProfit && (
           <div className="mt-4 grid grid-cols-1 lg:grid-cols-[1fr_2fr_auto] gap-6 items-center">
             <div>
-              <div className="text-2xl font-bold text-gray-900">{profitability.margin.toFixed(2)}%</div>
-              <div className="text-sm text-gray-600">Profit margin</div>
+              <div className="text-2xl font-bold text-slate-100">{profitability.margin.toFixed(2)}%</div>
+              <div className="text-sm text-slate-400">Profit margin</div>
             </div>
-            <div className="flex flex-wrap gap-6 text-sm text-gray-700">
+            <div className="flex flex-wrap gap-6 text-sm text-slate-100">
               <div>
-                <div className="text-xs uppercase text-gray-500">Total price</div>
+                <div className="text-xs uppercase text-slate-400">Total price</div>
                 <div className="font-semibold">{formatCurrency(profitability.totalPrice)}</div>
               </div>
               <div>
-                <div className="text-xs uppercase text-gray-500">Line item cost</div>
+                <div className="text-xs uppercase text-slate-400">Line item cost</div>
                 <div className="font-semibold">-{formatCurrency(profitability.lineItemCost)}</div>
               </div>
               <div>
-                <div className="text-xs uppercase text-gray-500">Labour</div>
+                <div className="text-xs uppercase text-slate-400">Labour</div>
                 <div className="font-semibold">-{formatCurrency(profitability.laborCost)}</div>
               </div>
               <div>
-                <div className="text-xs uppercase text-gray-500">Expenses</div>
+                <div className="text-xs uppercase text-slate-400">Expenses</div>
                 <div className="font-semibold">-{formatCurrency(profitability.expenseCost)}</div>
               </div>
               <div>
-                <div className="text-xs uppercase text-gray-500">Profit</div>
+                <div className="text-xs uppercase text-slate-400">Profit</div>
                 <div className="font-semibold">{formatCurrency(profitability.profit)}</div>
               </div>
             </div>
@@ -529,22 +529,22 @@ export default function JobDetailView({
         )}
       </div>
 
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+      <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-6">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h3 className="text-xl font-semibold text-gray-900">Line Items</h3>
+            <h3 className="text-xl font-semibold text-slate-100">Line Items</h3>
             {quote?.quoteNumber && (
-              <div className="text-xs text-gray-500 mt-1">
+              <div className="text-xs text-slate-400 mt-1">
                 From{" "}
                 {onOpenQuote ? (
                   <button
                     onClick={() => onOpenQuote(quote)}
-                    className="text-green-700 font-semibold hover:underline"
+                    className="text-trellio-teal font-semibold hover:underline"
                   >
                     {quote.quoteNumber}
                   </button>
                 ) : (
-                  <span className="text-gray-700 font-semibold">{quote.quoteNumber}</span>
+                  <span className="text-slate-100 font-semibold">{quote.quoteNumber}</span>
                 )}
               </div>
             )}
@@ -552,7 +552,7 @@ export default function JobDetailView({
           {canEditLineItems && (
             <button
               onClick={() => setShowLineItemForm((v) => !v)}
-              className="px-3 py-1.5 rounded-md border border-gray-200 text-sm font-semibold text-green-700 hover:bg-green-50"
+              className="px-3 py-1.5 rounded-md border border-slate-700/30 text-sm font-semibold text-trellio-teal hover:bg-green-50"
             >
               {showLineItemForm ? 'Cancel' : 'New Line Item'}
             </button>
@@ -564,7 +564,7 @@ export default function JobDetailView({
               value={lineItemDraft.description}
               onChange={(e) => setLineItemDraft({ ...lineItemDraft, description: e.target.value })}
               placeholder="Description"
-              className="md:col-span-2 px-3 py-2 border border-gray-300 rounded-md"
+              className="md:col-span-2 px-3 py-2 border border-slate-700 rounded-md"
             />
             <input
               type="number"
@@ -572,7 +572,7 @@ export default function JobDetailView({
               value={lineItemDraft.qty}
               onChange={(e) => setLineItemDraft({ ...lineItemDraft, qty: e.target.value })}
               placeholder="Qty"
-              className="px-3 py-2 border border-gray-300 rounded-md"
+              className="px-3 py-2 border border-slate-700 rounded-md"
             />
             <input
               type="number"
@@ -580,7 +580,7 @@ export default function JobDetailView({
               value={lineItemDraft.price}
               onChange={(e) => setLineItemDraft({ ...lineItemDraft, price: e.target.value })}
               placeholder="Price"
-              className="px-3 py-2 border border-gray-300 rounded-md"
+              className="px-3 py-2 border border-slate-700 rounded-md"
             />
             <input
               type="number"
@@ -588,18 +588,18 @@ export default function JobDetailView({
               value={lineItemDraft.unitCost}
               onChange={(e) => setLineItemDraft({ ...lineItemDraft, unitCost: e.target.value })}
               placeholder="Unit cost"
-              className="px-3 py-2 border border-gray-300 rounded-md"
+              className="px-3 py-2 border border-slate-700 rounded-md"
             />
             <input
               value={lineItemDraft.note}
               onChange={(e) => setLineItemDraft({ ...lineItemDraft, note: e.target.value })}
               placeholder="Notes"
-              className="md:col-span-3 px-3 py-2 border border-gray-300 rounded-md"
+              className="md:col-span-3 px-3 py-2 border border-slate-700 rounded-md"
             />
             <div className="md:col-span-2 flex justify-end">
               <button
                 onClick={handleAddLineItem}
-                className="px-4 py-2 bg-green-600 text-white rounded-md text-sm font-semibold hover:bg-green-700"
+                className="px-4 py-2 bg-trellio-teal text-white rounded-md text-sm font-semibold hover:bg-trellio-teal/90"
               >
                 Add Line Item
               </button>
@@ -607,10 +607,10 @@ export default function JobDetailView({
           </div>
         )}
         {lineItems.length === 0 ? (
-          <div className="text-sm text-gray-500">No line items yet.</div>
+          <div className="text-sm text-slate-400">No line items yet.</div>
         ) : (
           <table className="w-full text-sm">
-            <thead className="text-xs text-gray-500 border-b">
+            <thead className="text-xs text-slate-400 border-b">
               <tr>
                 <th className="text-left py-2">Product / Service</th>
                 <th className="text-right py-2">Quantity</th>
@@ -622,8 +622,8 @@ export default function JobDetailView({
               {lineItems.map((item, idx) => (
                 <tr key={`${item.description}-${idx}`} className="border-b last:border-b-0">
                   <td className="py-3">
-                    <div className="font-semibold text-green-700">{item.description || 'Line item'}</div>
-                    {item.note && <div className="text-xs text-gray-500">{item.note}</div>}
+                    <div className="font-semibold text-trellio-teal">{item.description || 'Line item'}</div>
+                    {item.note && <div className="text-xs text-slate-400">{item.note}</div>}
                   </td>
                   <td className="py-3 text-right">{item.qty || 0}</td>
                   <td className="py-3 text-right">{formatCurrency(item.price)}</td>
@@ -633,15 +633,15 @@ export default function JobDetailView({
             </tbody>
           </table>
         )}
-        <div className="mt-4 text-right font-semibold text-gray-900">{formatCurrency(profitability.totalPrice)}</div>
+        <div className="mt-4 text-right font-semibold text-slate-100">{formatCurrency(profitability.totalPrice)}</div>
       </div>
 
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+      <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-xl font-semibold text-gray-900">Labour</h3>
+          <h3 className="text-xl font-semibold text-slate-100">Labour</h3>
           <button
             onClick={() => setShowLaborForm((v) => !v)}
-            className="px-3 py-1.5 rounded-md border border-gray-200 text-sm font-semibold text-green-700 hover:bg-green-50"
+            className="px-3 py-1.5 rounded-md border border-slate-700/30 text-sm font-semibold text-trellio-teal hover:bg-green-50"
           >
             {showLaborForm ? 'Cancel' : 'Manual Time Entry'}
           </button>
@@ -659,7 +659,7 @@ export default function JobDetailView({
             <select
               value={laborDraft.staffId}
               onChange={(e) => setLaborDraft({ ...laborDraft, staffId: e.target.value })}
-              className="md:col-span-2 px-3 py-2 border border-gray-300 rounded-md"
+              className="md:col-span-2 px-3 py-2 border border-slate-700 rounded-md"
             >
               <option value="">Select team member</option>
               {staff.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
@@ -668,13 +668,13 @@ export default function JobDetailView({
               type="datetime-local"
               value={toLocalInput(laborDraft.start)}
               onChange={(e) => setLaborDraft({ ...laborDraft, start: e.target.value })}
-              className="px-3 py-2 border border-gray-300 rounded-md"
+              className="px-3 py-2 border border-slate-700 rounded-md"
             />
             <input
               type="datetime-local"
               value={toLocalInput(laborDraft.end)}
               onChange={(e) => setLaborDraft({ ...laborDraft, end: e.target.value })}
-              className="px-3 py-2 border border-gray-300 rounded-md"
+              className="px-3 py-2 border border-slate-700 rounded-md"
             />
             <input
               type="number"
@@ -682,7 +682,7 @@ export default function JobDetailView({
               value={laborDraft.hours}
               onChange={(e) => setLaborDraft({ ...laborDraft, hours: e.target.value })}
               placeholder="Hours"
-              className="px-3 py-2 border border-gray-300 rounded-md"
+              className="px-3 py-2 border border-slate-700 rounded-md"
             />
             <input
               type="number"
@@ -690,18 +690,18 @@ export default function JobDetailView({
               value={laborDraft.cost}
               onChange={(e) => setLaborDraft({ ...laborDraft, cost: e.target.value })}
               placeholder="Cost"
-              className="px-3 py-2 border border-gray-300 rounded-md"
+              className="px-3 py-2 border border-slate-700 rounded-md"
             />
             <input
               value={laborDraft.note}
               onChange={(e) => setLaborDraft({ ...laborDraft, note: e.target.value })}
               placeholder="Notes"
-              className="md:col-span-4 px-3 py-2 border border-gray-300 rounded-md"
+              className="md:col-span-4 px-3 py-2 border border-slate-700 rounded-md"
             />
             <div className="md:col-span-2 flex justify-end">
               <button
                 onClick={handleAddLaborEntry}
-                className="px-4 py-2 bg-green-600 text-white rounded-md text-sm font-semibold hover:bg-green-700"
+                className="px-4 py-2 bg-trellio-teal text-white rounded-md text-sm font-semibold hover:bg-trellio-teal/90"
               >
                 Add Time Entry
               </button>
@@ -709,10 +709,10 @@ export default function JobDetailView({
           </div>
         )}
         {laborEntries.length === 0 ? (
-          <div className="text-sm text-gray-500">No labour entries yet.</div>
+          <div className="text-sm text-slate-400">No labour entries yet.</div>
         ) : (
           <table className="w-full text-sm">
-            <thead className="text-xs text-gray-500 border-b">
+            <thead className="text-xs text-slate-400 border-b">
               <tr>
                 <th className="text-left py-2">Team</th>
                 <th className="text-left py-2">Notes</th>
@@ -724,11 +724,11 @@ export default function JobDetailView({
             <tbody>
               {laborEntries.map((entry, idx) => (
                 <tr key={`${entry.id || idx}`} className="border-b last:border-b-0">
-                  <td className="py-3 font-semibold text-gray-700">{staffMap[entry.staffId]?.name || entry.name || 'Team member'}</td>
-                  <td className="py-3 text-gray-600">{entry.note || '-'}</td>
-                  <td className="py-3 text-gray-600">{formatDateTime(entry.start)}</td>
-                  <td className="py-3 text-right text-gray-700">{entry.hours || '-'}</td>
-                  <td className="py-3 text-right font-semibold text-gray-900">{formatCurrency(entry.cost || entry.amount || 0)}</td>
+                  <td className="py-3 font-semibold text-slate-100">{staffMap[entry.staffId]?.name || entry.name || 'Team member'}</td>
+                  <td className="py-3 text-slate-400">{entry.note || '-'}</td>
+                  <td className="py-3 text-slate-400">{formatDateTime(entry.start)}</td>
+                  <td className="py-3 text-right text-slate-100">{entry.hours || '-'}</td>
+                  <td className="py-3 text-right font-semibold text-slate-100">{formatCurrency(entry.cost || entry.amount || 0)}</td>
                 </tr>
               ))}
             </tbody>
@@ -736,12 +736,12 @@ export default function JobDetailView({
         )}
       </div>
 
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+      <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-xl font-semibold text-gray-900">Expenses</h3>
+          <h3 className="text-xl font-semibold text-slate-100">Expenses</h3>
           <button
             onClick={() => setShowExpenseForm((v) => !v)}
-            className="px-3 py-1.5 rounded-md border border-gray-200 text-sm font-semibold text-green-700 hover:bg-green-50"
+            className="px-3 py-1.5 rounded-md border border-slate-700/30 text-sm font-semibold text-trellio-teal hover:bg-green-50"
           >
             {showExpenseForm ? 'Cancel' : 'New Expense'}
           </button>
@@ -752,7 +752,7 @@ export default function JobDetailView({
               value={expenseDraft.title}
               onChange={(e) => setExpenseDraft({ ...expenseDraft, title: e.target.value })}
               placeholder="Expense title"
-              className="md:col-span-2 px-3 py-2 border border-gray-300 rounded-md"
+              className="md:col-span-2 px-3 py-2 border border-slate-700 rounded-md"
             />
             <input
               type="number"
@@ -760,24 +760,24 @@ export default function JobDetailView({
               value={expenseDraft.amount}
               onChange={(e) => setExpenseDraft({ ...expenseDraft, amount: e.target.value })}
               placeholder="Amount"
-              className="px-3 py-2 border border-gray-300 rounded-md"
+              className="px-3 py-2 border border-slate-700 rounded-md"
             />
             <input
               type="date"
               value={expenseDraft.date}
               onChange={(e) => setExpenseDraft({ ...expenseDraft, date: e.target.value })}
-              className="px-3 py-2 border border-gray-300 rounded-md"
+              className="px-3 py-2 border border-slate-700 rounded-md"
             />
             <input
               value={expenseDraft.note}
               onChange={(e) => setExpenseDraft({ ...expenseDraft, note: e.target.value })}
               placeholder="Notes"
-              className="md:col-span-3 px-3 py-2 border border-gray-300 rounded-md"
+              className="md:col-span-3 px-3 py-2 border border-slate-700 rounded-md"
             />
             <div className="md:col-span-2 flex justify-end">
               <button
                 onClick={handleAddExpense}
-                className="px-4 py-2 bg-green-600 text-white rounded-md text-sm font-semibold hover:bg-green-700"
+                className="px-4 py-2 bg-trellio-teal text-white rounded-md text-sm font-semibold hover:bg-trellio-teal/90"
               >
                 Add Expense
               </button>
@@ -785,28 +785,28 @@ export default function JobDetailView({
           </div>
         )}
         {expenseEntries.length === 0 ? (
-          <div className="text-sm text-gray-500">Get an accurate picture of job costs by recording expenses.</div>
+          <div className="text-sm text-slate-400">Get an accurate picture of job costs by recording expenses.</div>
         ) : (
           <div className="space-y-2 text-sm">
             {expenseEntries.map((expense, idx) => (
               <div key={`${expense.id || idx}`} className="flex items-center justify-between border-b pb-2">
                 <div>
-                  <div className="font-semibold text-gray-800">{expense.title || 'Expense'}</div>
-                  <div className="text-xs text-gray-500">{expense.note || ''}</div>
+                  <div className="font-semibold text-slate-100">{expense.title || 'Expense'}</div>
+                  <div className="text-xs text-slate-400">{expense.note || ''}</div>
                 </div>
-                <div className="font-semibold text-gray-900">{formatCurrency(expense.amount || expense.cost || 0)}</div>
+                <div className="font-semibold text-slate-100">{formatCurrency(expense.amount || expense.cost || 0)}</div>
               </div>
             ))}
           </div>
         )}
       </div>
 
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+      <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-xl font-semibold text-gray-900">Visits</h3>
+          <h3 className="text-xl font-semibold text-slate-100">Visits</h3>
           <button
             onClick={() => setShowVisitForm((v) => !v)}
-            className="px-3 py-1.5 rounded-md border border-gray-200 text-sm font-semibold text-green-700 hover:bg-green-50"
+            className="px-3 py-1.5 rounded-md border border-slate-700/30 text-sm font-semibold text-trellio-teal hover:bg-green-50"
           >
             {showVisitForm ? 'Cancel' : 'New Visit'}
           </button>
@@ -817,16 +817,16 @@ export default function JobDetailView({
               type="datetime-local"
               value={toLocalInput(visitDraft.start)}
               onChange={(e) => setVisitDraft({ ...visitDraft, start: e.target.value })}
-              className="md:col-span-2 px-3 py-2 border border-gray-300 rounded-md"
+              className="md:col-span-2 px-3 py-2 border border-slate-700 rounded-md"
             />
             <input
               type="datetime-local"
               value={toLocalInput(visitDraft.end)}
               onChange={(e) => setVisitDraft({ ...visitDraft, end: e.target.value })}
-              className="md:col-span-2 px-3 py-2 border border-gray-300 rounded-md"
+              className="md:col-span-2 px-3 py-2 border border-slate-700 rounded-md"
             />
-            <div className="md:col-span-2 border border-gray-200 rounded-md p-2">
-              <div className="text-xs text-gray-500 mb-2">Assignees</div>
+            <div className="md:col-span-2 border border-slate-700/30 rounded-md p-2">
+              <div className="text-xs text-slate-400 mb-2">Assignees</div>
               <div className="flex flex-wrap gap-2">
                 {staff.map((s) => (
                   <label key={s.id} className="inline-flex items-center gap-2 text-xs">
@@ -844,19 +844,19 @@ export default function JobDetailView({
                     {s.name}
                   </label>
                 ))}
-                {staff.length === 0 && <span className="text-xs text-gray-500">No staff available.</span>}
+                {staff.length === 0 && <span className="text-xs text-slate-400">No staff available.</span>}
               </div>
             </div>
             <input
               value={visitDraft.notes}
               onChange={(e) => setVisitDraft({ ...visitDraft, notes: e.target.value })}
               placeholder="Visit notes"
-              className="md:col-span-4 px-3 py-2 border border-gray-300 rounded-md"
+              className="md:col-span-4 px-3 py-2 border border-slate-700 rounded-md"
             />
             <div className="md:col-span-2 flex justify-end">
               <button
                 onClick={handleAddVisit}
-                className="px-4 py-2 bg-green-600 text-white rounded-md text-sm font-semibold hover:bg-green-700"
+                className="px-4 py-2 bg-trellio-teal text-white rounded-md text-sm font-semibold hover:bg-trellio-teal/90"
               >
                 Add Visit
               </button>
@@ -864,13 +864,13 @@ export default function JobDetailView({
           </div>
         )}
         {visitGroups.length === 0 ? (
-          <div className="text-sm text-gray-500">No visits scheduled yet.</div>
+          <div className="text-sm text-slate-400">No visits scheduled yet.</div>
         ) : (
           <div className="space-y-4">
             {visitGroups.map((group) => (
               <div key={group.label}>
-                <div className="text-sm font-semibold text-green-700 mb-2">{group.label}</div>
-                <div className="divide-y border border-gray-200 rounded-lg">
+                <div className="text-sm font-semibold text-trellio-teal mb-2">{group.label}</div>
+                <div className="divide-y border border-slate-700/30 rounded-lg">
                   {group.items.map((visit) => {
                     const assignedIds = visit.assignees || job.assignees || [];
                     const assignedNames = assignedIds.map((id) => staffMap[id]?.name).filter(Boolean);
@@ -883,9 +883,9 @@ export default function JobDetailView({
                             checked={visit.status === 'Completed'}
                             onChange={() => handleToggleVisitComplete(visit.id, visit.start)}
                           />
-                          <div className="font-semibold text-gray-900">{formatDateTime(visit.start)}</div>
+                          <div className="font-semibold text-slate-100">{formatDateTime(visit.start)}</div>
                         </div>
-                        <div className="text-gray-600">{assignedNames.length ? `Assigned to ${assignedNames.join(', ')}` : 'Unassigned'}</div>
+                        <div className="text-slate-400">{assignedNames.length ? `Assigned to ${assignedNames.join(', ')}` : 'Unassigned'}</div>
                       </div>
                     );
                   })}
@@ -896,19 +896,19 @@ export default function JobDetailView({
         )}
       </div>
 
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+      <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-6">
-            <h3 className="text-xl font-semibold text-gray-900">Billing</h3>
+            <h3 className="text-xl font-semibold text-slate-100">Billing</h3>
             <div className="flex items-center gap-4 text-sm font-semibold">
               <button
-                className={`${billingTab === 'billing' ? 'text-green-700 border-b-2 border-green-700' : 'text-gray-500'} pb-1`}
+                className={`${billingTab === 'billing' ? 'text-trellio-teal border-b-2 border-green-700' : 'text-slate-400'} pb-1`}
                 onClick={() => setBillingTab('billing')}
               >
                 Billing
               </button>
               <button
-                className={`${billingTab === 'reminders' ? 'text-green-700 border-b-2 border-green-700' : 'text-gray-500'} pb-1`}
+                className={`${billingTab === 'reminders' ? 'text-trellio-teal border-b-2 border-green-700' : 'text-slate-400'} pb-1`}
                 onClick={() => setBillingTab('reminders')}
               >
                 Invoicing Reminders
@@ -918,14 +918,14 @@ export default function JobDetailView({
           {billingTab === 'billing' ? (
             <button
               onClick={() => onCreateInvoice && onCreateInvoice(job)}
-              className="px-3 py-1.5 rounded-md border border-gray-200 text-sm font-semibold text-green-700 hover:bg-green-50"
+              className="px-3 py-1.5 rounded-md border border-slate-700/30 text-sm font-semibold text-trellio-teal hover:bg-green-50"
             >
               New Invoice
             </button>
           ) : (
             <button
               onClick={() => setShowReminderForm((v) => !v)}
-              className="px-3 py-1.5 rounded-md border border-gray-200 text-sm font-semibold text-green-700 hover:bg-green-50"
+              className="px-3 py-1.5 rounded-md border border-slate-700/30 text-sm font-semibold text-trellio-teal hover:bg-green-50"
             >
               {showReminderForm ? 'Cancel' : 'New Reminder'}
             </button>
@@ -940,24 +940,24 @@ export default function JobDetailView({
                   value={reminderDraft.name}
                   onChange={(e) => setReminderDraft({ ...reminderDraft, name: e.target.value })}
                   placeholder="Reminder name"
-                  className="px-3 py-2 border border-gray-300 rounded-md"
+                  className="px-3 py-2 border border-slate-700 rounded-md"
                 />
                 <input
                   value={reminderDraft.rule}
                   onChange={(e) => setReminderDraft({ ...reminderDraft, rule: e.target.value })}
                   placeholder="Rule (e.g., every 2 visits)"
-                  className="px-3 py-2 border border-gray-300 rounded-md"
+                  className="px-3 py-2 border border-slate-700 rounded-md"
                 />
                 <input
                   type="date"
                   value={reminderDraft.nextDate}
                   onChange={(e) => setReminderDraft({ ...reminderDraft, nextDate: e.target.value })}
-                  className="px-3 py-2 border border-gray-300 rounded-md"
+                  className="px-3 py-2 border border-slate-700 rounded-md"
                 />
                 <div className="flex justify-end">
                   <button
                     onClick={handleAddReminder}
-                    className="px-4 py-2 bg-green-600 text-white rounded-md text-sm font-semibold hover:bg-green-700"
+                    className="px-4 py-2 bg-trellio-teal text-white rounded-md text-sm font-semibold hover:bg-trellio-teal/90"
                   >
                     Add Reminder
                   </button>
@@ -965,7 +965,7 @@ export default function JobDetailView({
               </div>
             )}
             {billingReminders.length === 0 ? (
-              <div className="text-sm text-gray-500">
+              <div className="text-sm text-slate-400">
                 No invoice reminders yet. Add reminders to keep billing on track.
               </div>
             ) : (
@@ -973,10 +973,10 @@ export default function JobDetailView({
                 {billingReminders.map((reminder) => (
                   <div key={reminder.id} className="flex items-center justify-between border-b pb-2">
                     <div>
-                      <div className="font-semibold text-gray-800">{reminder.name || 'Reminder'}</div>
-                      <div className="text-xs text-gray-500">{reminder.rule || ''}</div>
+                      <div className="font-semibold text-slate-100">{reminder.name || 'Reminder'}</div>
+                      <div className="text-xs text-slate-400">{reminder.rule || ''}</div>
                     </div>
-                    <div className="text-sm text-gray-600">{reminder.nextDate ? formatDate(reminder.nextDate) : 'Not scheduled'}</div>
+                    <div className="text-sm text-slate-400">{reminder.nextDate ? formatDate(reminder.nextDate) : 'Not scheduled'}</div>
                   </div>
                 ))}
               </div>
@@ -985,12 +985,12 @@ export default function JobDetailView({
         ) : (
           <>
             {jobInvoices.length === 0 ? (
-              <div className="text-sm text-gray-500">
+              <div className="text-sm text-slate-400">
                 No invoices or reminders. Add a new invoice or reminder to start billing.
               </div>
             ) : (
               <table className="w-full text-sm">
-                <thead className="text-xs text-gray-500 border-b">
+                <thead className="text-xs text-slate-400 border-b">
                   <tr>
                     <th className="text-left py-2">Status</th>
                     <th className="text-left py-2">Type and number</th>
@@ -1012,16 +1012,16 @@ export default function JobDetailView({
                     return (
                       <tr key={inv.id} className="border-b last:border-b-0">
                         <td className="py-3">
-                          <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${statusColors?.[inv.status] || STATUS_COLORS[inv.status] || 'bg-gray-100 text-gray-600'}`}>
+                          <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${statusColors?.[inv.status] || STATUS_COLORS[inv.status] || 'bg-midnight text-slate-400'}`}>
                             {inv.status}
                           </span>
                         </td>
-                        <td className="py-3 font-semibold text-gray-800">{inv.invoiceNumber || inv.id}</td>
-                        <td className="py-3 text-gray-600">{inv.subject || 'For Services Rendered'}</td>
-                        <td className="py-3 text-gray-600">{formatDate(inv.issueDate || inv.createdAt)}</td>
-                        <td className="py-3 text-gray-600">{formatDate(inv.dueDate)}</td>
-                        <td className="py-3 text-right font-semibold text-gray-900">{formatCurrency(inv.total || 0)}</td>
-                        <td className="py-3 text-right font-semibold text-gray-900">{formatCurrency(balance)}</td>
+                        <td className="py-3 font-semibold text-slate-100">{inv.invoiceNumber || inv.id}</td>
+                        <td className="py-3 text-slate-400">{inv.subject || 'For Services Rendered'}</td>
+                        <td className="py-3 text-slate-400">{formatDate(inv.issueDate || inv.createdAt)}</td>
+                        <td className="py-3 text-slate-400">{formatDate(inv.dueDate)}</td>
+                        <td className="py-3 text-right font-semibold text-slate-100">{formatCurrency(inv.total || 0)}</td>
+                        <td className="py-3 text-right font-semibold text-slate-100">{formatCurrency(balance)}</td>
                       </tr>
                     );
                   })}
@@ -1032,12 +1032,12 @@ export default function JobDetailView({
         )}
       </div>
 
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+      <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-xl font-semibold text-gray-900">Chemical tracking</h3>
+          <h3 className="text-xl font-semibold text-slate-100">Chemical tracking</h3>
           <button
             onClick={() => setShowChemicalForm((v) => !v)}
-            className="px-3 py-1.5 rounded-md border border-gray-200 text-sm font-semibold text-green-700 hover:bg-green-50"
+            className="px-3 py-1.5 rounded-md border border-slate-700/30 text-sm font-semibold text-trellio-teal hover:bg-green-50"
           >
             {showChemicalForm ? 'Cancel' : 'Record Treatment'}
           </button>
@@ -1048,24 +1048,24 @@ export default function JobDetailView({
               type="date"
               value={chemicalDraft.date}
               onChange={(e) => setChemicalDraft({ ...chemicalDraft, date: e.target.value })}
-              className="px-3 py-2 border border-gray-300 rounded-md"
+              className="px-3 py-2 border border-slate-700 rounded-md"
             />
             <input
               value={chemicalDraft.name}
               onChange={(e) => setChemicalDraft({ ...chemicalDraft, name: e.target.value })}
               placeholder="Chemical name"
-              className="px-3 py-2 border border-gray-300 rounded-md"
+              className="px-3 py-2 border border-slate-700 rounded-md"
             />
             <input
               value={chemicalDraft.notes}
               onChange={(e) => setChemicalDraft({ ...chemicalDraft, notes: e.target.value })}
               placeholder="Notes"
-              className="md:col-span-2 px-3 py-2 border border-gray-300 rounded-md"
+              className="md:col-span-2 px-3 py-2 border border-slate-700 rounded-md"
             />
             <div className="md:col-span-4 flex justify-end">
               <button
                 onClick={handleAddChemical}
-                className="px-4 py-2 bg-green-600 text-white rounded-md text-sm font-semibold hover:bg-green-700"
+                className="px-4 py-2 bg-trellio-teal text-white rounded-md text-sm font-semibold hover:bg-trellio-teal/90"
               >
                 Add Treatment
               </button>
@@ -1076,44 +1076,44 @@ export default function JobDetailView({
           <div className="space-y-2 text-sm">
             {chemicalTreatments.map((t, idx) => (
               <div key={`${t.date || idx}`} className="flex items-center justify-between border-b pb-2">
-                <div className="text-gray-700">{formatDate(t.date)}</div>
-                <div className="font-semibold text-gray-900">{t.name || 'Treatment'}</div>
+                <div className="text-slate-100">{formatDate(t.date)}</div>
+                <div className="font-semibold text-slate-100">{t.name || 'Treatment'}</div>
               </div>
             ))}
           </div>
         ) : (
-          <div className="text-sm text-gray-500">No chemical treatments recorded yet.</div>
+          <div className="text-sm text-slate-400">No chemical treatments recorded yet.</div>
         )}
       </div>
 
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
-        <h3 className="text-xl font-semibold text-gray-900 mb-4">Notes</h3>
-        <div className="border-2 border-dashed border-gray-200 rounded-2xl p-6 text-center">
+      <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-6">
+        <h3 className="text-xl font-semibold text-slate-100 mb-4">Notes</h3>
+        <div className="border-2 border-dashed border-slate-700/30 rounded-2xl p-6 text-center">
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             placeholder="Leave an internal note for yourself or a team member"
-            className="w-full h-40 bg-transparent text-sm text-gray-700 focus:outline-none"
+            className="w-full h-40 bg-transparent text-sm text-slate-100 focus:outline-none"
           />
         </div>
         <div className="mt-4 flex items-center justify-end gap-2">
           <button
             onClick={() => setNotes(job.notes || '')}
-            className="px-4 py-2 rounded-lg border border-gray-300 text-sm font-semibold text-gray-700 hover:bg-gray-50"
+            className="px-4 py-2 rounded-lg border border-slate-700 text-sm font-semibold text-slate-100 hover:bg-midnight"
           >
             Cancel
           </button>
           <button
             onClick={handleSaveNotes}
-            className="px-4 py-2 rounded-lg bg-green-600 text-white text-sm font-semibold hover:bg-green-700"
+            className="px-4 py-2 rounded-lg bg-trellio-teal text-white text-sm font-semibold hover:bg-trellio-teal/90"
           >
             Save Job
           </button>
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
-        <h3 className="text-xl font-semibold text-gray-900 mb-4">Attachments</h3>
+      <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-6">
+        <h3 className="text-xl font-semibold text-slate-100 mb-4">Attachments</h3>
         {(userRole === 'admin' || userRole === 'manager' || userRole === 'tech') && (
           <div className="flex items-center gap-2 mb-3">
             <input type="file" onChange={(e) => { const f = e.target.files?.[0]; if (f && onUploadAttachment) onUploadAttachment(f); e.target.value = ''; }} className="text-sm" />
@@ -1122,34 +1122,34 @@ export default function JobDetailView({
         {(job.attachments && job.attachments.length > 0) ? (
           <ul className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {job.attachments.map((a, idx) => (
-              <li key={idx} className="border rounded-lg overflow-hidden bg-gray-50">
+              <li key={idx} className="border rounded-lg overflow-hidden bg-midnight">
                 {a.type?.startsWith('image/') ? (
                   <img src={a.url} alt={a.name} className="w-full h-32 object-cover" />
                 ) : (
-                  <div className="h-32 flex items-center justify-center text-xs text-gray-600">{a.name}</div>
+                  <div className="h-32 flex items-center justify-center text-xs text-slate-400">{a.name}</div>
                 )}
                 <div className="p-2 flex items-center justify-between">
                   <a href={a.url} target="_blank" rel="noreferrer" className="text-blue-700 text-sm hover:underline truncate">{a.name}</a>
                   {(userRole === 'admin' || userRole === 'manager') && (
-                    <button onClick={() => onRemoveAttachment && onRemoveAttachment(a.url)} className="text-xs text-red-600 hover:text-red-800">Remove</button>
+                    <button onClick={() => onRemoveAttachment && onRemoveAttachment(a.url)} className="text-xs text-signal-coral hover:text-red-800">Remove</button>
                   )}
                 </div>
               </li>
             ))}
           </ul>
         ) : (
-          <p className="text-sm text-gray-500">No attachments yet.</p>
+          <p className="text-sm text-slate-400">No attachments yet.</p>
         )}
       </div>
 
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
-        <h3 className="text-xl font-semibold text-gray-900 mb-4">Checklist</h3>
+      <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-6">
+        <h3 className="text-xl font-semibold text-slate-100 mb-4">Checklist</h3>
         <form onSubmit={handleAddChecklistItem} className="flex gap-2 mb-4">
           <input
             value={checklistItem}
             onChange={(e) => setChecklistItem(e.target.value)}
             placeholder="Add checklist item"
-            className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm"
+            className="flex-1 px-3 py-2 border border-slate-700 rounded-md text-sm"
           />
           <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-semibold hover:bg-blue-700">Add</button>
         </form>
@@ -1158,12 +1158,12 @@ export default function JobDetailView({
             {job.checklist.map((item, index) => (
               <li key={index} className="flex items-center gap-2 text-sm">
                 <input type="checkbox" checked={item.completed} onChange={() => handleToggleChecklistItem(index)} />
-                <span className={item.completed ? 'line-through text-gray-400' : 'text-gray-700'}>{item.text}</span>
+                <span className={item.completed ? 'line-through text-gray-400' : 'text-slate-100'}>{item.text}</span>
               </li>
             ))}
           </ul>
         ) : (
-          <p className="text-sm text-gray-500">No checklist items yet.</p>
+          <p className="text-sm text-slate-400">No checklist items yet.</p>
         )}
       </div>
     </div>

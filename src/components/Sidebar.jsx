@@ -12,6 +12,7 @@ import {
   TrendingUpIcon,
   DollarSignIcon,
 } from './icons';
+import TrellioLogo from './icons/TrellioLogo';
 
 const NavItem = ({ active, label, onClick, children }) => (
   <button
@@ -37,9 +38,8 @@ const Sidebar = ({ activeView, setActiveView, onCreateAction, open = false, onCl
   );
   const Body = (
     <div className="flex flex-col w-64 bg-midnight text-white min-h-full">
-      <div className="px-4 py-4 border-b border-slate-700/30 flex items-center gap-2">
-        <div className="h-8 w-8 rounded-lg bg-trellio-teal/10 flex items-center justify-center font-bold font-display text-trellio-teal">T</div>
-        <div className="text-sm font-semibold text-slate-200">Trellio</div>
+      <div className="px-4 py-4 border-b border-slate-700/30">
+        <TrellioLogo size="sm" />
       </div>
       <div className="p-4 relative">
         <div className="mb-4 relative">

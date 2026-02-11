@@ -99,44 +99,44 @@ const ClientDetailView = ({
 
   return (
     <div className="animate-fade-in">
-      <button onClick={onBack} className="flex items-center gap-2 text-sm font-semibold text-gray-600 hover:text-gray-800 mb-3">
+      <button onClick={onBack} className="flex items-center gap-2 text-sm font-semibold text-slate-400 hover:text-trellio-teal mb-3">
         <ChevronLeftIcon /> Back to Clients
       </button>
 
       {/* Header */}
       <div className="mb-6 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-full bg-gray-100 border flex items-center justify-center text-gray-700 font-bold">{initials}</div>
-          <h1 className="text-3xl font-extrabold text-gray-900">{client.name}</h1>
+          <div className="h-10 w-10 rounded-full bg-charcoal border border-slate-700/30 flex items-center justify-center text-trellio-teal font-bold">{initials}</div>
+          <h1 className="text-3xl font-extrabold text-slate-100">{client.name}</h1>
         </div>
         <div className="flex items-center gap-2">
           <button
             type="button"
             disabled={!client.email}
             onClick={() => { if (client.email) window.location.href = `mailto:${client.email}`; }}
-            className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-md border text-sm font-semibold ${client.email ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100' : 'bg-gray-50 text-gray-400 border-gray-200 cursor-not-allowed'}`}
+            className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-md border text-sm font-semibold ${client.email ? 'bg-trellio-teal/10 text-trellio-teal border-trellio-teal/30 hover:bg-trellio-teal/20' : 'bg-charcoal text-slate-500 border-slate-700/30 cursor-not-allowed'}`}
           >
             <AtSignIcon className="h-4 w-4" /> Email
           </button>
           <button
             type="button"
             onClick={() => onEditClient && onEditClient(client)}
-            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-gray-200 bg-white text-sm font-semibold text-gray-800 hover:bg-gray-50"
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-slate-700/30 bg-charcoal text-sm font-semibold text-slate-100 hover:bg-charcoal/80"
           >
             <EditIcon className="h-4 w-4" /> Edit
           </button>
           <details className="relative">
-            <summary className="list-none cursor-pointer inline-flex items-center px-3 py-1.5 rounded-md border border-gray-200 bg-white text-gray-800 text-sm font-semibold hover:bg-gray-50">More Actions</summary>
-            <div className="absolute right-0 mt-2 w-64 bg-white border border-gray-200 rounded-md shadow-lg z-10 p-1">
-            <button className="w-full text-left px-3 py-2 hover:bg-gray-50 text-sm" onClick={()=>onCreateQuote && onCreateQuote(client)}>Quote</button>
-            <button className="w-full text-left px-3 py-2 hover:bg-gray-50 text-sm" onClick={()=>onCreateJob && onCreateJob(client)}>Job</button>
-            <button className="w-full text-left px-3 py-2 hover:bg-gray-50 text-sm" onClick={()=>onCreateInvoice && onCreateInvoice(client)}>Invoice</button>
-            <button className="w-full text-left px-3 py-2 hover:bg-gray-50 text-sm" onClick={()=>onCollectPayment && onCollectPayment(client)}>Collect Payment</button>
-            <button className="w-full text-left px-3 py-2 hover:bg-gray-50 text-sm" onClick={()=>onArchiveClient && onArchiveClient(client)}>Archive Client</button>
-            <button className="w-full text-left px-3 py-2 hover:bg-gray-50 text-sm" onClick={()=>onDownloadVCard && onDownloadVCard(client)}>Download VCard</button>
-            <button className="w-full text-left px-3 py-2 hover:bg-gray-50 text-sm" onClick={()=>onGeneratePortalLink && onGeneratePortalLink(client)}>Generate Portal Link</button>
-            <button className="w-full text-left px-3 py-2 hover:bg-gray-50 text-sm" onClick={()=>onViewAsClient && onViewAsClient(client)}>Log in as Client</button>
-            <button className="w-full text-left px-3 py-2 hover:bg-gray-50 text-sm text-red-700" onClick={()=>handleDeleteClient && handleDeleteClient(client.id)}>Delete</button>
+            <summary className="list-none cursor-pointer inline-flex items-center px-3 py-1.5 rounded-md border border-slate-700/30 bg-charcoal text-slate-100 text-sm font-semibold hover:bg-charcoal/80">More Actions</summary>
+            <div className="absolute right-0 mt-2 w-64 bg-charcoal border border-slate-700/30 rounded-md shadow-lg z-10 p-1">
+            <button className="w-full text-left px-3 py-2 hover:bg-midnight text-sm text-slate-100" onClick={()=>onCreateQuote && onCreateQuote(client)}>Quote</button>
+            <button className="w-full text-left px-3 py-2 hover:bg-midnight text-sm text-slate-100" onClick={()=>onCreateJob && onCreateJob(client)}>Job</button>
+            <button className="w-full text-left px-3 py-2 hover:bg-midnight text-sm text-slate-100" onClick={()=>onCreateInvoice && onCreateInvoice(client)}>Invoice</button>
+            <button className="w-full text-left px-3 py-2 hover:bg-midnight text-sm text-slate-100" onClick={()=>onCollectPayment && onCollectPayment(client)}>Collect Payment</button>
+            <button className="w-full text-left px-3 py-2 hover:bg-midnight text-sm text-slate-100" onClick={()=>onArchiveClient && onArchiveClient(client)}>Archive Client</button>
+            <button className="w-full text-left px-3 py-2 hover:bg-midnight text-sm text-slate-100" onClick={()=>onDownloadVCard && onDownloadVCard(client)}>Download VCard</button>
+            <button className="w-full text-left px-3 py-2 hover:bg-midnight text-sm text-slate-100" onClick={()=>onGeneratePortalLink && onGeneratePortalLink(client)}>Generate Portal Link</button>
+            <button className="w-full text-left px-3 py-2 hover:bg-midnight text-sm text-slate-100" onClick={()=>onViewAsClient && onViewAsClient(client)}>Log in as Client</button>
+            <button className="w-full text-left px-3 py-2 hover:bg-midnight text-sm text-signal-coral" onClick={()=>handleDeleteClient && handleDeleteClient(client.id)}>Delete</button>
             </div>
           </details>
         </div>
@@ -146,13 +146,13 @@ const ClientDetailView = ({
 
       {/* Properties + Contact Info */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-        <div className="lg:col-span-2 bg-white p-4 rounded-xl shadow border border-gray-200">
+        <div className="lg:col-span-2 bg-charcoal p-4 rounded-xl shadow border border-slate-700/30">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold">Properties</h3>
-            <button className="px-3 py-1 text-sm rounded-md bg-gray-100 text-gray-800" onClick={()=>onCreateProperty && onCreateProperty(client)}>+ New Property</button>
+            <h3 className="text-lg font-semibold text-slate-100">Properties</h3>
+            <button className="px-3 py-1 text-sm rounded-md bg-midnight text-slate-100 hover:bg-midnight/80" onClick={()=>onCreateProperty && onCreateProperty(client)}>+ New Property</button>
           </div>
           {properties.length === 0 ? (
-            <p className="text-sm text-gray-500">No properties yet.</p>
+            <p className="text-sm text-slate-400">No properties yet.</p>
           ) : (
             <div className="space-y-3">
               {properties.map((p, idx) => {
@@ -161,20 +161,20 @@ const ClientDetailView = ({
                 const addressLabel = line1 || p.label || `Property ${idx + 1}`;
                 const lawnSize = p.lawnSizeWidth && p.lawnSizeLength ? `${p.lawnSizeWidth} x ${p.lawnSizeLength} ${p.lawnSizeUnit || 'ft'}` : '-';
                 return (
-                  <div key={p.uid || idx} className="border rounded-xl p-4">
+                  <div key={p.uid || idx} className="border border-slate-700/30 rounded-xl p-4">
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div className="flex items-start gap-3">
-                        <div className="h-10 w-10 rounded-xl border border-gray-200 flex items-center justify-center text-green-700 bg-green-50">
+                        <div className="h-10 w-10 rounded-xl border border-slate-700/30 flex items-center justify-center text-trellio-teal bg-trellio-teal/10">
                           <MapPinIcon className="h-5 w-5" />
                         </div>
                         <div>
-                          <div className="font-semibold text-gray-900">{addressLabel}</div>
-                          <div className="text-sm text-gray-500">{[line2, p.country].filter(Boolean).join(', ')}</div>
+                          <div className="font-semibold text-slate-100">{addressLabel}</div>
+                          <div className="text-sm text-slate-400">{[line2, p.country].filter(Boolean).join(', ')}</div>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
                         <a
-                          className="px-3 py-1 text-sm rounded-md bg-gray-100 text-gray-800"
+                          className="px-3 py-1 text-sm rounded-md bg-midnight text-slate-100 hover:bg-midnight/80"
                           href={`https://www.google.com/maps?q=${encodeURIComponent([p.street1,p.street2,p.city,p.state,p.zip,p.country].filter(Boolean).join(', '))}`}
                           target="_blank"
                           rel="noreferrer"
@@ -182,28 +182,28 @@ const ClientDetailView = ({
                           Show on Map
                         </a>
                         {onOpenProperty && (
-                          <button className="px-3 py-1 text-sm rounded-md border border-gray-200 text-gray-700" onClick={()=>onOpenProperty(p)}>
+                          <button className="px-3 py-1 text-sm rounded-md border border-slate-700/30 text-slate-100 hover:bg-midnight/50" onClick={()=>onOpenProperty(p)}>
                             View
                           </button>
                         )}
                       </div>
                     </div>
                     <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-                      <div className="flex items-center justify-between border-t pt-3">
-                        <span className="text-gray-500">Locked Gate</span>
-                        <span className="font-semibold text-gray-900">{p.lockedGate ? 'Yes' : 'No'}</span>
+                      <div className="flex items-center justify-between border-t border-slate-700/30 pt-3">
+                        <span className="text-slate-400">Locked Gate</span>
+                        <span className="font-semibold text-slate-100">{p.lockedGate ? 'Yes' : 'No'}</span>
                       </div>
-                      <div className="flex items-center justify-between border-t pt-3">
-                        <span className="text-gray-500">Lawn Size</span>
-                        <span className="font-semibold text-gray-900">{lawnSize}</span>
+                      <div className="flex items-center justify-between border-t border-slate-700/30 pt-3">
+                        <span className="text-slate-400">Lawn Size</span>
+                        <span className="font-semibold text-slate-100">{lawnSize}</span>
                       </div>
-                      <div className="flex items-center justify-between border-t pt-3">
-                        <span className="text-gray-500">Gate Code</span>
-                        <span className="font-semibold text-gray-900">{p.accessCode || '-'}</span>
+                      <div className="flex items-center justify-between border-t border-slate-700/30 pt-3">
+                        <span className="text-slate-400">Gate Code</span>
+                        <span className="font-semibold text-slate-100">{p.accessCode || '-'}</span>
                       </div>
-                      <div className="flex items-center justify-between border-t pt-3">
-                        <span className="text-gray-500">Tax rate</span>
-                        <span className="font-semibold text-gray-900">{p.taxRate || 'Default'}</span>
+                      <div className="flex items-center justify-between border-t border-slate-700/30 pt-3">
+                        <span className="text-slate-400">Tax rate</span>
+                        <span className="font-semibold text-slate-100">{p.taxRate || 'Default'}</span>
                       </div>
                     </div>
                   </div>
@@ -212,18 +212,18 @@ const ClientDetailView = ({
             </div>
           )}
         </div>
-        <div className="bg-white p-4 rounded-xl shadow border border-gray-200">
-          <h3 className="text-lg font-semibold mb-3">Contact info</h3>
-          <div className="space-y-2 text-sm">
+        <div className="bg-charcoal p-4 rounded-xl shadow border border-slate-700/30">
+          <h3 className="text-lg font-semibold mb-3 text-slate-100">Contact info</h3>
+          <div className="space-y-2 text-sm text-slate-100">
             {client.phone && (<div className="flex items-center gap-2"><PhoneIcon /><span>{client.phone}</span></div>)}
             {client.email && (<div className="flex items-center gap-2"><AtSignIcon /><span>{client.email}</span></div>)}
-            {client.leadSource && (<div className="flex items-center gap-2"><span className="text-gray-500">Lead source</span><span className="font-medium">{client.leadSource}</span></div>)}
+            {client.leadSource && (<div className="flex items-center gap-2"><span className="text-slate-400">Lead source</span><span className="font-medium">{client.leadSource}</span></div>)}
           </div>
           {(client.tags && client.tags.length>0) && (
             <div className="mt-4">
-              <div className="text-sm font-semibold mb-2">Tags</div>
+              <div className="text-sm font-semibold mb-2 text-slate-100">Tags</div>
               <div className="flex flex-wrap gap-2">
-                {client.tags.map((t, i)=>(<span key={`${t}-${i}`} className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">{t}</span>))}
+                {client.tags.map((t, i)=>(<span key={`${t}-${i}`} className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-500/20 text-blue-400">{t}</span>))}
               </div>
             </div>
           )}
@@ -233,18 +233,18 @@ const ClientDetailView = ({
       {/* Overview + Schedule left, communications/billing right */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
         <div className="lg:col-span-2">
-          <div className="bg-white p-4 rounded-xl shadow border border-gray-200 mb-8">
+          <div className="bg-charcoal p-4 rounded-xl shadow border border-slate-700/30 mb-8">
             <div className="mb-2">
-              <h3 className="text-lg font-semibold">Overview</h3>
+              <h3 className="text-lg font-semibold text-slate-100">Overview</h3>
             </div>
             <div className="flex items-center gap-2 text-sm mb-3">
               {['active','quotes','jobs','invoices'].map(t => (
-                <button key={t} onClick={()=>setOverviewTab(t)} className={`px-3 py-1 rounded-full border ${overviewTab===t? 'bg-gray-900 text-white border-gray-900':'bg-white text-gray-800 border-gray-300'}`}>{t.charAt(0).toUpperCase()+t.slice(1)}</button>
+                <button key={t} onClick={()=>setOverviewTab(t)} className={`px-3 py-1 rounded-full border ${overviewTab===t? 'bg-trellio-teal text-midnight border-trellio-teal':'bg-midnight text-slate-100 border-slate-700/30'}`}>{t.charAt(0).toUpperCase()+t.slice(1)}</button>
               ))}
             </div>
             <div>
               {overviewTab === 'active' && (clientQuotes || []).some(q => q && (q.status === 'Draft' || q.status === 'Sent' || q.status === 'Awaiting Response')) && (
-                <ul className="divide-y divide-gray-100 text-sm">
+                <ul className="divide-y divide-slate-700/30 text-sm">
                   {[...
                     clientJobs.filter(j=>j.status!=='Completed').map(j=>({type:'job', id:j.id, label:j.jobNumber, date:j.start, status:j.status})),
                     clientInvoices.filter(i=>i.status==='Unpaid' || i.status==='Sent').map(i=>({
@@ -266,42 +266,42 @@ const ClientDetailView = ({
                   ].sort((a,b)=> new Date(b.date||0) - new Date(a.date||0)).slice(0,8).filter(it => it.type!=='quote' || !!it.title).map(item => (
                     <li key={`${item.type}-${item.id}`} className="py-2 flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <span className="inline-block w-2 h-2 rounded-full bg-gray-400"/>
-                        <span className="font-medium">{item.type==='job' ? (item.label || 'Job') : `${item.type==='invoice'?'Invoice':'Quote'} ${(item.title ?? '—')}`}</span>
-                        {item.date && <span className="text-gray-500">• {formatDate(item.date)}</span>}
-                        <span className={`ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_COLORS[item.status]||'bg-gray-100 text-gray-800'}`}>{item.status}</span>
+                        <span className="inline-block w-2 h-2 rounded-full bg-slate-500"/>
+                        <span className="font-medium text-slate-100">{item.type==='job' ? (item.label || 'Job') : `${item.type==='invoice'?'Invoice':'Quote'} ${(item.title ?? '—')}`}</span>
+                        {item.date && <span className="text-slate-400">• {formatDate(item.date)}</span>}
+                        <span className={`ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_COLORS[item.status]||'bg-midnight text-slate-100'}`}>{item.status}</span>
                       </div>
                       <div>
-                        {typeof item.amount==='number' && Number.isFinite(item.amount) && <span className="font-semibold">{formatCurrency(item.amount)}</span>}
-                        {item.type==='job' && <button className="ml-3 text-blue-700" onClick={()=> onOpenJob && onOpenJob(clientJobs.find(j=>j.id===item.id))}>Open</button>}
-                        {item.type==='invoice' && <button className="ml-3 text-blue-700" onClick={()=> onOpenInvoice && onOpenInvoice(clientInvoices.find(i=>i.id===item.id))}>Open</button>}
-                        {item.type==='quote' && <button className="ml-3 text-blue-700" onClick={()=> onOpenQuote && onOpenQuote(clientQuotes.find(q=>q.id===item.id))}>Open</button>}
+                        {typeof item.amount==='number' && Number.isFinite(item.amount) && <span className="font-semibold text-slate-100">{formatCurrency(item.amount)}</span>}
+                        {item.type==='job' && <button className="ml-3 text-trellio-teal hover:text-trellio-teal/80" onClick={()=> onOpenJob && onOpenJob(clientJobs.find(j=>j.id===item.id))}>Open</button>}
+                        {item.type==='invoice' && <button className="ml-3 text-trellio-teal hover:text-trellio-teal/80" onClick={()=> onOpenInvoice && onOpenInvoice(clientInvoices.find(i=>i.id===item.id))}>Open</button>}
+                        {item.type==='quote' && <button className="ml-3 text-trellio-teal hover:text-trellio-teal/80" onClick={()=> onOpenQuote && onOpenQuote(clientQuotes.find(q=>q.id===item.id))}>Open</button>}
                       </div>
                     </li>
                   ))}
                 </ul>
               )}
               {overviewTab === 'quotes' && (
-                <ul className="divide-y divide-gray-100 text-sm">{clientQuotes.map(q => (
+                <ul className="divide-y divide-slate-700/30 text-sm">{clientQuotes.map(q => (
                   <li key={q.id} className="py-2 flex items-center justify-between">
-                    <div><span className="font-semibold text-blue-700">{q.quoteNumber || q.id.substring(0,6)}</span> <span className="text-gray-500 ml-2">{formatDate(q.createdAt)}</span></div>
-                    <div><span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_COLORS[q.status]}`}>{q.status}</span><button className="ml-3 text-blue-700" onClick={()=>onOpenQuote&&onOpenQuote(q)}>Open</button></div>
+                    <div><span className="font-semibold text-trellio-teal">{q.quoteNumber || q.id.substring(0,6)}</span> <span className="text-slate-400 ml-2">{formatDate(q.createdAt)}</span></div>
+                    <div><span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_COLORS[q.status]}`}>{q.status}</span><button className="ml-3 text-trellio-teal hover:text-trellio-teal/80" onClick={()=>onOpenQuote&&onOpenQuote(q)}>Open</button></div>
                   </li>
                 ))}</ul>
               )}
               {overviewTab === 'jobs' && (
-                <ul className="divide-y divide-gray-100 text-sm">{clientJobs.map(j => (
+                <ul className="divide-y divide-slate-700/30 text-sm">{clientJobs.map(j => (
                   <li key={j.id} className="py-2 flex items-center justify-between">
-                    <div><span className="font-semibold text-blue-700">{j.jobNumber}</span> <span className="text-gray-500 ml-2">{formatDateTime(j.start)}</span></div>
-                    <div><span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_COLORS[j.status]}`}>{j.status}</span><button className="ml-3 text-blue-700" onClick={()=>onOpenJob&&onOpenJob(j)}>Open</button></div>
+                    <div><span className="font-semibold text-trellio-teal">{j.jobNumber}</span> <span className="text-slate-400 ml-2">{formatDateTime(j.start)}</span></div>
+                    <div><span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_COLORS[j.status]}`}>{j.status}</span><button className="ml-3 text-trellio-teal hover:text-trellio-teal/80" onClick={()=>onOpenJob&&onOpenJob(j)}>Open</button></div>
                   </li>
                 ))}</ul>
               )}
               {overviewTab === 'invoices' && (
-                <ul className="divide-y divide-gray-100 text-sm">{clientInvoices.map(i => (
+                <ul className="divide-y divide-slate-700/30 text-sm">{clientInvoices.map(i => (
                   <li key={i.id} className="py-2 flex items-center justify-between">
-                    <div><span className="font-semibold text-blue-700">{i.invoiceNumber || i.id.substring(0,6)}</span> <span className="text-gray-500 ml-2">{formatDate(i.issueDate || i.createdAt)}</span></div>
-                    <div><span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_COLORS[i.status]}`}>{i.status}</span><span className="ml-3 font-semibold">{formatCurrency(i.total)}</span><button className="ml-3 text-blue-700" onClick={()=>onOpenInvoice&&onOpenInvoice(i)}>Open</button></div>
+                    <div><span className="font-semibold text-trellio-teal">{i.invoiceNumber || i.id.substring(0,6)}</span> <span className="text-slate-400 ml-2">{formatDate(i.issueDate || i.createdAt)}</span></div>
+                    <div><span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_COLORS[i.status]}`}>{i.status}</span><span className="ml-3 font-semibold text-slate-100">{formatCurrency(i.total)}</span><button className="ml-3 text-trellio-teal hover:text-trellio-teal/80" onClick={()=>onOpenInvoice&&onOpenInvoice(i)}>Open</button></div>
                   </li>
                 ))}</ul>
               )}
@@ -309,16 +309,16 @@ const ClientDetailView = ({
           </div>
 
           {/* Schedule */}
-          <div className="bg-white p-4 rounded-xl shadow border border-gray-200 mb-8">
-            <h3 className="text-lg font-semibold mb-3">Schedule</h3>
+          <div className="bg-charcoal p-4 rounded-xl shadow border border-slate-700/30 mb-8">
+            <h3 className="text-lg font-semibold mb-3 text-slate-100">Schedule</h3>
             {clientJobs.length === 0 ? (
-              <p className="text-sm text-gray-500">No jobs scheduled.</p>
+              <p className="text-sm text-slate-400">No jobs scheduled.</p>
             ) : (
-              <ul className="divide-y divide-gray-100 text-sm">
+              <ul className="divide-y divide-slate-700/30 text-sm">
                 {clientJobs.slice().sort((a,b)=> new Date(a.start||0) - new Date(b.start||0)).slice(0,8).map(j => (
                   <li key={j.id} className="py-2 flex items-center justify-between">
-                    <div><span className="font-medium text-blue-700">{j.jobNumber}</span>{j.start && <span className="ml-2 text-gray-500">{formatDateTime(j.start)}</span>}</div>
-                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_COLORS[j.status]||'bg-gray-100 text-gray-800'}`}>{j.status}</span>
+                    <div><span className="font-medium text-trellio-teal">{j.jobNumber}</span>{j.start && <span className="ml-2 text-slate-400">{formatDateTime(j.start)}</span>}</div>
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_COLORS[j.status]||'bg-midnight text-slate-100'}`}>{j.status}</span>
                   </li>
                 ))}
               </ul>
@@ -328,45 +328,45 @@ const ClientDetailView = ({
 
         {/* Right rail */}
         <div className="space-y-8">
-          <div className="bg-white p-4 rounded-xl shadow border border-gray-200">
-            <h3 className="text-lg font-semibold mb-3">Last client communication</h3>
+          <div className="bg-charcoal p-4 rounded-xl shadow border border-slate-700/30">
+            <h3 className="text-lg font-semibold mb-3 text-slate-100">Last client communication</h3>
             {clientComms.length === 0 ? (
-              <p className="text-sm text-gray-500">No communications found.</p>
+              <p className="text-sm text-slate-400">No communications found.</p>
             ) : (
-              <ul className="divide-y divide-gray-100 text-sm">
+              <ul className="divide-y divide-slate-700/30 text-sm">
                 {clientComms.map((n)=> (
                   <li key={n.id || n.createdAt} className="py-2">
-                    <div className="font-medium">{n.message}</div>
-                    <div className="text-gray-500 text-xs">{formatDateTime(n.createdAt)}</div>
+                    <div className="font-medium text-slate-100">{n.message}</div>
+                    <div className="text-slate-400 text-xs">{formatDateTime(n.createdAt)}</div>
                   </li>
                 ))}
               </ul>
             )}
           </div>
 
-          <div className="bg-white p-4 rounded-xl shadow border border-gray-200">
+          <div className="bg-charcoal p-4 rounded-xl shadow border border-slate-700/30">
             <div className="flex items-center justify-between mb-1">
-              <h3 className="text-lg font-semibold">Billing history</h3>
-              <button className="text-sm px-2 py-1 bg-gray-100 rounded" onClick={()=>onCollectPayment && onCollectPayment(client)}>New</button>
+              <h3 className="text-lg font-semibold text-slate-100">Billing history</h3>
+              <button className="text-sm px-2 py-1 bg-midnight text-slate-100 rounded hover:bg-midnight/80" onClick={()=>onCollectPayment && onCollectPayment(client)}>New</button>
             </div>
             {billingEntries.length === 0 ? (
-              <p className="text-sm text-gray-500">No invoices or payments yet.</p>
+              <p className="text-sm text-slate-400">No invoices or payments yet.</p>
             ) : (
-              <ul className="divide-y divide-gray-100 text-sm">
+              <ul className="divide-y divide-slate-700/30 text-sm">
                 {billingEntries.map(e => (
                   <li key={e.id} className="py-2 flex items-center justify-between">
                     <div>
-                      <div className="font-medium">{e.label}</div>
-                      <div className="text-xs text-gray-500">{formatDate(e.date)} {e.method?`• ${e.method}`:''} {e.status?`• ${e.status}`:''}</div>
+                      <div className="font-medium text-slate-100">{e.label}</div>
+                      <div className="text-xs text-slate-400">{formatDate(e.date)} {e.method?`• ${e.method}`:''} {e.status?`• ${e.status}`:''}</div>
                     </div>
-                    <div className={`font-semibold ${e.amount<0?'text-green-700':'text-gray-900'}`}>{e.amount<0?'-':''}{formatCurrency(Math.abs(e.amount || 0))}</div>
+                    <div className={`font-semibold ${e.amount<0?'text-trellio-teal':'text-slate-100'}`}>{e.amount<0?'-':''}{formatCurrency(Math.abs(e.amount || 0))}</div>
                   </li>
                 ))}
               </ul>
             )}
-            <div className="mt-3 pt-2 border-t text-sm flex items-center justify-between">
-              <span className="font-semibold">Current balance</span>
-              <span className={`font-bold ${currentBalance>0?'text-red-700':'text-green-700'}`}>{formatCurrency(currentBalance)}</span>
+            <div className="mt-3 pt-2 border-t border-slate-700/30 text-sm flex items-center justify-between">
+              <span className="font-semibold text-slate-100">Current balance</span>
+              <span className={`font-bold ${currentBalance>0?'text-signal-coral':'text-trellio-teal'}`}>{formatCurrency(currentBalance)}</span>
             </div>
           </div>
         </div>

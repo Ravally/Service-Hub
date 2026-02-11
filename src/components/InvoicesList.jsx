@@ -4,14 +4,14 @@ import { formatCurrency } from '../utils';
 import { inRange, lastNDays, last30ExcludingToday, monthRange, yearRange } from '../utils/dateUtils';
 
 const KpiCard = ({ title, sub, value, money, delta, positive }) => (
-  <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
-    <div className="text-sm font-semibold text-gray-800">{title}</div>
-    <div className="text-xs text-gray-500 mb-2">{sub}</div>
-    <div className="text-3xl font-bold text-gray-900">{value}</div>
-    {typeof money === 'string' && <div className="text-xs text-gray-500">{money}</div>}
+  <div className="bg-charcoal rounded-xl border border-slate-700/30 shadow-sm p-4">
+    <div className="text-sm font-semibold text-slate-100">{title}</div>
+    <div className="text-xs text-slate-400 mb-2">{sub}</div>
+    <div className="text-3xl font-bold text-slate-100">{value}</div>
+    {typeof money === 'string' && <div className="text-xs text-slate-400">{money}</div>}
     {typeof delta === 'string' && (
-      <div className={`inline-flex items-center mt-2 text-xs font-medium ${positive ? 'text-green-700' : 'text-red-700'}`}>
-        <span className={`inline-block h-2 w-2 rounded-full mr-1 ${positive ? 'bg-green-400' : 'bg-red-400'}`} />
+      <div className={`inline-flex items-center mt-2 text-xs font-medium ${positive ? 'text-trellio-teal' : 'text-signal-coral'}`}>
+        <span className={`inline-block h-2 w-2 rounded-full mr-1 ${positive ? 'bg-trellio-teal' : 'bg-signal-coral'}`} />
         {delta}
       </div>
     )}
@@ -102,7 +102,7 @@ export default function InvoicesList({ invoices=[], clients=[], onOpenInvoice, o
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-3xl font-bold text-gray-900">Invoices</h2>
+        <h2 className="text-3xl font-bold text-slate-100">Invoices</h2>
         {onNewInvoice && (
           <button
             onClick={onNewInvoice}
@@ -114,8 +114,8 @@ export default function InvoicesList({ invoices=[], clients=[], onOpenInvoice, o
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
-          <div className="text-sm font-semibold text-gray-800 mb-2">Overview</div>
+        <div className="bg-charcoal rounded-xl border border-slate-700/30 shadow-sm p-4">
+          <div className="text-sm font-semibold text-slate-100 mb-2">Overview</div>
           <div className="space-y-2 text-sm">
             <div className="flex items-center justify-between"><span className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-red-500"></span>Past due ({kpis.overview.pastDue.count})</span><span>{formatCurrency(kpis.overview.pastDue.value)}</span></div>
             <div className="flex items-center justify-between"><span className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-yellow-500"></span>Sent but not due ({kpis.overview.notDue.count})</span><span>{formatCurrency(kpis.overview.notDue.value)}</span></div>
@@ -129,22 +129,22 @@ export default function InvoicesList({ invoices=[], clients=[], onOpenInvoice, o
       <div className="mb-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="relative">
-            <button onClick={()=>setStatusOpen(o=>!o)} className="px-3 py-1.5 rounded-full bg-gray-100 text-gray-800 text-sm border">Status | {status==='all' ? 'All' : status}</button>
+            <button onClick={()=>setStatusOpen(o=>!o)} className="px-3 py-1.5 rounded-full bg-midnight text-slate-100 text-sm border">Status | {status==='all' ? 'All' : status}</button>
             {statusOpen && (
-              <div className="absolute z-20 mt-2 w-72 bg-white border border-gray-200 rounded-md shadow p-2">
+              <div className="absolute z-20 mt-2 w-72 bg-charcoal border border-slate-700/30 rounded-md shadow p-2">
                 <input placeholder="Search status" className="w-full px-2 py-1 border border-gray-300 rounded mb-2 text-sm" />
-                <button className={`w-full text-left px-3 py-2 hover:bg-gray-50 ${status==='all'?'bg-gray-50':''}`} onClick={()=>{ setStatus('all'); setStatusOpen(false); }}>All</button>
+                <button className={`w-full text-left px-3 py-2 hover:bg-midnight ${status==='all'?'bg-midnight':''}`} onClick={()=>{ setStatus('all'); setStatusOpen(false); }}>All</button>
                 {statusOptions.map(s => (
-                  <button key={s} className={`w-full text-left px-3 py-2 hover:bg-gray-50 ${status===s?'bg-gray-50':''}`} onClick={()=>{ setStatus(s); setStatusOpen(false); }}>{s}</button>
+                  <button key={s} className={`w-full text-left px-3 py-2 hover:bg-midnight ${status===s?'bg-midnight':''}`} onClick={()=>{ setStatus(s); setStatusOpen(false); }}>{s}</button>
                 ))}
               </div>
             )}
           </div>
           <div className="relative">
-            <button onClick={()=>setDueOpen(o=>!o)} className="px-3 py-1.5 rounded-full bg-gray-100 text-gray-800 text-sm border">Due | {dueMode==='all' ? 'All' : dueMode.replace('_',' ')}</button>
+            <button onClick={()=>setDueOpen(o=>!o)} className="px-3 py-1.5 rounded-full bg-midnight text-slate-100 text-sm border">Due | {dueMode==='all' ? 'All' : dueMode.replace('_',' ')}</button>
             {dueOpen && (
-              <div className="absolute z-20 mt-2 w-80 bg-white border border-gray-200 rounded-md shadow p-3">
-                <div className="text-sm text-gray-700 mb-2">Due date</div>
+              <div className="absolute z-20 mt-2 w-80 bg-charcoal border border-slate-700/30 rounded-md shadow p-3">
+                <div className="text-sm text-slate-100 mb-2">Due date</div>
                 <select value={dueMode} onChange={(e)=>setDueMode(e.target.value)} className="w-full px-2 py-2 border border-gray-300 rounded mb-3 text-sm">
                   <option value="all">All</option>
                   <option value="this_month">This month</option>
@@ -168,14 +168,14 @@ export default function InvoicesList({ invoices=[], clients=[], onOpenInvoice, o
         <input value={search} onChange={(e)=>setSearch(e.target.value)} placeholder="Search invoices..." className="px-3 py-2 border border-gray-300 rounded-md text-sm w-72"/>
       </div>
 
-      <div className="text-sm text-gray-700 mb-2">{(status!=='all' || dueMode!=='all' || search) ? 'Filtered invoices' : 'All invoices'} ({filtered.length} results)</div>
+      <div className="text-sm text-slate-100 mb-2">{(status!=='all' || dueMode!=='all' || search) ? 'Filtered invoices' : 'All invoices'} ({filtered.length} results)</div>
 
-      <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+      <div className="bg-charcoal rounded-xl shadow-lg border border-slate-700/30 overflow-hidden">
         {filtered.length === 0 ? (
-          <div className="text-center p-10 text-gray-500">No invoices found.</div>
+          <div className="text-center p-10 text-slate-400">No invoices found.</div>
         ) : (
           <table className="w-full">
-            <thead className="bg-gray-50 text-sm">
+            <thead className="bg-midnight text-sm">
               <tr>
                 <th className="text-left font-semibold p-3 cursor-pointer select-none" onClick={()=>toggleSort('client')}>Client{sortBy==='client' && (sortDir==='asc'?' ^':' v')}</th>
                 <th className="text-left font-semibold p-3 cursor-pointer select-none" onClick={()=>toggleSort('number')}>Invoice number{sortBy==='number' && (sortDir==='asc'?' ^':' v')}</th>
@@ -188,14 +188,14 @@ export default function InvoicesList({ invoices=[], clients=[], onOpenInvoice, o
             </thead>
             <tbody className="text-sm">
               {filtered.map(inv => (
-                <tr key={inv.id} className="border-t hover:bg-gray-50" onClick={()=>onOpenInvoice && onOpenInvoice(inv)}>
+                <tr key={inv.id} className="border-t hover:bg-midnight" onClick={()=>onOpenInvoice && onOpenInvoice(inv)}>
                   <td className="p-3"><button className="font-semibold text-blue-700 hover:underline">{inv._clientName}</button></td>
                   <td className="p-3"><button onClick={()=>onOpenInvoice && onOpenInvoice(inv)} className="font-semibold text-blue-700 hover:underline">{inv.invoiceNumber || `#${(inv.id||'').slice(0,6)}`}</button></td>
                   <td className="p-3"><div className="truncate max-w-xs">{inv._address || '-'}</div></td>
                   <td className="p-3">{inv.dueDate ? new Date(inv.dueDate).toLocaleDateString() : '-'}</td>
                   <td className="p-3">{inv.status}</td>
-                  <td className="p-3 font-semibold text-gray-900">{formatCurrency(inv.total||0)}</td>
-                  <td className="p-3 font-semibold text-gray-900">{formatCurrency(inv._balance||0)}</td>
+                  <td className="p-3 font-semibold text-slate-100">{formatCurrency(inv.total||0)}</td>
+                  <td className="p-3 font-semibold text-slate-100">{formatCurrency(inv._balance||0)}</td>
                 </tr>
               ))}
             </tbody>

@@ -10,17 +10,18 @@
 
 1. [Architecture Overview](#architecture-overview)
 2. [Technology Stack](#technology-stack)
-3. [Directory Structure](#directory-structure)
-4. [Core Principles](#core-principles)
-5. [Component Patterns](#component-patterns)
-6. [State Management](#state-management)
-7. [Data Layer](#data-layer)
-8. [Firebase Architecture](#firebase-architecture)
-9. [Coding Conventions](#coding-conventions)
-10. [Common Patterns](#common-patterns)
-11. [Testing Strategy](#testing-strategy)
-12. [Performance Optimization](#performance-optimization)
-13. [Security Practices](#security-practices)
+3. [Trellio Brand System](#trellio-brand-system)
+4. [Directory Structure](#directory-structure)
+5. [Core Principles](#core-principles)
+6. [Component Patterns](#component-patterns)
+7. [State Management](#state-management)
+8. [Data Layer](#data-layer)
+9. [Firebase Architecture](#firebase-architecture)
+10. [Coding Conventions](#coding-conventions)
+11. [Common Patterns](#common-patterns)
+12. [Testing Strategy](#testing-strategy)
+13. [Performance Optimization](#performance-optimization)
+14. [Security Practices](#security-practices)
 
 ---
 
@@ -139,6 +140,188 @@ Expo Image Picker     # Photo library
 EAS Build             # Cloud builds (iOS/Android)
 EAS Submit            # App store automation
 ```
+
+---
+
+## Trellio Brand System
+
+### Design Philosophy
+
+Trellio's visual identity is built on **modern sophistication** with a tech-forward, professional aesthetic. The brand system uses a carefully crafted dark-first design language that emphasizes clarity, hierarchy, and purposeful use of color.
+
+### Color Palette
+
+**Primary Colors**:
+```css
+/* Trellio Teal - Primary brand color for actions, accents, and success states */
+--trellio-teal:       #0EA5A0
+--trellio-teal-deep:  #087F7A  /* Hover/active states */
+--trellio-teal-light: #B2F0ED  /* Subtle backgrounds */
+
+/* Signal Coral - Warnings, urgent actions, overdue states */
+--signal-coral:       #F7845E
+--signal-coral-deep:  #E56840
+--signal-coral-light: #FFDCC8
+
+/* Harvest Amber - Info, neutral highlights, pending states */
+--harvest-amber:      #FFAA5C
+--harvest-amber-deep: #FF9633
+--harvest-amber-light: #FFE8CC
+```
+
+**Neutral Colors**:
+```css
+/* Dark Mode (Default) */
+--midnight:           #0C1220  /* Primary background */
+--charcoal:           #1A2332  /* Card/elevated surfaces */
+--slate-dark:         #2D3B4E  /* Hover states */
+--muted:              #6B7F96  /* Disabled/muted elements */
+--silver:             #A3B4C8  /* Secondary text */
+--cream:              #FFF9F5  /* Light mode primary (future) */
+```
+
+### Typography
+
+**Font System**:
+```css
+/* DM Sans - Primary UI Font */
+font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+/* Usage: Buttons, labels, body text, navigation */
+
+/* Playfair Display - Editorial Font */
+font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+/* Usage: Large headings, metric numbers, emphasis */
+
+/* JetBrains Mono - Data Font */
+font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+/* Usage: Codes, IDs, technical data, currency amounts */
+```
+
+**Type Scale**:
+- Display: `text-4xl` (36px) - Page titles
+- H1: `text-3xl` (30px) - Section headers
+- H2: `text-2xl` (24px) - Subsection headers
+- H3: `text-xl` (20px) - Card titles
+- Body: `text-base` (16px) - Default text
+- Small: `text-sm` (14px) - Labels
+- Tiny: `text-xs` (12px) - Captions
+
+### Component Patterns
+
+**Buttons**:
+```jsx
+/* Primary Action - Trellio Teal */
+<button className="btn-primary">
+  Save Changes
+</button>
+
+/* Secondary Action - Neutral */
+<button className="btn-secondary">
+  Cancel
+</button>
+
+/* Accent Actions - Coral/Amber */
+<button className="btn-accent-coral">
+  Delete
+</button>
+<button className="btn-accent-amber">
+  Archive
+</button>
+```
+
+**Cards**:
+```jsx
+/* Standard Card Pattern */
+<div className="bg-charcoal rounded-xl border border-slate-700/30 shadow-sm overflow-hidden hover:border-trellio-teal/30 transition-all">
+  <div className="px-4 py-3 border-b border-slate-700/30">
+    <h3 className="text-sm font-semibold text-slate-100">Card Title</h3>
+  </div>
+  <div className="p-4">
+    {/* Card content */}
+  </div>
+</div>
+```
+
+**Form Inputs**:
+```jsx
+/* Dark Mode Input Pattern */
+<input
+  type="text"
+  className="w-full px-4 py-2.5 bg-midnight border border-slate-700 rounded-lg text-slate-100 placeholder-slate-500 focus:border-trellio-teal focus:ring-2 focus:ring-trellio-teal/20 transition-all"
+  placeholder="Enter value..."
+/>
+```
+
+**Status Badges**:
+```jsx
+/* Use centralized STATUS_COLORS constant */
+import { STATUS_COLORS } from '../constants';
+
+<span className={STATUS_COLORS[status]}>
+  {status}
+</span>
+
+/* Examples:
+   - Approved: trellio-teal with teal background
+   - Overdue: signal-coral with coral background
+   - Draft: harvest-amber with amber background
+*/
+```
+
+### Usage Guidelines
+
+**DO ✅**:
+- Use `bg-midnight` for primary backgrounds
+- Use `bg-charcoal` for cards and elevated surfaces
+- Use `text-slate-100` for primary text
+- Use `text-slate-400` for labels and secondary text
+- Use `border-slate-700/30` for borders
+- Use `trellio-teal` for positive actions and success states
+- Use `signal-coral` for warnings and destructive actions
+- Use `harvest-amber` for info and neutral highlights
+- Use `font-display` for large numbers and headings
+- Use `font-mono` for currency amounts and technical data
+
+**DON'T ❌**:
+- Don't use hardcoded hex colors (use Tailwind classes)
+- Don't use `bg-gray-*` (use `bg-charcoal` or `bg-midnight`)
+- Don't use `text-gray-*` (use `text-slate-*`)
+- Don't mix light and dark mode patterns
+- Don't use green/blue/red for buttons (use Trellio palette)
+- Don't forget hover states and transitions
+
+### Brand Assets
+
+**Logo Components**:
+- `TrellioLogo` - Full logo with icon and text
+- `TrellioLogoIcon` - Icon only
+- `TrellioLogoText` - Wordmark only
+
+**Logo Usage**:
+```jsx
+import TrellioLogo from './icons/TrellioLogo';
+
+/* Full logo */
+<TrellioLogo size="md" showText={true} />
+
+/* Icon only */
+<TrellioLogo size="sm" showText={false} />
+```
+
+### Accessibility
+
+All color combinations meet **WCAG AA** standards:
+- Text on midnight: ≥4.5:1 contrast ratio
+- Text on charcoal: ≥4.5:1 contrast ratio
+- Trellio teal on dark: ≥4.5:1 contrast ratio
+- Large text (18px+): ≥3:1 contrast ratio
+
+### Reference
+
+For complete brand specifications, see:
+- [brand/TRELLIO_BRAND.md](../brand/TRELLIO_BRAND.md) - Full brand guide
+- [brand/tokens.css](../brand/tokens.css) - CSS design tokens
+- [brand/tokens.json](../brand/tokens.json) - JSON design tokens
 
 ---
 

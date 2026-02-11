@@ -1,6 +1,8 @@
 // src/components/PropertyDetailView.jsx
 import React, { useMemo, useState } from 'react';
 import { ChevronLeftIcon, MapPinIcon, EditIcon } from './icons';
+import { formatCurrency, formatDate } from '../utils';
+import { QUOTE_STATUSES, JOB_STATUSES } from '../constants';
 
 const formatAddress = (prop) => {
   if (!prop) return '';
@@ -18,12 +20,6 @@ const formatShort = (prop) => {
     prop.street1,
     [prop.city, prop.state].filter(Boolean).join(', '),
   ].filter(Boolean).join(', ');
-};
-
-const currency = (n) => {
-  const num = Number(n || 0);
-  try { return new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }).format(num); }
-  catch { return `$${num.toFixed(2)}`; }
 };
 
 export default function PropertyDetailView({
@@ -57,8 +53,8 @@ export default function PropertyDetailView({
     (jobs || []).filter((j) => j.clientId === client?.id && j.propertyId === propertyId)
   ), [jobs, client?.id, propertyId]);
   const activeItems = useMemo(() => ([
-    ...jobsForProperty.filter(j => j.status !== 'Completed').map(j => ({ type: 'job', id: j.id, title: j.title || j.jobNumber || 'Job', date: j.start, status: j.status, amount: 0 })),
-    ...quotesForProperty.filter(q => q.status !== 'Converted' && q.status !== 'Archived').map(q => ({ type: 'quote', id: q.id, title: q.quoteNumber || 'Quote', date: q.createdAt, status: q.status, amount: q.total || 0 })),
+    ...jobsForProperty.filter(j => j.status !== JOB_STATUSES[3]).map(j => ({ type: 'job', id: j.id, title: j.title || j.jobNumber || 'Job', date: j.start, status: j.status, amount: 0 })),
+    ...quotesForProperty.filter(q => q.status !== QUOTE_STATUSES[4] && q.status !== QUOTE_STATUSES[5]).map(q => ({ type: 'quote', id: q.id, title: q.quoteNumber || 'Quote', date: q.createdAt, status: q.status, amount: q.total || 0 })),
   ]).sort((a,b)=> new Date(b.date||0) - new Date(a.date||0)), [jobsForProperty, quotesForProperty]);
 
   const lawnSize = property?.lawnSizeWidth && property?.lawnSizeLength
@@ -201,10 +197,10 @@ export default function PropertyDetailView({
                       <div key={`${item.type}-${item.id}`} className="flex items-center justify-between border rounded-lg px-3 py-2">
                         <div>
                           <div className="font-semibold text-gray-900">{item.type === 'job' ? item.title : item.title}</div>
-                          <div className="text-xs text-gray-500">{item.date ? new Date(item.date).toLocaleDateString() : ''}</div>
+                          <div className="text-xs text-gray-500">{item.date ? formatDate(item.date) : ''}</div>
                         </div>
                         <div className="text-right">
-                          {item.amount ? <div className="font-semibold">{currency(item.amount)}</div> : null}
+                          {item.amount ? <div className="font-semibold">{formatCurrency(item.amount)}</div> : null}
                           <div className="text-xs text-gray-500">{item.status || ''}</div>
                         </div>
                       </div>
@@ -221,10 +217,10 @@ export default function PropertyDetailView({
                       <button key={q.id} onClick={() => onOpenQuote && onOpenQuote(q)} className="w-full text-left flex items-center justify-between border rounded-lg px-3 py-2 hover:bg-gray-50">
                         <div>
                           <div className="font-semibold text-gray-900">{q.quoteNumber || 'Quote'}</div>
-                          <div className="text-xs text-gray-500">{q.createdAt ? new Date(q.createdAt).toLocaleDateString() : ''}</div>
+                          <div className="text-xs text-gray-500">{q.createdAt ? formatDate(q.createdAt) : ''}</div>
                         </div>
                         <div className="text-right">
-                          <div className="font-semibold">{currency(q.total || 0)}</div>
+                          <div className="font-semibold">{formatCurrency(q.total || 0)}</div>
                           <div className="text-xs text-gray-500">{q.status || ''}</div>
                         </div>
                       </button>
@@ -241,7 +237,7 @@ export default function PropertyDetailView({
                       <button key={j.id} onClick={() => onOpenJob && onOpenJob(j)} className="w-full text-left flex items-center justify-between border rounded-lg px-3 py-2 hover:bg-gray-50">
                         <div>
                           <div className="font-semibold text-gray-900">{j.jobNumber || j.title || 'Job'}</div>
-                          <div className="text-xs text-gray-500">{j.start ? new Date(j.start).toLocaleDateString() : ''}</div>
+                          <div className="text-xs text-gray-500">{j.start ? formatDate(j.start) : ''}</div>
                         </div>
                         <div className="text-right">
                           <div className="text-xs text-gray-500">{j.status || ''}</div>

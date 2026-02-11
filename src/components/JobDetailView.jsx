@@ -3,6 +3,7 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { ChevronLeftIcon, EditIcon, MapPinIcon, PhoneIcon, AtSignIcon, DollarSignIcon } from './icons';
 import { formatCurrency, formatDate, formatDateTime } from '../utils';
 import { STATUS_COLORS } from '../constants';
+import ClockInOut from './timesheets/ClockInOut';
 
 const toLocalInput = (iso) => {
   if (!iso) return '';
@@ -642,9 +643,17 @@ export default function JobDetailView({
             onClick={() => setShowLaborForm((v) => !v)}
             className="px-3 py-1.5 rounded-md border border-gray-200 text-sm font-semibold text-green-700 hover:bg-green-50"
           >
-            {showLaborForm ? 'Cancel' : 'New Time Entry'}
+            {showLaborForm ? 'Cancel' : 'Manual Time Entry'}
           </button>
         </div>
+
+        {/* Quick Clock In/Out */}
+        {job && staff && staff.length > 0 && (
+          <div className="mb-6">
+            <ClockInOut job={job} staff={staff} />
+          </div>
+        )}
+
         {showLaborForm && (
           <div className="mb-4 grid grid-cols-1 md:grid-cols-6 gap-3 text-sm">
             <select

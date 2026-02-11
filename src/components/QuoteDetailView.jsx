@@ -222,7 +222,9 @@ export default function QuoteDetailView({
                   <button className="w-full text-left px-4 py-2 hover:bg-gray-50" onClick={() => { onCollectDeposit && onCollectDeposit(quote); setMenuOpen(false); }}>Collect Deposit</button>
                   <div className="px-4 pt-2 text-xs text-gray-400">Send as...</div>
                   <button className="w-full text-left px-4 py-2 hover:bg-gray-50" onClick={() => { onSendEmail && onSendEmail(quote); setMenuOpen(false); }}>Email</button>
-                  <button className="w-full text-left px-4 py-2 hover:bg-gray-50" onClick={() => { onSendText && onSendText(quote); setMenuOpen(false); }}>Text</button>
+                  {(/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) && (
+                    <button className="w-full text-left px-4 py-2 hover:bg-gray-50" onClick={() => { onSendText && onSendText(quote); setMenuOpen(false); }}>Text (SMS)</button>
+                  )}
                   <div className="px-4 pt-2 text-xs text-gray-400">Mark as...</div>
                   <button className="w-full text-left px-4 py-2 hover:bg-gray-50" onClick={() => { onMarkAwaiting && onMarkAwaiting(quote); setMenuOpen(false); }}>Awaiting Response</button>
                   <button className="w-full text-left px-4 py-2 hover:bg-gray-50" onClick={() => { onMarkApproved && onMarkApproved(quote); setMenuOpen(false); }}>Approved</button>

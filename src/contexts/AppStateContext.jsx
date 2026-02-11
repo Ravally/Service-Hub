@@ -26,10 +26,33 @@ export function AppStateProvider({ children }) {
   const [companySettings, setCompanySettings] = useState(initialCompanySettings);
   const [invoiceSettings, setInvoiceSettings] = useState(initialInvoiceSettings);
   const [emailTemplates, setEmailTemplates] = useState({
+    // Invoice templates
     invoiceSubject: 'Invoice {{documentNumber}} from {{companyName}}',
-    invoiceBody: 'Hi {{clientName}},\n\nPlease find your invoice {{documentNumber}} for {{total}}.\n\nView/print it from the app.\n\nThanks,\n{{companyName}}',
+    invoiceBody: 'Hi {{clientName}},\n\nPlease find your invoice {{documentNumber}} for {{total}}.\n\nView and pay online: {{paymentLink}}\n\nThanks,\n{{companyName}}',
+
+    // Quote templates
     quoteSubject: 'Quote {{documentNumber}} from {{companyName}}',
-    quoteBody: 'Hi {{clientName}},\n\nPlease find your quote {{documentNumber}} for {{total}}.\n\nView/approve it from the app.\n\nThanks,\n{{companyName}}',
+    quoteBody: 'Hi {{clientName}},\n\nPlease find your quote {{documentNumber}} for {{total}}.\n\nView and approve it online: {{approvalLink}}\n\nThanks,\n{{companyName}}',
+
+    // Quote follow-up templates
+    quoteFollowupSubject: 'Following up on Quote {{documentNumber}}',
+    quoteFollowupBody: 'Hi {{clientName}},\n\nJust following up on quote {{documentNumber}} that we sent. Have you had a chance to review it?\n\nView and approve: {{approvalLink}}\n\nPlease let us know if you have any questions!\n\nThanks,\n{{companyName}}',
+
+    // Invoice reminder templates
+    invoiceReminderSubject: 'Reminder: Invoice {{documentNumber}} Due {{dueDate}}',
+    invoiceReminderBody: 'Hi {{clientName}},\n\nThis is a friendly reminder that invoice {{documentNumber}} for {{amountDue}} is due on {{dueDate}}.\n\nPay online: {{paymentLink}}\n\nThanks,\n{{companyName}}',
+
+    // Overdue invoice templates
+    overdueInvoiceSubject: 'Overdue: Invoice {{documentNumber}}',
+    overdueInvoiceBody: 'Hi {{clientName}},\n\nInvoice {{documentNumber}} for {{amountDue}} is now {{daysOverdue}} days overdue.\n\nPay online: {{paymentLink}}\n\nPlease contact us if you have any questions.\n\nThanks,\n{{companyName}}',
+
+    // Appointment reminder templates
+    appointmentReminderSubject: 'Reminder: Appointment on {{appointmentDate}}',
+    appointmentReminderBody: 'Hi {{clientName}},\n\nThis is a reminder about your appointment:\n\nDate: {{appointmentDate}}\nTime: {{appointmentTime}}\nService: {{jobTitle}}\n\nPlease let us know if you need to reschedule.\n\nThanks,\n{{companyName}}',
+
+    // Job completion templates
+    jobCompletionSubject: 'Work Completed: {{jobTitle}}',
+    jobCompletionBody: 'Hi {{clientName}},\n\nWe\'ve completed the work for: {{jobTitle}}\n\nThank you for choosing {{companyName}}! We hope you\'re satisfied with our service.\n\nThanks,\n{{companyName}}',
   });
 
   // Form state

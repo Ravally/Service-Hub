@@ -2,8 +2,10 @@ import { useMemo } from 'react';
 import { collection, addDoc, doc, updateDoc, setDoc, deleteDoc, getDoc, runTransaction } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { getAuth, signOut } from 'firebase/auth';
-import { db, storage } from '../../firebase/config';
+import { httpsCallable } from 'firebase/functions';
+import { db, storage, functions } from '../../firebase/config';
 import { initialQuoteState, initialJobState, initialInvoiceSettings, initialCompanySettings } from '../../constants';
+import { generateQuoteSMSLink, generateInvoiceSMSLink, openSMSApp } from '../../utils';
 
 /**
  * Hook that provides all CRUD/business logic handler functions.
@@ -171,14 +173,17 @@ export function useAppHandlers(userId, userProfile, appState) {
   // --- Dashboard stats ---
   const dashboardStats = useMemo(() => {
     const activeJobs = jobs.filter(job => job.status === 'Scheduled' || job.status === 'In Progress');
+    const unscheduledJobs = jobs.filter(job => job.status === 'Unscheduled');
     const outstandingInvoices = invoices.filter(invoice => (invoice.status === 'Unpaid' || invoice.status === 'Sent') && !invoice.isCreditNote);
     const outstandingAmount = outstandingInvoices.reduce((sum, inv) => sum + (inv.total || 0), 0);
     const revenueThisMonth = invoices.filter(inv => inv.status === 'Paid' && inv.paidAt).reduce((sum, inv) => sum + (inv.total || 0), 0);
     return {
       activeJobsCount: activeJobs.length,
+      requiresSchedulingCount: unscheduledJobs.length,
       outstandingAmount,
       revenueThisMonth,
       upcomingJobs: activeJobs.slice(0, 5),
+      jobsRequiringScheduling: unscheduledJobs.slice(0, 5),
       invoicesAwaitingPayment: outstandingInvoices.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt)).slice(0, 5),
     };
   }, [jobs, invoices]);
@@ -782,22 +787,7 @@ export function useAppHandlers(userId, userProfile, appState) {
         status: 'Approved', approvalStatus: 'approved', approvedAt: now,
         approvedByName: (signerName || '').trim() || 'Client',
       });
-      const invSettingsRef = doc(db, `users/${ctx.uid}/settings/invoiceSettings`);
-      const pad = (n, width) => String(n).padStart(width ?? 4, '0');
-      const jobNumber = await runTransaction(db, async (tx) => {
-        const snap = await tx.get(invSettingsRef);
-        const s = snap.exists() ? { ...initialInvoiceSettings, ...snap.data() } : { ...initialInvoiceSettings };
-        const seq = s.nextJob || 1; const prefix = s.prefixJob || 'JOB'; const padding = s.padding ?? 4;
-        const num = `${prefix}-${pad(seq, padding)}`;
-        tx.set(invSettingsRef, { nextJob: seq + 1, prefixJob: prefix, padding }, { merge: true });
-        return num;
-      });
-      await addDoc(collection(db, `users/${ctx.uid}/jobs`), {
-        status: 'Draft', clientId: ctx.quote.clientId, quoteId: ctx.quote.id,
-        title: ctx.quote.lineItems?.[0]?.description || `Job for ${ctx.client?.name || 'Client'}`,
-        jobNumber, createdAt: now,
-      });
-      setPublicMessage('Quote approved. A draft job has been created.');
+      setPublicMessage('Quote approved! Thank you for your business. We will be in touch shortly to schedule your service.');
     } catch (err) {
       console.error('Public approve error:', err);
       setPublicError('Unable to approve quote.');
@@ -1100,47 +1090,137 @@ export function useAppHandlers(userId, userProfile, appState) {
   // --- Email/Notification Handlers ---
   const handleSendInvoice = async (invoice) => {
     if (!db || !userId) return;
-    const client = getClientById(invoice.clientId);
-    const variables = {
-      clientName: client?.name || 'Client', companyName: companySettings?.name || 'Our Company',
-      documentNumber: invoice.invoiceNumber || invoice.id.substring(0,8), total: `$${(invoice.total||0).toFixed(2)}`,
-    };
-    const subject = renderTemplate(emailTemplates.invoiceSubject, variables);
-    const body = renderTemplate(emailTemplates.invoiceBody, variables);
-    await addDoc(collection(db, `users/${userId}/notifications`), { message: `Sent invoice ${variables.documentNumber} to ${client?.email || 'client'}`, createdAt: new Date().toISOString(), read: false });
-    if (invoice.status !== 'Paid') await handleUpdateInvoiceStatus(invoice.id, 'Sent');
-    await logAudit('send', 'invoice', invoice.id);
-    alert(`Simulated email sent:\nSubject: ${subject}\n\n${body}`);
+    try {
+      const client = getClientById(invoice.clientId);
+      if (!client?.email) {
+        alert('Client has no email address. Please add an email to the client profile.');
+        return;
+      }
+
+      // Call the Cloud Function
+      const sendInvoiceEmail = httpsCallable(functions, 'sendInvoiceEmail');
+      const result = await sendInvoiceEmail({ uid: userId, invoiceId: invoice.id });
+
+      // Create notification
+      await addDoc(collection(db, `users/${userId}/notifications`), {
+        message: `Sent invoice ${invoice.invoiceNumber || invoice.id.substring(0,8)} to ${client.email}`,
+        createdAt: new Date().toISOString(),
+        read: false
+      });
+
+      // Log audit
+      await logAudit('send', 'invoice', invoice.id);
+
+      alert(`Invoice email sent successfully to ${client.email}!`);
+
+      // Update local state if this is the selected invoice
+      if (selectedInvoice?.id === invoice.id) {
+        const updatedSnap = await getDoc(doc(db, `users/${userId}/invoices`, invoice.id));
+        if (updatedSnap.exists()) {
+          setSelectedInvoice({ id: updatedSnap.id, ...updatedSnap.data() });
+        }
+      }
+    } catch (error) {
+      console.error('Failed to send invoice email:', error);
+      alert(`Failed to send invoice email: ${error.message}`);
+    }
   };
 
   const handleSendQuote = async (quote) => {
     if (!db || !userId) return;
-    const client = getClientById(quote.clientId);
-    const variables = {
-      clientName: client?.name || 'Client', companyName: companySettings?.name || 'Our Company',
-      documentNumber: quote.quoteNumber || quote.id.substring(0,8), total: `$${(quote.total||0).toFixed(2)}`,
-    };
-    const subject = renderTemplate(emailTemplates.quoteSubject, variables);
-    const body = renderTemplate(emailTemplates.quoteBody, variables);
-    await addDoc(collection(db, `users/${userId}/notifications`), { message: `Sent quote ${variables.documentNumber} to ${client?.email || 'client'}`, createdAt: new Date().toISOString(), read: false });
-    const sentAt = quote.sentAt || new Date().toISOString();
-    if (quote.status === 'Draft' || quote.status === 'Awaiting Response' || quote.status === 'Sent') {
-      await updateDoc(doc(db, `users/${userId}/quotes`, quote.id), { status: 'Awaiting Response', sentAt });
-      if (selectedQuote?.id === quote.id) setSelectedQuote(prev => ({...prev, status: 'Awaiting Response', sentAt }));
+    try {
+      const client = getClientById(quote.clientId);
+      if (!client?.email) {
+        alert('Client has no email address. Please add an email to the client profile.');
+        return;
+      }
+
+      // Generate quote approval link
+      const token = `${userId}.${quote.id}.${Math.random().toString(36).substring(2, 15)}`;
+      const approvalLink = `${window.location.origin}/?quoteToken=${token}`;
+
+      // Update quote with token and approval link before sending
+      await updateDoc(doc(db, `users/${userId}/quotes`, quote.id), {
+        token,
+        approvalLink,
+        tokenCreatedAt: new Date().toISOString()
+      });
+
+      // Call the Cloud Function
+      const sendQuoteEmail = httpsCallable(functions, 'sendQuoteEmail');
+      const result = await sendQuoteEmail({ uid: userId, quoteId: quote.id });
+
+      // Create notification
+      await addDoc(collection(db, `users/${userId}/notifications`), {
+        message: `Sent quote ${quote.quoteNumber || quote.id.substring(0,8)} to ${client.email}`,
+        createdAt: new Date().toISOString(),
+        read: false
+      });
+
+      // Log audit
+      await logAudit('send', 'quote', quote.id);
+
+      alert(`Quote email sent successfully to ${client.email}!`);
+
+      // Update local state if this is the selected quote
+      if (selectedQuote?.id === quote.id) {
+        const updatedSnap = await getDoc(doc(db, `users/${userId}/quotes`, quote.id));
+        if (updatedSnap.exists()) {
+          setSelectedQuote({ id: updatedSnap.id, ...updatedSnap.data() });
+        }
+      }
+    } catch (error) {
+      console.error('Failed to send quote email:', error);
+      alert(`Failed to send quote email: ${error.message}`);
     }
-    await logAudit('send', 'quote', quote.id);
-    alert(`Simulated email sent:\nSubject: ${subject}\n\n${body}`);
   };
 
   const handleSendQuoteText = async (quote) => {
     if (!db || !userId || !quote) return;
-    const sentAt = quote.sentAt || new Date().toISOString();
-    if (quote.status === 'Draft' || quote.status === 'Awaiting Response' || quote.status === 'Sent') {
-      await updateDoc(doc(db, `users/${userId}/quotes`, quote.id), { status: 'Awaiting Response', sentAt });
-      if (selectedQuote?.id === quote.id) setSelectedQuote(prev => ({ ...prev, status: 'Awaiting Response', sentAt }));
+    try {
+      const client = getClientById(quote.clientId);
+      if (!client?.phone) {
+        alert('Client has no phone number. Please add a phone number to the client profile.');
+        return;
+      }
+
+      // Generate quote approval link (similar to email)
+      const token = `${userId}.${quote.id}.${Math.random().toString(36).substring(2, 15)}`;
+      const approvalLink = `${window.location.origin}/?quoteToken=${token}`;
+
+      // Update quote with token and approval link
+      await updateDoc(doc(db, `users/${userId}/quotes`, quote.id), {
+        token,
+        approvalLink,
+        tokenCreatedAt: new Date().toISOString()
+      });
+
+      // Update status to Awaiting Response
+      const sentAt = quote.sentAt || new Date().toISOString();
+      if (quote.status === 'Draft' || quote.status === 'Awaiting Response' || quote.status === 'Sent') {
+        await updateDoc(doc(db, `users/${userId}/quotes`, quote.id), { status: 'Awaiting Response', sentAt });
+        if (selectedQuote?.id === quote.id) setSelectedQuote(prev => ({ ...prev, status: 'Awaiting Response', sentAt, token, approvalLink }));
+      }
+
+      // Generate and open SMS link
+      const smsLink = generateQuoteSMSLink(client.phone, { ...quote, token, approvalLink }, companySettings);
+
+      // Log audit
+      await logAudit('send', 'quote', quote.id, { channel: 'text' });
+
+      // Create notification
+      await addDoc(collection(db, `users/${userId}/notifications`), {
+        message: `Opened SMS to send quote ${quote.quoteNumber || quote.id.substring(0,8)} to ${client.phone}`,
+        createdAt: new Date().toISOString(),
+        read: false
+      });
+
+      // Open SMS app
+      window.location.href = smsLink;
+    } catch (error) {
+      console.error('Failed to prepare quote SMS:', error);
+      alert(`Failed to prepare quote SMS: ${error.message}`);
     }
-    await logAudit('send', 'quote', quote.id, { channel: 'text' });
-    alert('Text messaging is not configured yet. This will send a secure approval link when SMS is enabled.');
   };
 
   const handleMarkNotificationAsRead = async (id) => {

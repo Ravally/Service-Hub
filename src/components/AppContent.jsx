@@ -121,6 +121,20 @@ export default function AppContent({ auth, appState, handlers }) {
     return <PublicClientPortal uid={publicPortalContext.uid} clientId={publicPortalContext.clientId} company={companySettings} />;
   }
 
+  // Check if loading public view (has token in URL but context not loaded yet)
+  const hasPublicToken = new URLSearchParams(window.location.search).has('quoteToken') ||
+                         new URLSearchParams(window.location.search).has('portalToken');
+
+  if (hasPublicToken && !publicQuoteContext && !publicPortalContext && !publicError) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
+        <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200 max-w-lg w-full text-center">
+          <p className="text-gray-700">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   // --- Auth gate ---
   if (!userId || !userProfile) {
     return <Auth />;
@@ -687,22 +701,87 @@ export default function AppContent({ auth, appState, handlers }) {
                   <form onSubmit={handleSaveEmailTemplates} className="bg-gray-50 p-4 rounded-lg border">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                       <div>
-                        <h4 className="font-semibold mb-2">Invoice Email</h4>
-                        <label className="block text-sm text-gray-700 mb-1">Subject</label>
-                        <input type="text" value={emailTemplates.invoiceSubject} onChange={(e)=>appState.setEmailTemplates({...emailTemplates, invoiceSubject: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm mb-2"/>
-                        <label className="block text-sm text-gray-700 mb-1">Body</label>
-                        <textarea rows={6} value={emailTemplates.invoiceBody} onChange={(e)=>appState.setEmailTemplates({...emailTemplates, invoiceBody: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"/>
+                        <h4 className="font-semibold mb-3 text-blue-700">Invoice Emails</h4>
+                        <div className="mb-4">
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Invoice Subject</label>
+                          <input type="text" value={emailTemplates.invoiceSubject} onChange={(e)=>appState.setEmailTemplates({...emailTemplates, invoiceSubject: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"/>
+                        </div>
+                        <div className="mb-4">
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Invoice Body</label>
+                          <textarea rows={5} value={emailTemplates.invoiceBody} onChange={(e)=>appState.setEmailTemplates({...emailTemplates, invoiceBody: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"/>
+                        </div>
+                        <div className="mb-4">
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Invoice Reminder Subject</label>
+                          <input type="text" value={emailTemplates.invoiceReminderSubject} onChange={(e)=>appState.setEmailTemplates({...emailTemplates, invoiceReminderSubject: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"/>
+                        </div>
+                        <div className="mb-4">
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Invoice Reminder Body</label>
+                          <textarea rows={5} value={emailTemplates.invoiceReminderBody} onChange={(e)=>appState.setEmailTemplates({...emailTemplates, invoiceReminderBody: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"/>
+                        </div>
+                        <div className="mb-4">
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Overdue Invoice Subject</label>
+                          <input type="text" value={emailTemplates.overdueInvoiceSubject} onChange={(e)=>appState.setEmailTemplates({...emailTemplates, overdueInvoiceSubject: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"/>
+                        </div>
+                        <div className="mb-4">
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Overdue Invoice Body</label>
+                          <textarea rows={5} value={emailTemplates.overdueInvoiceBody} onChange={(e)=>appState.setEmailTemplates({...emailTemplates, overdueInvoiceBody: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"/>
+                        </div>
                       </div>
                       <div>
-                        <h4 className="font-semibold mb-2">Quote Email</h4>
-                        <label className="block text-sm text-gray-700 mb-1">Subject</label>
-                        <input type="text" value={emailTemplates.quoteSubject} onChange={(e)=>appState.setEmailTemplates({...emailTemplates, quoteSubject: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm mb-2"/>
-                        <label className="block text-sm text-gray-700 mb-1">Body</label>
-                        <textarea rows={6} value={emailTemplates.quoteBody} onChange={(e)=>appState.setEmailTemplates({...emailTemplates, quoteBody: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"/>
+                        <h4 className="font-semibold mb-3 text-blue-700">Quote Emails</h4>
+                        <div className="mb-4">
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Quote Subject</label>
+                          <input type="text" value={emailTemplates.quoteSubject} onChange={(e)=>appState.setEmailTemplates({...emailTemplates, quoteSubject: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"/>
+                        </div>
+                        <div className="mb-4">
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Quote Body</label>
+                          <textarea rows={5} value={emailTemplates.quoteBody} onChange={(e)=>appState.setEmailTemplates({...emailTemplates, quoteBody: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"/>
+                        </div>
+                        <div className="mb-4">
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Quote Follow-up Subject</label>
+                          <input type="text" value={emailTemplates.quoteFollowupSubject} onChange={(e)=>appState.setEmailTemplates({...emailTemplates, quoteFollowupSubject: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"/>
+                        </div>
+                        <div className="mb-4">
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Quote Follow-up Body</label>
+                          <textarea rows={5} value={emailTemplates.quoteFollowupBody} onChange={(e)=>appState.setEmailTemplates({...emailTemplates, quoteFollowupBody: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"/>
+                        </div>
+                        <h4 className="font-semibold mb-3 mt-6 text-blue-700">Other Templates</h4>
+                        <div className="mb-4">
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Appointment Reminder Subject</label>
+                          <input type="text" value={emailTemplates.appointmentReminderSubject} onChange={(e)=>appState.setEmailTemplates({...emailTemplates, appointmentReminderSubject: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"/>
+                        </div>
+                        <div className="mb-4">
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Appointment Reminder Body</label>
+                          <textarea rows={5} value={emailTemplates.appointmentReminderBody} onChange={(e)=>appState.setEmailTemplates({...emailTemplates, appointmentReminderBody: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"/>
+                        </div>
+                        <div className="mb-4">
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Job Completion Subject</label>
+                          <input type="text" value={emailTemplates.jobCompletionSubject} onChange={(e)=>appState.setEmailTemplates({...emailTemplates, jobCompletionSubject: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"/>
+                        </div>
+                        <div className="mb-4">
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Job Completion Body</label>
+                          <textarea rows={5} value={emailTemplates.jobCompletionBody} onChange={(e)=>appState.setEmailTemplates({...emailTemplates, jobCompletionBody: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"/>
+                        </div>
                       </div>
                     </div>
-                    <div className="mt-4 text-sm text-gray-500"><p>Available placeholders: {'{{clientName}}'}, {'{{companyName}}'}, {'{{documentNumber}}'}, {'{{total}}'}</p></div>
-                    <div className="mt-4 text-right"><button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-md font-semibold">Save Email Templates</button></div>
+                    <div className="mt-4 p-3 bg-blue-50 rounded border border-blue-200">
+                      <p className="text-sm font-semibold text-blue-900 mb-2">Available Placeholders:</p>
+                      <div className="grid grid-cols-2 gap-2 text-sm text-blue-800">
+                        <div>• <code>{'{{clientName}}'}</code> - Client's name</div>
+                        <div>• <code>{'{{companyName}}'}</code> - Your company name</div>
+                        <div>• <code>{'{{documentNumber}}'}</code> - Invoice/Quote number</div>
+                        <div>• <code>{'{{total}}'}</code> - Total amount</div>
+                        <div>• <code>{'{{amountDue}}'}</code> - Amount due</div>
+                        <div>• <code>{'{{dueDate}}'}</code> - Due date</div>
+                        <div>• <code>{'{{daysOverdue}}'}</code> - Days overdue</div>
+                        <div>• <code>{'{{paymentLink}}'}</code> - Payment link</div>
+                        <div>• <code>{'{{approvalLink}}'}</code> - Quote approval link</div>
+                        <div>• <code>{'{{appointmentDate}}'}</code> - Appointment date</div>
+                        <div>• <code>{'{{appointmentTime}}'}</code> - Appointment time</div>
+                        <div>• <code>{'{{jobTitle}}'}</code> - Job title</div>
+                      </div>
+                    </div>
+                    <div className="mt-4 text-right"><button type="submit" className="px-6 py-2 bg-blue-600 text-white rounded-md font-semibold hover:bg-blue-700">Save All Email Templates</button></div>
                   </form>
                 </div>
               )}

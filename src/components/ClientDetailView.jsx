@@ -15,6 +15,7 @@ const ClientDetailView = ({
   notifications = [],
   clientNotes = [],
   onAddNote,
+  onGeneratePortalLink,
   onCreateProperty,
   onCreateQuote,
   onCreateJob,
@@ -133,6 +134,7 @@ const ClientDetailView = ({
             <button className="w-full text-left px-3 py-2 hover:bg-gray-50 text-sm" onClick={()=>onCollectPayment && onCollectPayment(client)}>Collect Payment</button>
             <button className="w-full text-left px-3 py-2 hover:bg-gray-50 text-sm" onClick={()=>onArchiveClient && onArchiveClient(client)}>Archive Client</button>
             <button className="w-full text-left px-3 py-2 hover:bg-gray-50 text-sm" onClick={()=>onDownloadVCard && onDownloadVCard(client)}>Download VCard</button>
+            <button className="w-full text-left px-3 py-2 hover:bg-gray-50 text-sm" onClick={()=>onGeneratePortalLink && onGeneratePortalLink(client)}>Generate Portal Link</button>
             <button className="w-full text-left px-3 py-2 hover:bg-gray-50 text-sm" onClick={()=>onViewAsClient && onViewAsClient(client)}>Log in as Client</button>
             <button className="w-full text-left px-3 py-2 hover:bg-gray-50 text-sm text-red-700" onClick={()=>handleDeleteClient && handleDeleteClient(client.id)}>Delete</button>
             </div>

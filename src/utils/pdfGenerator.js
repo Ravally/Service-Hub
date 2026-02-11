@@ -1,5 +1,5 @@
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import { formatCurrency, formatDate } from './formatters';
 
 /**
@@ -88,7 +88,8 @@ export function generateInvoicePDF(invoice, client, company) {
     formatCurrency((item.qty || 0) * (item.price || 0))
   ]);
 
-  doc.autoTable({
+  // Use autoTable plugin
+  autoTable(doc, {
     startY: yPos,
     head: [['Description', 'Qty', 'Unit Price', 'Total']],
     body: tableData,

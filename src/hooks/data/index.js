@@ -11,3 +11,5 @@ export { useFirebaseSubscriptions } from './useFirebaseSubscriptions';
 export { usePublicAccess } from './usePublicAccess';
 export { useAppHandlers } from './useAppHandlers';
 export { useTimeTracking } from './useTimeTracking';
+export { useFormTemplates } from './useFormTemplates';
+export { useFormResponses } from './useFormResponses';

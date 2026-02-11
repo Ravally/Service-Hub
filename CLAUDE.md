@@ -22,6 +22,7 @@ This codebase follows a **clean, modular architecture** with clear separation of
 2. **DRY (Don't Repeat Yourself)** - Utilities are centralized, zero duplication
 3. **Separation of Concerns** - State, logic, and UI are separated
 4. **Composition** - Hooks and contexts are composed for complex functionality
+5. **Visual Design** - For all UI, design, and frontend work, follow the brand system defined in brand/TRELLIO_BRAND.md
 
 ---
 

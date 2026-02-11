@@ -1,9 +1,11 @@
 // src/components/PublicClientPortal.jsx
 import React, { useEffect, useMemo, useState } from 'react';
 import { getAuth } from 'firebase/auth';
-import { getFirestore, collection, doc, getDoc, onSnapshot, query, updateDoc, where, addDoc } from 'firebase/firestore';
+import { getFirestore, collection, doc, getDoc, onSnapshot, query, updateDoc, where, addDoc, runTransaction } from 'firebase/firestore';
 import { db } from '../firebase/config';
 import { formatCurrency, formatDate, formatDateTime } from '../utils';
+import { downloadInvoicePDF } from '../utils/pdfGenerator';
+import ServiceRequestModal from './clientPortal/ServiceRequestModal';
 
 const PublicClientPortal = ({ uid, clientId, company }) => {
   const [client, setClient] = useState(null);
@@ -14,6 +16,8 @@ const PublicClientPortal = ({ uid, clientId, company }) => {
   const [error, setError] = useState('');
   const [edit, setEdit] = useState(null);
   const [message, setMessage] = useState('');
+  const [jobsTab, setJobsTab] = useState('upcoming'); // 'upcoming' or 'past'
+  const [showServiceRequestModal, setShowServiceRequestModal] = useState(false);
 
   useEffect(() => {
     let unsubs = [];
@@ -165,6 +169,21 @@ const PublicClientPortal = ({ uid, clientId, company }) => {
     } catch (e) { setError('Payment failed.'); }
   };
 
+  const handleDownloadInvoice = (invoice) => {
+    try {
+      downloadInvoicePDF(invoice, client, company);
+    } catch (e) {
+      console.error('PDF generation error:', e);
+      setError('Failed to generate PDF');
+      setTimeout(() => setError(''), 3000);
+    }
+  };
+
+  const handleServiceRequestSuccess = () => {
+    setMessage('Service request submitted successfully! We\'ll be in touch soon.');
+    setTimeout(() => setMessage(''), 4000);
+  };
+
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center text-gray-600">Loading...</div>;
   }
@@ -174,13 +193,22 @@ const PublicClientPortal = ({ uid, clientId, company }) => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-5xl mx-auto p-6">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">{company?.name || 'Your Company'} - Client Portal</h1>
-          <p className="text-gray-600">Welcome, {client?.name}</p>
+      <div className="max-w-6xl mx-auto p-4 sm:p-6">
+        {/* Header with Request Service Button */}
+        <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">{company?.name || 'Your Company'} - Client Portal</h1>
+            <p className="text-gray-600 mt-1">Welcome, {client?.name}</p>
+          </div>
+          <button
+            onClick={() => setShowServiceRequestModal(true)}
+            className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors whitespace-nowrap"
+          >
+            Request Service
+          </button>
         </div>
 
-        {(message) && <div className="mb-4 p-3 rounded bg-green-50 text-green-700 border border-green-200">{message}</div>}
+        {(message) && <div className="mb-4 p-3 rounded bg-green-50 text-green-700 border border-green-200 text-sm sm:text-base">{message}</div>}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Contact Details */}
@@ -226,20 +254,70 @@ const PublicClientPortal = ({ uid, clientId, company }) => {
           </div>
         </div>
 
-        {/* Jobs */}
+        {/* Jobs with Tabs */}
         <div className="mt-6 bg-white rounded-xl shadow border border-gray-200 p-4">
-          <h2 className="text-lg font-semibold mb-3">Upcoming Jobs</h2>
-          {jobs.length === 0 ? <p className="text-sm text-gray-500">No scheduled jobs yet.</p> : (
-            <ul className="divide-y divide-gray-100">
-              {jobs.map(j => (
-                <li key={j.id} className="py-2 text-sm">
-                  <div className="flex justify-between">
-                    <span>{j.title}</span>
-                    <span className="text-gray-500">{j.start ? formatDateTime(j.start) : ''}</span>
-                  </div>
-                </li>
-              ))}
-            </ul>
+          <div className="flex justify-between items-center mb-3">
+            <h2 className="text-lg font-semibold">Your Jobs</h2>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setJobsTab('upcoming')}
+                className={`px-3 py-1 text-sm rounded-md font-medium ${
+                  jobsTab === 'upcoming'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                Upcoming ({upcomingJobs.length})
+              </button>
+              <button
+                onClick={() => setJobsTab('past')}
+                className={`px-3 py-1 text-sm rounded-md font-medium ${
+                  jobsTab === 'past'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                Past ({pastJobs.length})
+              </button>
+            </div>
+          </div>
+
+          {jobsTab === 'upcoming' ? (
+            upcomingJobs.length === 0 ? (
+              <p className="text-sm text-gray-500">No upcoming jobs scheduled.</p>
+            ) : (
+              <ul className="divide-y divide-gray-100">
+                {upcomingJobs.map(j => (
+                  <li key={j.id} className="py-3">
+                    <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
+                      <div>
+                        <p className="font-medium text-gray-900">{j.title}</p>
+                        <p className="text-xs text-gray-500">{j.status}</p>
+                      </div>
+                      <span className="text-sm text-gray-700 sm:text-right">{j.start ? formatDateTime(j.start) : 'Not scheduled'}</span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )
+          ) : (
+            pastJobs.length === 0 ? (
+              <p className="text-sm text-gray-500">No past jobs.</p>
+            ) : (
+              <ul className="divide-y divide-gray-100">
+                {pastJobs.map(j => (
+                  <li key={j.id} className="py-3">
+                    <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
+                      <div>
+                        <p className="font-medium text-gray-900">{j.title}</p>
+                        <p className="text-xs text-gray-500">{j.status}</p>
+                      </div>
+                      <span className="text-sm text-gray-700 sm:text-right">{j.start ? formatDateTime(j.start) : 'Not scheduled'}</span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )
           )}
         </div>
 
@@ -254,26 +332,35 @@ const PublicClientPortal = ({ uid, clientId, company }) => {
                 const canPay = (i.paymentSettings?.acceptCard ?? true) || (i.paymentSettings?.acceptBank ?? false);
                 return (
                   <li key={i.id} className="py-3">
-                    <div className="flex justify-between items-center">
-                      <div>
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+                      <div className="flex-1">
                         <p className="font-semibold">{i.invoiceNumber || i.id.substring(0,6)}</p>
                         <p className="text-xs text-gray-500">Issued {formatDate(i.issueDate || i.createdAt)}</p>
                         {credits > 0 && <p className="text-xs text-purple-700">Credits applied: {formatCurrency(credits)}</p>}
                       </div>
-                      <div className="text-right">
-                        <p className="font-semibold">{formatCurrency(net)}</p>
-                        {i.status !== 'Paid' ? (
-                          !canPay ? (
-                            <span className="inline-block mt-1 px-2 py-0.5 rounded-full text-xs bg-gray-100 text-gray-600">Payments disabled</span>
-                          ) :
-                          i.paymentLink ? (
-                            <a href={i.paymentLink} className="inline-block mt-1 px-3 py-1 text-sm bg-blue-600 text-white rounded-md">Pay Now</a>
+                      <div className="flex items-center gap-3">
+                        <div className="text-right">
+                          <p className="font-semibold">{formatCurrency(net)}</p>
+                          {i.status !== 'Paid' ? (
+                            !canPay ? (
+                              <span className="inline-block mt-1 px-2 py-0.5 rounded-full text-xs bg-gray-100 text-gray-600">Payments disabled</span>
+                            ) :
+                            i.paymentLink ? (
+                              <a href={i.paymentLink} className="inline-block mt-1 px-3 py-1 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700">Pay Now</a>
+                            ) : (
+                              <button onClick={() => portalPayInvoice(i)} className="inline-block mt-1 px-3 py-1 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700">Pay Now (test)</button>
+                            )
                           ) : (
-                            <button onClick={() => portalPayInvoice(i)} className="inline-block mt-1 px-3 py-1 text-sm bg-blue-600 text-white rounded-md">Pay Now (test)</button>
-                          )
-                        ) : (
-                          <span className="inline-block mt-1 px-2 py-0.5 rounded-full text-xs bg-green-100 text-green-700">Paid</span>
-                        )}
+                            <span className="inline-block mt-1 px-2 py-0.5 rounded-full text-xs bg-green-100 text-green-700">Paid</span>
+                          )}
+                        </div>
+                        <button
+                          onClick={() => handleDownloadInvoice(i)}
+                          className="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 whitespace-nowrap"
+                          title="Download PDF"
+                        >
+                          📄 PDF
+                        </button>
                       </div>
                     </div>
                   </li>
@@ -282,6 +369,79 @@ const PublicClientPortal = ({ uid, clientId, company }) => {
             </ul>
           )}
         </div>
+
+        {/* Payment History */}
+        {paymentHistory.length > 0 && (
+          <div className="mt-6 bg-white rounded-xl shadow border border-gray-200 p-4">
+            <h2 className="text-lg font-semibold mb-3">Payment History</h2>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-gray-50 border-b">
+                  <tr>
+                    <th className="text-left p-2 font-medium text-gray-700">Date</th>
+                    <th className="text-left p-2 font-medium text-gray-700">Invoice</th>
+                    <th className="text-left p-2 font-medium text-gray-700">Method</th>
+                    <th className="text-right p-2 font-medium text-gray-700">Amount</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {paymentHistory.map((payment, idx) => (
+                    <tr key={idx}>
+                      <td className="p-2 text-gray-700">{formatDate(payment.createdAt)}</td>
+                      <td className="p-2 text-gray-700">{payment.invoiceNumber || payment.invoiceId.substring(0, 8)}</td>
+                      <td className="p-2 text-gray-500">{payment.method}</td>
+                      <td className="p-2 text-right font-medium text-gray-900">
+                        {formatCurrency((payment.amount || 0) + (payment.tip || 0))}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* Service History */}
+        {completedJobs.length > 0 && (
+          <div className="mt-6 bg-white rounded-xl shadow border border-gray-200 p-4">
+            <h2 className="text-lg font-semibold mb-3">Service History</h2>
+            <ul className="space-y-3">
+              {completedJobs.slice(0, 10).map(job => {
+                const relatedInvoice = invoices.find(inv => inv.jobId === job.id);
+                return (
+                  <li key={job.id} className="flex flex-col sm:flex-row sm:justify-between pb-3 border-b border-gray-100 last:border-0">
+                    <div>
+                      <p className="font-medium text-gray-900">{job.title}</p>
+                      <p className="text-xs text-gray-500">Completed: {formatDate(job.completedAt || job.start)}</p>
+                      {relatedInvoice && (
+                        <p className="text-xs text-blue-600 mt-1">
+                          Invoice: {relatedInvoice.invoiceNumber} ({relatedInvoice.status})
+                        </p>
+                      )}
+                    </div>
+                    <div className="text-sm text-gray-500 mt-2 sm:mt-0 sm:text-right">
+                      {job.notes && <p className="text-xs italic">{job.notes.substring(0, 100)}{job.notes.length > 100 ? '...' : ''}</p>}
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+            {completedJobs.length > 10 && (
+              <p className="text-xs text-center text-gray-500 mt-3">Showing 10 most recent services</p>
+            )}
+          </div>
+        )}
+
+        {/* Service Request Modal */}
+        {showServiceRequestModal && (
+          <ServiceRequestModal
+            uid={uid}
+            clientId={clientId}
+            clientName={client?.name}
+            onClose={() => setShowServiceRequestModal(false)}
+            onSuccess={handleServiceRequestSuccess}
+          />
+        )}
 
         <div className="text-center text-xs text-gray-400 mt-8">Powered by Service Hub</div>
       </div>

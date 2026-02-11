@@ -3,6 +3,7 @@ import { collection, addDoc, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../firebase/config';
 
 import { JOB_STATUSES, initialQuoteState, initialJobState } from '../constants';
+import { exportPayroll } from '../utils';
 
 // Icons
 import {
@@ -30,6 +31,7 @@ import PropertyDetailView from './PropertyDetailView';
 import ClientsList from './ClientsList';
 import CreateClient from './CreateClient';
 import JobsList from './JobsList';
+import TimesheetView from './timesheets/TimesheetView';
 
 /**
  * Main application content component.
@@ -869,8 +871,23 @@ export default function AppContent({ auth, appState, handlers }) {
             </div>
           )}
 
+          {/* Timesheets */}
+          {activeView === 'timesheets' && (
+            <TimesheetView
+              onExportPayroll={(entries, format) => {
+                const startDate = entries[0]?.start;
+                const endDate = entries[entries.length - 1]?.start;
+                exportPayroll(entries, staff, clients, { startDate, endDate, format });
+              }}
+              onOpenJob={(job) => {
+                setActiveView('schedule');
+                setSelectedJob(job);
+              }}
+            />
+          )}
+
           {/* Placeholder pages */}
-          {['requests','reports','expenses','timesheets','apps'].includes(activeView) && (
+          {['requests','reports','expenses','apps'].includes(activeView) && (
             <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
               <h2 className="text-2xl font-semibold text-gray-800 mb-2" style={{textTransform:'capitalize'}}>{activeView}</h2>
               <p className="text-gray-600">This page is a placeholder. We'll build this module next.</p>

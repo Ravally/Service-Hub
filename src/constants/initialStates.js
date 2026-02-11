@@ -55,6 +55,9 @@ export const initialJobState = {
   status: 'Scheduled',
   notes: '',
   checklist: [],
+  checklistTemplateId: null,
+  formTemplates: [],
+  formResponses: [],
   assignees: [],
   jobType: 'one_off',
   schedule: 'One-time',
@@ -132,4 +135,16 @@ export const initialLineItem = {
 export const initialTextLineItem = {
   type: 'text',
   content: '',
+};
+
+export const initialChecklistItem = {
+  id: '',
+  text: '',
+  completed: false,
+  completedBy: '',
+  completedAt: '',
+  required: false,
+  notes: '',
+  photos: [],
+  order: 0,
 };

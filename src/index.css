@@ -1,0 +1,60 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom styles from your original file */
+body { 
+  font-family: 'Inter', sans-serif; 
+}
+@layer base {
+  html { @apply antialiased; }
+  body { @apply leading-relaxed text-gray-800 bg-gray-50; }
+  h1, h2, h3 { @apply leading-tight text-gray-900; }
+  small { @apply leading-snug; }
+}
+
+@layer components {
+  .card { @apply bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden; }
+  .card-header { @apply px-4 py-3 border-b border-gray-100 flex items-center justify-between; }
+  .chip { @apply px-2 py-0.5 text-xs rounded border; }
+  .list-row { @apply px-3 py-3 sm:px-4 hover:bg-gray-50 cursor-pointer transition-colors; }
+  .legend-dot { @apply inline-block h-2.5 w-2.5 rounded-full; }
+  .btn { @apply inline-flex items-center justify-center rounded-md text-sm font-medium px-3 py-1 transition-colors; }
+  .btn-green { @apply text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-300; }
+  .btn-blue { @apply text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300; }
+  .btn-gray { @apply text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-300; }
+}
+@keyframes fade-in { 
+  from { opacity: 0; transform: translateY(-10px); } 
+  to { opacity: 1; transform: translateY(0); } 
+}
+.animate-fade-in { 
+  animation: fade-in 0.3s ease-out forwards; 
+}
+@keyframes fade-in-fast { 
+  from { opacity: 0; transform: scale(0.95); } 
+  to { opacity: 1; transform: scale(1); } 
+}
+.animate-fade-in-fast { 
+  animation: fade-in-fast 0.1s ease-out forwards; 
+}
+@media print { 
+  body * { visibility: hidden; } 
+  #printable-invoice, #printable-invoice * { visibility: visible; } 
+  #printable-invoice { position: absolute; left: 0; top: 0; width: 100%; } 
+  .no-print { display: none; } 
+}
+
+/* Ensure Google Places suggestion dropdown appears above cards/dialogs */
+.pac-container { z-index: 2147483647 !important; }
+
+/* Hide search input clear/cancel (for type=search we use to suppress Chrome autofill) */
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-decoration,
+input[type="search"]::-webkit-search-results-button,
+input[type="search"]::-webkit-search-results-decoration { display: none; }
+
+/* Hide empty overview lists (e.g., Active tab in Client Detail) */
+ul.divide-y:empty { display: none; }

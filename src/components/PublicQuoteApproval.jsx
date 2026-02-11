@@ -1,0 +1,105 @@
+// src/components/PublicQuoteApproval.jsx
+import React, { useState, useMemo } from 'react';
+
+const PublicQuoteApproval = ({ quote, client, company, onApprove, onDecline, message, error }) => {
+  const [name, setName] = useState('');
+
+  const totals = useMemo(() => {
+    const items = quote?.lineItems || [];
+    const subtotal = items.reduce((s, it) => {
+      const itemType = it?.type || 'line_item';
+      if (itemType === 'text' || it?.isOptional) return s;
+      return s + (parseFloat(it.qty) || 0) * (parseFloat(it.price) || 0);
+    }, 0);
+    const taxRate = parseFloat(quote?.taxRate || 0);
+    const tax = subtotal * (taxRate / 100);
+    const total = (typeof quote?.total === 'number') ? quote.total : subtotal + tax;
+    return { subtotal, tax, total, taxRate };
+  }, [quote]);
+
+  if (!quote) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
+        <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200 max-w-lg w-full text-center">
+          <p className="text-gray-700">Loading quote…</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
+      <div className="bg-white rounded-xl shadow-lg p-6 md:p-8 border border-gray-200 max-w-2xl w-full">
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-gray-900">{company?.name || 'Your Company'}</h1>
+          <p className="text-gray-600">Quote {quote.quoteNumber || `#${(quote.id || '').substring(0,6)}…`}</p>
+        </div>
+
+        <div className="mb-4">
+          <p className="text-lg text-gray-700">To: <span className="font-semibold">{client?.name || 'Client'}</span></p>
+          <p className="text-sm text-gray-500">{client?.email}</p>
+        </div>
+
+        <div className="mb-6">
+          <table className="w-full">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="text-left font-semibold p-2">Description</th>
+                <th className="text-center font-semibold p-2">Qty</th>
+                <th className="text-right font-semibold p-2">Price</th>
+                <th className="text-right font-semibold p-2">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(quote.lineItems || []).map((it, idx) => {
+                const itemType = it?.type || 'line_item';
+                if (itemType === 'text') {
+                  return (
+                    <tr key={idx} className="border-b">
+                      <td className="p-2" colSpan={4}>{it.description || it.name || 'Text'}</td>
+                    </tr>
+                  );
+                }
+                const lineTotal = (parseFloat(it.qty) || 0) * (parseFloat(it.price) || 0);
+                return (
+                  <tr key={idx} className="border-b">
+                    <td className="p-2">{it.name || it.description}</td>
+                    <td className="text-center p-2">{it.qty}</td>
+                    <td className="text-right p-2">${parseFloat(it.price || 0).toFixed(2)}</td>
+                    <td className="text-right p-2">${lineTotal.toFixed(2)}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+          <div className="flex justify-end mt-4">
+            <div className="w-full max-w-sm space-y-1">
+              <div className="flex justify-between text-sm"><span>GST ({totals.taxRate}%)</span><span>${totals.tax.toFixed(2)}</span></div>
+              <div className="flex justify-between text-xl font-bold border-t-2 pt-2"><span>Total</span><span>${totals.total.toFixed(2)}</span></div>
+            </div>
+          </div>
+        </div>
+
+        {(message || error) && (
+          <div className={`mb-4 p-3 rounded ${error ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-green-50 text-green-700 border border-green-200'}`}>
+            {error || message}
+          </div>
+        )}
+
+        <div className="space-y-3">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
+            <input value={name} onChange={(e)=>setName(e.target.value)} placeholder="Type your full name" className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"/>
+          </div>
+          <div className="flex gap-2 justify-end">
+            <button onClick={() => onDecline && onDecline(name)} className="px-4 py-2 text-sm font-semibold text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">Decline</button>
+            <button onClick={() => onApprove && onApprove(name)} className="px-4 py-2 text-sm font-semibold text-white bg-green-600 rounded-lg hover:bg-green-700">Approve</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  );
+};
+
+export default PublicQuoteApproval;

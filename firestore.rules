@@ -1,0 +1,63 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() { return request.auth != null; }
+    function isOwner(uid) { return request.auth != null && request.auth.uid == uid; }
+    function userRole(uid) {
+      return get(/databases/$(database)/documents/users/$(uid)).data.role;
+    }
+    function isAdmin(uid) { return userRole(uid) == 'admin'; }
+    function isManager(uid) { return userRole(uid) == 'manager'; }
+    function isTech(uid) { return userRole(uid) == 'tech'; }
+
+    // Users profile: user can read/write their own profile
+    match /users/{uid} {
+      allow read, write: if isOwner(uid);
+    }
+
+    // Collections under a user namespace
+    match /users/{uid}/{col}/{doc} {
+      allow read: if isOwner(uid);
+
+      // Clients
+      allow create: if isOwner(uid) && (isAdmin(uid) || isManager(uid));
+      allow update: if isOwner(uid) && (isAdmin(uid) || isManager(uid));
+      allow delete: if isOwner(uid) && (isAdmin(uid) || isManager(uid));
+
+      // Jobs: Tech can update limited fields on assigned jobs
+      allow create: if isOwner(uid) && (isAdmin(uid) || isManager(uid));
+      allow update: if isOwner(uid) && (
+        (isAdmin(uid) || isManager(uid)) ||
+        (
+          isTech(uid) &&
+          col == 'jobs' &&
+          // Allow tech to update notes and checklist only when assigned
+          (request.resource.data.diff(resource.data).changedKeys().hasOnly(['notes','checklist']) &&
+            (request.resource.data.assignees.hasAny([request.auth.uid]) || resource.data.assignees.hasAny([request.auth.uid])) )
+        )
+      );
+      allow delete: if isOwner(uid) && (isAdmin(uid) || isManager(uid));
+
+      // Quotes
+      allow create: if isOwner(uid) && (isAdmin(uid) || isManager(uid));
+      allow update: if isOwner(uid) && (isAdmin(uid) || isManager(uid));
+      allow delete: if isOwner(uid) && (isAdmin(uid) || isManager(uid));
+
+      // Invoices
+      allow create: if isOwner(uid) && (isAdmin(uid) || isManager(uid));
+      allow update: if isOwner(uid) && (isAdmin(uid) || isManager(uid));
+      allow delete: if isOwner(uid) && (isAdmin(uid) || isManager(uid));
+
+      // Notifications: read, create by owner
+      allow create: if isOwner(uid);
+    }
+
+    // Audit logs: owner read; create allowed by owner (client) or cloud functions (service accounts)
+    match /users/{uid}/auditLogs/{logId} {
+      allow read: if isOwner(uid) && (isAdmin(uid) || isManager(uid));
+      allow create: if isOwner(uid) || request.auth.token.admin == true;
+      allow update, delete: if false;
+    }
+  }
+}
+

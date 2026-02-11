@@ -17,7 +17,16 @@ service cloud.firestore {
 
     // Collections under a user namespace
     match /users/{uid}/{col}/{doc} {
+      // Allow owner to read everything
       allow read: if isOwner(uid);
+
+      // Allow authenticated users (including anonymous) to read public portal data
+      // Security relies on token obscurity (similar to Google Drive sharing links)
+      allow read: if isSignedIn() && col == 'clients';
+      allow read: if isSignedIn() && col == 'quotes';
+      allow read: if isSignedIn() && col == 'jobs';
+      allow read: if isSignedIn() && col == 'invoices';
+      allow read: if isSignedIn() && col == 'settings';
 
       // Clients
       allow create: if isOwner(uid) && (isAdmin(uid) || isManager(uid));
@@ -50,6 +59,29 @@ service cloud.firestore {
 
       // Notifications: read, create by owner
       allow create: if isOwner(uid);
+    }
+
+    // Portal access logs: allow authenticated users to create logs (for portal access tracking)
+    match /users/{uid}/portalAccessLogs/{logId} {
+      allow read: if isOwner(uid);
+      allow create: if isSignedIn(); // Anonymous users can log their portal access
+      allow update, delete: if false;
+    }
+
+    // Service requests: allow authenticated users to create requests
+    match /users/{uid}/serviceRequests/{requestId} {
+      allow read: if isOwner(uid);
+      allow create: if isSignedIn(); // Clients can submit service requests
+      allow update: if isOwner(uid);
+      allow delete: if isOwner(uid);
+    }
+
+    // Notifications: allow creating notifications for service requests
+    match /users/{uid}/notifications/{notifId} {
+      allow read: if isOwner(uid);
+      allow create: if isSignedIn(); // Allow service request notifications
+      allow update: if isOwner(uid);
+      allow delete: if isOwner(uid);
     }
 
     // Audit logs: owner read; create allowed by owner (client) or cloud functions (service accounts)

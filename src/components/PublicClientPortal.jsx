@@ -3,6 +3,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { getAuth } from 'firebase/auth';
 import { getFirestore, collection, doc, getDoc, onSnapshot, query, updateDoc, where, addDoc } from 'firebase/firestore';
 import { db } from '../firebase/config';
+import { formatCurrency, formatDate, formatDateTime } from '../utils';
 
 const PublicClientPortal = ({ uid, clientId, company }) => {
   const [client, setClient] = useState(null);
@@ -146,7 +147,7 @@ const PublicClientPortal = ({ uid, clientId, company }) => {
       const netDue = Math.max(0, (inv.total || 0) - credits);
       let amount = netDue;
       if (allowPartial) {
-        const raw = window.prompt(`Enter amount to pay (max ${netDue.toFixed(2)}):`, netDue.toFixed(2));
+        const raw = window.prompt(`Enter amount to pay (max ${formatCurrency(netDue)}):`, netDue.toFixed(2));
         if (!raw) return;
         const parsed = parseFloat(raw);
         if (!Number.isFinite(parsed) || parsed <= 0) return;
@@ -206,7 +207,7 @@ const PublicClientPortal = ({ uid, clientId, company }) => {
                     <div className="flex justify-between items-center">
                       <div>
                         <p className="font-semibold">{q.quoteNumber || q.id.substring(0,6)}</p>
-                        <p className="text-xs text-gray-500">Total ${Number(q.total || 0).toFixed(2)}</p>
+                        <p className="text-xs text-gray-500">Total {formatCurrency(q.total || 0)}</p>
                       </div>
                       <div className="flex gap-2">
                         {(q.status === 'Draft' || q.status === 'Sent' || q.status === 'Awaiting Response') && (
@@ -234,7 +235,7 @@ const PublicClientPortal = ({ uid, clientId, company }) => {
                 <li key={j.id} className="py-2 text-sm">
                   <div className="flex justify-between">
                     <span>{j.title}</span>
-                    <span className="text-gray-500">{j.start ? new Date(j.start).toLocaleString() : ''}</span>
+                    <span className="text-gray-500">{j.start ? formatDateTime(j.start) : ''}</span>
                   </div>
                 </li>
               ))}
@@ -256,11 +257,11 @@ const PublicClientPortal = ({ uid, clientId, company }) => {
                     <div className="flex justify-between items-center">
                       <div>
                         <p className="font-semibold">{i.invoiceNumber || i.id.substring(0,6)}</p>
-                        <p className="text-xs text-gray-500">Issued {new Date(i.issueDate || i.createdAt).toLocaleDateString()}</p>
-                        {credits > 0 && <p className="text-xs text-purple-700">Credits applied: ${credits.toFixed(2)}</p>}
+                        <p className="text-xs text-gray-500">Issued {formatDate(i.issueDate || i.createdAt)}</p>
+                        {credits > 0 && <p className="text-xs text-purple-700">Credits applied: {formatCurrency(credits)}</p>}
                       </div>
                       <div className="text-right">
-                        <p className="font-semibold">${net.toFixed(2)}</p>
+                        <p className="font-semibold">{formatCurrency(net)}</p>
                         {i.status !== 'Paid' ? (
                           !canPay ? (
                             <span className="inline-block mt-1 px-2 py-0.5 rounded-full text-xs bg-gray-100 text-gray-600">Payments disabled</span>

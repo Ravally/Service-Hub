@@ -1,5 +1,7 @@
 // src/components/InvoicesList.jsx
 import React, { useMemo, useState } from 'react';
+import { formatCurrency } from '../utils';
+import { inRange, lastNDays, last30ExcludingToday, monthRange, yearRange } from '../utils/dateUtils';
 
 const KpiCard = ({ title, sub, value, money, delta, positive }) => (
   <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
@@ -15,23 +17,6 @@ const KpiCard = ({ title, sub, value, money, delta, positive }) => (
     )}
   </div>
 );
-
-function currency(n) {
-  const num = Number(n || 0);
-  try { return new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }).format(num); }
-  catch { return `$${num.toFixed(2)}`; }
-}
-
-function inRange(date, start, end) {
-  if (!start || !end) return true;
-  const d = new Date(date || 0);
-  return d >= start && d <= end;
-}
-
-function lastNDays(n) { const now = new Date(); const s = new Date(now); s.setDate(s.getDate()-n); return { start: s, end: now }; }
-function last30ExcludingToday() { const now = new Date(); const end = new Date(now); end.setDate(end.getDate()-1); const start = new Date(end); start.setDate(start.getDate()-29); return { start, end }; }
-function monthRange(offset=0) { const now = new Date(); const y = now.getFullYear(); const m = now.getMonth()+offset; const start = new Date(y, m, 1); const end = new Date(y, m+1, 0, 23,59,59,999); return { start, end }; }
-function yearRange(y) { const start = new Date(y,0,1); const end = new Date(y,11,31,23,59,59,999); return { start, end }; }
 
 export default function InvoicesList({ invoices=[], clients=[], onOpenInvoice, onNewInvoice }) {
   const clientMap = useMemo(() => Object.fromEntries((clients||[]).map(c=>[c.id,c])), [clients]);
@@ -132,12 +117,12 @@ export default function InvoicesList({ invoices=[], clients=[], onOpenInvoice, o
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
           <div className="text-sm font-semibold text-gray-800 mb-2">Overview</div>
           <div className="space-y-2 text-sm">
-            <div className="flex items-center justify-between"><span className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-red-500"></span>Past due ({kpis.overview.pastDue.count})</span><span>{currency(kpis.overview.pastDue.value)}</span></div>
-            <div className="flex items-center justify-between"><span className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-yellow-500"></span>Sent but not due ({kpis.overview.notDue.count})</span><span>{currency(kpis.overview.notDue.value)}</span></div>
+            <div className="flex items-center justify-between"><span className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-red-500"></span>Past due ({kpis.overview.pastDue.count})</span><span>{formatCurrency(kpis.overview.pastDue.value)}</span></div>
+            <div className="flex items-center justify-between"><span className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-yellow-500"></span>Sent but not due ({kpis.overview.notDue.count})</span><span>{formatCurrency(kpis.overview.notDue.value)}</span></div>
           </div>
         </div>
-        <KpiCard title="Issued" sub="Past 30 days" value={kpis.issuedCount} money={currency(kpis.issuedValue)} delta={kpis.sentDelta.t} positive={kpis.sentDelta.pos} />
-        <KpiCard title="Average invoice" sub="Past 30 days" value={currency(kpis.avgInvoice)} delta={kpis.avgDelta.t} positive={kpis.avgDelta.pos} />
+        <KpiCard title="Issued" sub="Past 30 days" value={kpis.issuedCount} money={formatCurrency(kpis.issuedValue)} delta={kpis.sentDelta.t} positive={kpis.sentDelta.pos} />
+        <KpiCard title="Average invoice" sub="Past 30 days" value={formatCurrency(kpis.avgInvoice)} delta={kpis.avgDelta.t} positive={kpis.avgDelta.pos} />
         <KpiCard title="Average time to get paid" sub="Past 7 days" value={`${kpis.avgDays} days`} />
       </div>
 
@@ -209,8 +194,8 @@ export default function InvoicesList({ invoices=[], clients=[], onOpenInvoice, o
                   <td className="p-3"><div className="truncate max-w-xs">{inv._address || '-'}</div></td>
                   <td className="p-3">{inv.dueDate ? new Date(inv.dueDate).toLocaleDateString() : '-'}</td>
                   <td className="p-3">{inv.status}</td>
-                  <td className="p-3 font-semibold text-gray-900">{currency(inv.total||0)}</td>
-                  <td className="p-3 font-semibold text-gray-900">{currency(inv._balance||0)}</td>
+                  <td className="p-3 font-semibold text-gray-900">{formatCurrency(inv.total||0)}</td>
+                  <td className="p-3 font-semibold text-gray-900">{formatCurrency(inv._balance||0)}</td>
                 </tr>
               ))}
             </tbody>

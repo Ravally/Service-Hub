@@ -1,9 +1,9 @@
 // src/components/QuotePrintView.jsx
 import React, { useEffect } from 'react';
+import { formatCurrency, formatDate } from '../utils';
 
 const QuotePrintView = ({ quote, client, company, onBack, statusColors }) => {
   useEffect(() => { window.print(); }, []);
-  const currency = (n) => `$${(parseFloat(n)||0).toFixed(2)}`;
   const view = quote.clientViewSettings || {};
   const showQuantities = view.showQuantities !== false;
   const showUnitPrices = view.showUnitPrices !== false;
@@ -35,7 +35,7 @@ const QuotePrintView = ({ quote, client, company, onBack, statusColors }) => {
         <div className="text-right">
           <h2 className="text-3xl font-bold uppercase text-gray-400">Quote</h2>
           <p className="text-sm mt-1">{quote.quoteNumber || `#${quote.id.substring(0,8)}`}</p>
-          <p className="text-sm">Date: {new Date(quote.createdAt).toLocaleDateString()}</p>
+          <p className="text-sm">Date: {formatDate(quote.createdAt)}</p>
         </div>
       </div>
 
@@ -73,8 +73,8 @@ const QuotePrintView = ({ quote, client, company, onBack, statusColors }) => {
                   {item.isOptional && <span className="text-xs text-gray-500"> (Optional)</span>}
                 </td>
                 {showQuantities && <td className="text-center p-3">{item.qty}</td>}
-                {showUnitPrices && <td className="text-right p-3">{currency(item.price)}</td>}
-                {showLineItemTotals && <td className="text-right p-3">{currency((item.qty || 0) * (item.price || 0))}</td>}
+                {showUnitPrices && <td className="text-right p-3">{formatCurrency(item.price)}</td>}
+                {showLineItemTotals && <td className="text-right p-3">{formatCurrency((item.qty || 0) * (item.price || 0))}</td>}
               </tr>
             );
           })}
@@ -84,10 +84,10 @@ const QuotePrintView = ({ quote, client, company, onBack, statusColors }) => {
       {showTotals && (
         <div className="flex justify-end">
           <div className="w-full max-w-sm space-y-1">
-            {typeof quote.taxAmount === 'number' && <div className="flex justify-between text-sm"><span>GST</span><span>{currency(quote.taxAmount)}</span></div>}
+            {typeof quote.taxAmount === 'number' && <div className="flex justify-between text-sm"><span>GST</span><span>{formatCurrency(quote.taxAmount)}</span></div>}
             <div className="flex justify-between text-xl font-bold border-t-2 pt-4">
               <span>Total</span>
-              <span>{currency(quote.total)}</span>
+              <span>{formatCurrency(quote.total)}</span>
             </div>
             <div className={`mt-4 text-center font-bold text-sm p-2 rounded-md ${statusColors[quote.status]}`}>
               {quote.status}

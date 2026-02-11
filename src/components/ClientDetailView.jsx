@@ -1,6 +1,8 @@
 // src/components/ClientDetailView.jsx
 import React, { useEffect, useMemo, useState } from 'react';
 import { AtSignIcon, ChevronLeftIcon, MapPinIcon, PhoneIcon, EditIcon } from './icons';
+import { formatCurrency, formatDate, formatDateTime } from '../utils';
+import { STATUS_COLORS } from '../constants';
 
 const ClientDetailView = ({
   client,
@@ -11,10 +13,9 @@ const ClientDetailView = ({
   jobs,
   invoices,
   notifications = [],
-  statusColors,
-  formatDateTime,
   clientNotes = [],
   onAddNote,
+  onGeneratePortalLink,
   onCreateProperty,
   onCreateQuote,
   onCreateJob,
@@ -133,6 +134,7 @@ const ClientDetailView = ({
             <button className="w-full text-left px-3 py-2 hover:bg-gray-50 text-sm" onClick={()=>onCollectPayment && onCollectPayment(client)}>Collect Payment</button>
             <button className="w-full text-left px-3 py-2 hover:bg-gray-50 text-sm" onClick={()=>onArchiveClient && onArchiveClient(client)}>Archive Client</button>
             <button className="w-full text-left px-3 py-2 hover:bg-gray-50 text-sm" onClick={()=>onDownloadVCard && onDownloadVCard(client)}>Download VCard</button>
+            <button className="w-full text-left px-3 py-2 hover:bg-gray-50 text-sm" onClick={()=>onGeneratePortalLink && onGeneratePortalLink(client)}>Generate Portal Link</button>
             <button className="w-full text-left px-3 py-2 hover:bg-gray-50 text-sm" onClick={()=>onViewAsClient && onViewAsClient(client)}>Log in as Client</button>
             <button className="w-full text-left px-3 py-2 hover:bg-gray-50 text-sm text-red-700" onClick={()=>handleDeleteClient && handleDeleteClient(client.id)}>Delete</button>
             </div>
@@ -266,11 +268,11 @@ const ClientDetailView = ({
                       <div className="flex items-center gap-2">
                         <span className="inline-block w-2 h-2 rounded-full bg-gray-400"/>
                         <span className="font-medium">{item.type==='job' ? (item.label || 'Job') : `${item.type==='invoice'?'Invoice':'Quote'} ${(item.title ?? '—')}`}</span>
-                        {item.date && <span className="text-gray-500">• {new Date(item.date).toLocaleDateString()}</span>}
-                        <span className={`ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${statusColors[item.status]||'bg-gray-100 text-gray-800'}`}>{item.status}</span>
+                        {item.date && <span className="text-gray-500">• {formatDate(item.date)}</span>}
+                        <span className={`ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_COLORS[item.status]||'bg-gray-100 text-gray-800'}`}>{item.status}</span>
                       </div>
                       <div>
-                        {typeof item.amount==='number' && Number.isFinite(item.amount) && <span className="font-semibold">${Number(item.amount).toFixed(2)}</span>}
+                        {typeof item.amount==='number' && Number.isFinite(item.amount) && <span className="font-semibold">{formatCurrency(item.amount)}</span>}
                         {item.type==='job' && <button className="ml-3 text-blue-700" onClick={()=> onOpenJob && onOpenJob(clientJobs.find(j=>j.id===item.id))}>Open</button>}
                         {item.type==='invoice' && <button className="ml-3 text-blue-700" onClick={()=> onOpenInvoice && onOpenInvoice(clientInvoices.find(i=>i.id===item.id))}>Open</button>}
                         {item.type==='quote' && <button className="ml-3 text-blue-700" onClick={()=> onOpenQuote && onOpenQuote(clientQuotes.find(q=>q.id===item.id))}>Open</button>}
@@ -282,8 +284,8 @@ const ClientDetailView = ({
               {overviewTab === 'quotes' && (
                 <ul className="divide-y divide-gray-100 text-sm">{clientQuotes.map(q => (
                   <li key={q.id} className="py-2 flex items-center justify-between">
-                    <div><span className="font-semibold text-blue-700">{q.quoteNumber || q.id.substring(0,6)}</span> <span className="text-gray-500 ml-2">{new Date(q.createdAt||0).toLocaleDateString()}</span></div>
-                    <div><span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${statusColors[q.status]}`}>{q.status}</span><button className="ml-3 text-blue-700" onClick={()=>onOpenQuote&&onOpenQuote(q)}>Open</button></div>
+                    <div><span className="font-semibold text-blue-700">{q.quoteNumber || q.id.substring(0,6)}</span> <span className="text-gray-500 ml-2">{formatDate(q.createdAt)}</span></div>
+                    <div><span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_COLORS[q.status]}`}>{q.status}</span><button className="ml-3 text-blue-700" onClick={()=>onOpenQuote&&onOpenQuote(q)}>Open</button></div>
                   </li>
                 ))}</ul>
               )}
@@ -291,15 +293,15 @@ const ClientDetailView = ({
                 <ul className="divide-y divide-gray-100 text-sm">{clientJobs.map(j => (
                   <li key={j.id} className="py-2 flex items-center justify-between">
                     <div><span className="font-semibold text-blue-700">{j.jobNumber}</span> <span className="text-gray-500 ml-2">{formatDateTime(j.start)}</span></div>
-                    <div><span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${statusColors[j.status]}`}>{j.status}</span><button className="ml-3 text-blue-700" onClick={()=>onOpenJob&&onOpenJob(j)}>Open</button></div>
+                    <div><span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_COLORS[j.status]}`}>{j.status}</span><button className="ml-3 text-blue-700" onClick={()=>onOpenJob&&onOpenJob(j)}>Open</button></div>
                   </li>
                 ))}</ul>
               )}
               {overviewTab === 'invoices' && (
                 <ul className="divide-y divide-gray-100 text-sm">{clientInvoices.map(i => (
                   <li key={i.id} className="py-2 flex items-center justify-between">
-                    <div><span className="font-semibold text-blue-700">{i.invoiceNumber || i.id.substring(0,6)}</span> <span className="text-gray-500 ml-2">{new Date(i.issueDate||i.createdAt||0).toLocaleDateString()}</span></div>
-                    <div><span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${statusColors[i.status]}`}>{i.status}</span><span className="ml-3 font-semibold">${(i.total||0).toFixed(2)}</span><button className="ml-3 text-blue-700" onClick={()=>onOpenInvoice&&onOpenInvoice(i)}>Open</button></div>
+                    <div><span className="font-semibold text-blue-700">{i.invoiceNumber || i.id.substring(0,6)}</span> <span className="text-gray-500 ml-2">{formatDate(i.issueDate || i.createdAt)}</span></div>
+                    <div><span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_COLORS[i.status]}`}>{i.status}</span><span className="ml-3 font-semibold">{formatCurrency(i.total)}</span><button className="ml-3 text-blue-700" onClick={()=>onOpenInvoice&&onOpenInvoice(i)}>Open</button></div>
                   </li>
                 ))}</ul>
               )}
@@ -316,7 +318,7 @@ const ClientDetailView = ({
                 {clientJobs.slice().sort((a,b)=> new Date(a.start||0) - new Date(b.start||0)).slice(0,8).map(j => (
                   <li key={j.id} className="py-2 flex items-center justify-between">
                     <div><span className="font-medium text-blue-700">{j.jobNumber}</span>{j.start && <span className="ml-2 text-gray-500">{formatDateTime(j.start)}</span>}</div>
-                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${statusColors[j.status]||'bg-gray-100 text-gray-800'}`}>{j.status}</span>
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_COLORS[j.status]||'bg-gray-100 text-gray-800'}`}>{j.status}</span>
                   </li>
                 ))}
               </ul>
@@ -335,7 +337,7 @@ const ClientDetailView = ({
                 {clientComms.map((n)=> (
                   <li key={n.id || n.createdAt} className="py-2">
                     <div className="font-medium">{n.message}</div>
-                    <div className="text-gray-500 text-xs">{new Date(n.createdAt||0).toLocaleString()}</div>
+                    <div className="text-gray-500 text-xs">{formatDateTime(n.createdAt)}</div>
                   </li>
                 ))}
               </ul>
@@ -355,16 +357,16 @@ const ClientDetailView = ({
                   <li key={e.id} className="py-2 flex items-center justify-between">
                     <div>
                       <div className="font-medium">{e.label}</div>
-                      <div className="text-xs text-gray-500">{new Date(e.date||0).toLocaleDateString()} {e.method?`• ${e.method}`:''} {e.status?`• ${e.status}`:''}</div>
+                      <div className="text-xs text-gray-500">{formatDate(e.date)} {e.method?`• ${e.method}`:''} {e.status?`• ${e.status}`:''}</div>
                     </div>
-                    <div className={`font-semibold ${e.amount<0?'text-green-700':'text-gray-900'}`}>{e.amount<0?'-':''}${Math.abs(e.amount||0).toFixed(2)}</div>
+                    <div className={`font-semibold ${e.amount<0?'text-green-700':'text-gray-900'}`}>{e.amount<0?'-':''}{formatCurrency(Math.abs(e.amount || 0))}</div>
                   </li>
                 ))}
               </ul>
             )}
             <div className="mt-3 pt-2 border-t text-sm flex items-center justify-between">
               <span className="font-semibold">Current balance</span>
-              <span className={`font-bold ${currentBalance>0?'text-red-700':'text-green-700'}`}>${currentBalance.toFixed(2)}</span>
+              <span className={`font-bold ${currentBalance>0?'text-red-700':'text-green-700'}`}>{formatCurrency(currentBalance)}</span>
             </div>
           </div>
         </div>

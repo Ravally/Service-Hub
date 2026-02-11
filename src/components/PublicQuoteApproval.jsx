@@ -1,20 +1,19 @@
 // src/components/PublicQuoteApproval.jsx
 import React, { useState, useMemo } from 'react';
+import { formatCurrency, computeTotals } from '../utils';
 
 const PublicQuoteApproval = ({ quote, client, company, onApprove, onDecline, message, error }) => {
   const [name, setName] = useState('');
 
   const totals = useMemo(() => {
-    const items = quote?.lineItems || [];
-    const subtotal = items.reduce((s, it) => {
-      const itemType = it?.type || 'line_item';
-      if (itemType === 'text' || it?.isOptional) return s;
-      return s + (parseFloat(it.qty) || 0) * (parseFloat(it.price) || 0);
-    }, 0);
-    const taxRate = parseFloat(quote?.taxRate || 0);
-    const tax = subtotal * (taxRate / 100);
-    const total = (typeof quote?.total === 'number') ? quote.total : subtotal + tax;
-    return { subtotal, tax, total, taxRate };
+    if (!quote) return { subtotal: 0, tax: 0, total: 0, taxRate: 0 };
+    const computed = computeTotals(quote);
+    return {
+      subtotal: computed.afterAllDiscounts,
+      tax: computed.taxAmount,
+      total: computed.total,
+      taxRate: parseFloat(quote.taxRate || 0)
+    };
   }, [quote]);
 
   if (!quote) {
@@ -65,8 +64,8 @@ const PublicQuoteApproval = ({ quote, client, company, onApprove, onDecline, mes
                   <tr key={idx} className="border-b">
                     <td className="p-2">{it.name || it.description}</td>
                     <td className="text-center p-2">{it.qty}</td>
-                    <td className="text-right p-2">${parseFloat(it.price || 0).toFixed(2)}</td>
-                    <td className="text-right p-2">${lineTotal.toFixed(2)}</td>
+                    <td className="text-right p-2">{formatCurrency(it.price || 0)}</td>
+                    <td className="text-right p-2">{formatCurrency(lineTotal)}</td>
                   </tr>
                 );
               })}
@@ -74,8 +73,8 @@ const PublicQuoteApproval = ({ quote, client, company, onApprove, onDecline, mes
           </table>
           <div className="flex justify-end mt-4">
             <div className="w-full max-w-sm space-y-1">
-              <div className="flex justify-between text-sm"><span>GST ({totals.taxRate}%)</span><span>${totals.tax.toFixed(2)}</span></div>
-              <div className="flex justify-between text-xl font-bold border-t-2 pt-2"><span>Total</span><span>${totals.total.toFixed(2)}</span></div>
+              <div className="flex justify-between text-sm"><span>GST ({totals.taxRate}%)</span><span>{formatCurrency(totals.tax)}</span></div>
+              <div className="flex justify-between text-xl font-bold border-t-2 pt-2"><span>Total</span><span>{formatCurrency(totals.total)}</span></div>
             </div>
           </div>
         </div>

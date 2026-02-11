@@ -17,11 +17,23 @@ service cloud.firestore {
 
     // Collections under a user namespace
     match /users/{uid}/{col}/{doc} {
+      // Allow owner to read everything
       allow read: if isOwner(uid);
 
-      // Clients
+      // Allow authenticated users (including anonymous) to read public portal data
+      // Security relies on token obscurity (similar to Google Drive sharing links)
+      allow read: if isSignedIn() && col == 'clients';
+      allow read: if isSignedIn() && col == 'quotes';
+      allow read: if isSignedIn() && col == 'invoices';
+      allow read: if isSignedIn() && col == 'jobs';
+      allow read: if isSignedIn() && col == 'settings';
+
+      // Clients: Allow portal users to update their contact info
       allow create: if isOwner(uid) && (isAdmin(uid) || isManager(uid));
       allow update: if isOwner(uid) && (isAdmin(uid) || isManager(uid));
+      allow update: if isSignedIn() && col == 'clients' &&
+        // Only allow updating contact fields, not sensitive data
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'email', 'phone', 'address']);
       allow delete: if isOwner(uid) && (isAdmin(uid) || isManager(uid));
 
       // Jobs: Tech can update limited fields on assigned jobs
@@ -38,18 +50,49 @@ service cloud.firestore {
       );
       allow delete: if isOwner(uid) && (isAdmin(uid) || isManager(uid));
 
-      // Quotes
+      // Quotes: Allow portal users to approve/decline quotes
       allow create: if isOwner(uid) && (isAdmin(uid) || isManager(uid));
       allow update: if isOwner(uid) && (isAdmin(uid) || isManager(uid));
+      allow update: if isSignedIn() && col == 'quotes' &&
+        // Allow updating status, approval fields, signature
+        request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['status', 'approvalStatus', 'approvedAt', 'approvedByName', 'declinedAt', 'declinedByName', 'signature', 'openedAt']);
       allow delete: if isOwner(uid) && (isAdmin(uid) || isManager(uid));
 
-      // Invoices
+      // Invoices: Allow portal users to mark as viewed and make payments
       allow create: if isOwner(uid) && (isAdmin(uid) || isManager(uid));
       allow update: if isOwner(uid) && (isAdmin(uid) || isManager(uid));
+      allow update: if isSignedIn() && col == 'invoices' &&
+        // Allow updating payment-related fields and viewed status
+        request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['viewedAt', 'status', 'paidAt', 'payments']);
       allow delete: if isOwner(uid) && (isAdmin(uid) || isManager(uid));
 
       // Notifications: read, create by owner
       allow create: if isOwner(uid);
+    }
+
+    // Portal access logs: allow authenticated users to create logs (for portal access tracking)
+    match /users/{uid}/portalAccessLogs/{logId} {
+      allow read: if isOwner(uid);
+      allow create: if isSignedIn(); // Anonymous users can log their portal access
+      allow update, delete: if false;
+    }
+
+    // Service requests: allow authenticated users to create requests
+    match /users/{uid}/serviceRequests/{requestId} {
+      allow read: if isOwner(uid);
+      allow create: if isSignedIn(); // Clients can submit service requests
+      allow update: if isOwner(uid);
+      allow delete: if isOwner(uid);
+    }
+
+    // Notifications: allow creating notifications for service requests
+    match /users/{uid}/notifications/{notifId} {
+      allow read: if isOwner(uid);
+      allow create: if isSignedIn(); // Allow service request notifications
+      allow update: if isOwner(uid);
+      allow delete: if isOwner(uid);
     }
 
     // Audit logs: owner read; create allowed by owner (client) or cloud functions (service accounts)

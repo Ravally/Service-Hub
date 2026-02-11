@@ -1,60 +1,15 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { FileTextIcon } from './icons';
-
-const currency = (n) => {
-  const num = Number(n || 0);
-  try { return new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }).format(num); }
-  catch { return `$${num.toFixed(2)}`; }
-};
+import { formatCurrency } from '../utils';
+import { computeTotals } from '../utils/calculations';
+import { rewriteText } from '../utils/textUtils';
+import { MAX_LINE_ITEMS, initialLineItem } from '../constants';
 
 const buildLineItem = (opts = {}) => ({
-  type: 'line_item',
-  name: '',
-  description: '',
-  qty: 1,
-  price: 0,
-  unitCost: 0,
-  isOptional: false,
+  ...initialLineItem,
   imageUrl: '',
   ...opts,
 });
-
-const computeTotals = (q) => {
-  const items = q.lineItems || [];
-  let subtotalBeforeDiscount = 0;
-  let lineDiscountTotal = 0;
-  items.forEach(it => {
-    const itemType = it?.type || 'line_item';
-    if (itemType === 'text' || it?.isOptional) return;
-    const qty = parseFloat(it.qty) || 0;
-    const price = parseFloat(it.price) || 0;
-    const lineSub = qty * price;
-    subtotalBeforeDiscount += lineSub;
-    const ldType = it.discountType || 'amount';
-    const ldValueNum = parseFloat(it.discountValue || 0);
-    const ldAmt = ldType === 'percent' ? (lineSub * (ldValueNum / 100)) : ldValueNum;
-    lineDiscountTotal += (Number.isFinite(ldAmt) ? ldAmt : 0);
-  });
-  const quoteDiscType = q.quoteDiscountType || q.discountType || 'amount';
-  const quoteDiscValue = parseFloat(q.quoteDiscountValue ?? q.discountValue ?? 0);
-  const discountedSubtotal = Math.max(0, subtotalBeforeDiscount - lineDiscountTotal);
-  const quoteDiscAmt = quoteDiscType === 'percent' ? (discountedSubtotal * (quoteDiscValue / 100)) : quoteDiscValue;
-  const afterAllDiscounts = Math.max(0, discountedSubtotal - (Number.isFinite(quoteDiscAmt) ? quoteDiscAmt : 0));
-  const taxRate = parseFloat(q.taxRate || 0);
-  const taxAmount = afterAllDiscounts * (taxRate / 100);
-  const total = afterAllDiscounts + taxAmount;
-  return { subtotalBeforeDiscount, taxAmount, total, lineDiscountTotal };
-};
-
-const rewriteText = (text, persona) => {
-  const base = (text || '').trim();
-  if (!base) return base;
-  if (persona === 'Cheerful') return `Great news! ${base}`;
-  if (persona === 'Casual') return `Just a quick note: ${base}`;
-  if (persona === 'Professional') return `Please review the following: ${base}`;
-  if (persona === 'Shorter') return base.slice(0, 120);
-  return base;
-};
 
 export default function QuoteCreateForm({
   quote,
@@ -76,7 +31,7 @@ export default function QuoteCreateForm({
   const totals = useMemo(() => computeTotals(quote), [quote]);
   const requiredDeposit = quote.depositRequiredAmount || (quote.depositRequiredPercent ? (totals.total * (quote.depositRequiredPercent / 100)) : 0);
   const itemCount = (quote.lineItems || []).length;
-  const canAddItems = itemCount < 100;
+  const canAddItems = itemCount < MAX_LINE_ITEMS;
   const activeClient = useMemo(() => clients.find((c) => c.id === quote.clientId), [clients, quote.clientId]);
   const propertyOptions = Array.isArray(activeClient?.properties) ? activeClient.properties : [];
 
@@ -307,7 +262,7 @@ export default function QuoteCreateForm({
                           className="px-4 py-3 border border-gray-200 rounded-2xl shadow-sm"
                         />
                         <input
-                          value={currency((item.qty || 0) * (item.price || 0))}
+                          value={formatCurrency((item.qty || 0) * (item.price || 0))}
                           disabled
                           className="px-4 py-3 border border-gray-200 rounded-2xl bg-gray-50 text-gray-500 shadow-sm"
                         />
@@ -364,7 +319,7 @@ export default function QuoteCreateForm({
               <button type="button" disabled={!canAddItems} onClick={() => addLineItem()} className="px-5 py-2.5 rounded-full bg-green-700 text-white text-sm font-semibold disabled:bg-gray-300 shadow-sm">New line item</button>
               <button type="button" disabled={!canAddItems} onClick={() => addLineItem({ isOptional: true })} className="px-5 py-2.5 rounded-full border border-gray-200 text-green-700 text-sm font-semibold disabled:text-gray-300 shadow-sm">New optional line item</button>
               <button type="button" disabled={!canAddItems} onClick={() => addLineItem({ type: 'text', description: '' })} className="px-5 py-2.5 rounded-full border border-gray-200 text-green-700 text-sm font-semibold disabled:text-gray-300 shadow-sm">New text</button>
-              {!canAddItems && <span className="text-xs text-gray-500">Limit 100 items</span>}
+              {!canAddItems && <span className="text-xs text-gray-500">Limit {MAX_LINE_ITEMS} items</span>}
             </div>
           </div>
 
@@ -458,7 +413,7 @@ export default function QuoteCreateForm({
             <div className="space-y-5 text-sm">
               <div className="flex items-center justify-between border-b border-gray-100 pb-4">
                 <span>Subtotal</span>
-                <span className="font-semibold">{currency(totals.subtotalBeforeDiscount)}</span>
+                <span className="font-semibold">{formatCurrency(totals.subtotalBeforeDiscount)}</span>
               </div>
 
               <div className="flex items-center justify-between border-b border-gray-100 pb-4">
@@ -498,13 +453,13 @@ export default function QuoteCreateForm({
                     className="w-24 px-3 py-2 border border-gray-200 rounded-xl text-right"
                   />
                   <span>%</span>
-                  <span className="font-semibold">{currency(totals.taxAmount)}</span>
+                  <span className="font-semibold">{formatCurrency(totals.taxAmount)}</span>
                 </div>
               </div>
 
               <div className="flex items-center justify-between border-b border-gray-100 pb-4 text-2xl font-semibold">
                 <span>Total</span>
-                <span>{currency(totals.total)}</span>
+                <span>{formatCurrency(totals.total)}</span>
               </div>
 
               <div className="flex items-center justify-between">
@@ -531,7 +486,7 @@ export default function QuoteCreateForm({
                     placeholder="Deposit percent"
                     className="w-full px-3 py-2 border border-gray-200 rounded-xl"
                   />
-                  <div className="text-xs text-gray-500">Calculated deposit: {currency(requiredDeposit)}</div>
+                  <div className="text-xs text-gray-500">Calculated deposit: {formatCurrency(requiredDeposit)}</div>
                 </div>
               )}
             </div>

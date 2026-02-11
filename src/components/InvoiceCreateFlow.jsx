@@ -2,30 +2,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import InvoiceDetailView from './InvoiceDetailView';
 import { InvoiceIcon } from './icons';
-
-const currency = (value, code) => {
-  const num = Number(value || 0);
-  try { return new Intl.NumberFormat(undefined, { style: 'currency', currency: code || 'USD' }).format(num); }
-  catch { return `$${num.toFixed(2)}`; }
-};
-
-const computeDueDate = (iso, term) => {
-  if (!iso) return '';
-  const d = new Date(iso);
-  const addDays = (days) => {
-    const dd = new Date(d);
-    dd.setDate(dd.getDate() + days);
-    return dd.toISOString();
-  };
-  const t = (term || '').toLowerCase();
-  if (t === 'net 7' || t === '7 calendar days') return addDays(7);
-  if (t === 'net 9') return addDays(9);
-  if (t === 'net 14' || t === '14 calendar days') return addDays(14);
-  if (t === 'net 15') return addDays(15);
-  if (t === 'net 30' || t === '30 calendar days') return addDays(30);
-  if (t === 'net 60') return addDays(60);
-  return d.toISOString();
-};
+import { formatCurrency, formatDate } from '../utils';
+import { computeDueDate } from '../utils/calculations';
+import { initialCompanySettings } from '../constants';
 
 const getPrimaryProperty = (client) => {
   if (!client?.properties || client.properties.length === 0) return null;
@@ -100,22 +79,11 @@ const buildDraft = ({ client, selectedJobs = [], mode, companySettings, invoiceS
     contactPhone: client?.phone || '',
     contactEmail: client?.email || '',
     customFields: [],
-    clientMessage: companySettings?.invoiceMessage || '',
+    clientMessage: companySettings?.invoiceMessage || initialCompanySettings.invoiceMessage,
     contractTerms: companySettings?.invoiceContractTerms || '',
     disclaimers: companySettings?.invoiceDisclaimers || '',
-    clientViewSettings: companySettings?.invoiceClientViewSettings || {
-      showQuantities: true,
-      showUnitCosts: true,
-      showLineItemTotals: true,
-      showTotals: true,
-      showAccountBalance: true,
-      showLateStamp: false,
-    },
-    paymentSettings: companySettings?.invoicePaymentSettings || {
-      acceptCard: true,
-      acceptBank: false,
-      allowPartialPayments: true,
-    },
+    clientViewSettings: companySettings?.invoiceClientViewSettings || initialCompanySettings.invoiceClientViewSettings,
+    paymentSettings: companySettings?.invoicePaymentSettings || initialCompanySettings.invoicePaymentSettings,
     askForReview: !!(client?.commPrefs && client.commPrefs.askForReview),
     depositApplied: 0,
     taxRate: companySettings?.defaultGstRate ?? 0,
@@ -274,9 +242,9 @@ export default function InvoiceCreateFlow({
                         <div className="flex-1">
                           <div className="flex items-center justify-between">
                             <div className="font-semibold text-gray-900">{job.jobNumber || job.title || 'Job'}</div>
-                            <div className="text-sm font-semibold text-gray-900">{currency(jobTotal, companySettings?.currencyCode)}</div>
+                            <div className="text-sm font-semibold text-gray-900">{formatCurrency(jobTotal, companySettings?.currencyCode)}</div>
                           </div>
-                          <div className="text-sm text-gray-500">{job.title || 'Service'}{job.start ? ` - ${new Date(job.start).toLocaleDateString()}` : ''}</div>
+                          <div className="text-sm text-gray-500">{job.title || 'Service'}{job.start ? ` - ${formatDate(job.start)}` : ''}</div>
                           <div className="mt-2 flex items-center gap-3 text-xs text-gray-500">
                             <span>{completedVisits} completed visits</span>
                             {requiresInvoicing && <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">Requires invoicing</span>}

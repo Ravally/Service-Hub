@@ -1,5 +1,8 @@
 // src/components/QuotesList.jsx
 import React, { useMemo, useState } from 'react';
+import { STATUS_COLORS } from '../constants/statusConstants';
+import { formatCurrency } from '../utils';
+import { periodRange, getPreviousRange, rangeLabel } from '../utils/dateUtils';
 
 const Pill = ({ className = '', children }) => (
   <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${className}`}>{children}</span>
@@ -15,14 +18,15 @@ const Menu = ({ open, onClose, children }) => (
   ) : null
 );
 
-const STATUS_COLORS = {
-  Draft: 'bg-gray-100 text-gray-800',
+// Local status color overrides for backward compatibility
+const LOCAL_STATUS_COLORS = {
   'Awaiting Response': 'bg-yellow-100 text-yellow-800',
   'Changes Requested': 'bg-amber-100 text-amber-800',
-  Approved: 'bg-green-100 text-green-800',
   Converted: 'bg-blue-100 text-blue-800',
-  Archived: 'bg-gray-100 text-gray-600',
 };
+
+// Merge centralized colors with local overrides
+const MERGED_STATUS_COLORS = { ...STATUS_COLORS, ...LOCAL_STATUS_COLORS };
 
 const KpiCard = ({ title, sub, value, money, delta, positive }) => (
   <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
@@ -48,52 +52,47 @@ function toDisplayStatus(q) {
   return 'Draft';
 }
 
-function currency(n, symbol = '$') {
-  const num = Number(n || 0);
-  try {
-    return new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }).format(num);
-  } catch { return symbol + num.toFixed(2); }
+// Removed local currency function - now using formatCurrency from utils
+
+// Map local period keys to centralized dateUtils period keys
+function mapPeriodKey(localKey) {
+  const mapping = {
+    'last_week': 'last_7_days',
+    'last_30': 'last_30_days',
+    'last_month': 'last_month',
+    'this_year': 'this_year',
+    'last_12': 'last_90_days', // Note: centralized utils don't have exact 12-month option
+    'custom': 'custom',
+    'all': 'all',
+  };
+  return mapping[localKey] || localKey;
 }
 
-function periodRange(mode, custom) {
-  const now = new Date();
-  let start, end;
-  switch (mode) {
-    case 'last_week':
-      end = now; start = new Date(now); start.setDate(start.getDate() - 7); break;
-    case 'last_30':
-      end = now; start = new Date(now); start.setDate(start.getDate() - 30); break;
-    case 'last_month':
-      end = now; start = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate()); break;
-    case 'this_year':
-      start = new Date(now.getFullYear(), 0, 1); end = now; break;
-    case 'last_12':
-      end = now; start = new Date(now.getFullYear(), now.getMonth() - 12, now.getDate()); break;
-    case 'custom':
-      start = custom?.start ? new Date(custom.start) : null;
-      end = custom?.end ? new Date(custom.end) : null; break;
-    default: return { start: null, end: null };
+// Wrapper for periodRange to handle local period keys and last_12 special case
+function getLocalPeriodRange(mode, custom) {
+  // Handle last_12 manually since centralized utils don't have this exact period
+  if (mode === 'last_12') {
+    const now = new Date();
+    const start = new Date(now.getFullYear(), now.getMonth() - 12, now.getDate());
+    return { start, end: now };
   }
-  return { start, end };
+  return periodRange(mapPeriodKey(mode), custom);
 }
 
-function getPreviousRange(start, end) {
+// Wrapper for getPreviousRange to handle null check
+function getLocalPreviousRange(start, end) {
   if (!start || !end) return { start: null, end: null };
-  const duration = end.getTime() - start.getTime();
-  const prevEnd = new Date(start);
-  const prevStart = new Date(start.getTime() - duration);
-  return { start: prevStart, end: prevEnd };
+  return getPreviousRange(start, end);
 }
 
-function rangeLabel(period, custom) {
+// Wrapper for rangeLabel to handle local period keys
+function getLocalRangeLabel(period, custom) {
   if (period === 'all') return 'All time';
   if (period === 'last_week') return 'Past 7 days';
   if (period === 'last_30') return 'Past 30 days';
-  if (period === 'last_month') return 'Last month';
-  if (period === 'this_year') return 'This year';
   if (period === 'last_12') return 'Past 12 months';
   if (period === 'custom' && custom?.start && custom?.end) return `${custom.start} - ${custom.end}`;
-  return 'Selected range';
+  return rangeLabel(mapPeriodKey(period), custom);
 }
 
 export default function QuotesList({
@@ -148,7 +147,7 @@ export default function QuotesList({
 
   // Filter + sort
   const filtered = useMemo(() => {
-    const { start, end } = periodRange(period, custom);
+    const { start, end } = getLocalPeriodRange(period, custom);
     const inRange = (d) => {
       if (!start || !end) return true;
       const dt = new Date(d || 0);
@@ -180,8 +179,8 @@ export default function QuotesList({
 
   // KPIs within selected range
   const kpis = useMemo(() => {
-    const { start, end } = periodRange(period, custom);
-    const prev = getPreviousRange(start, end);
+    const { start, end } = getLocalPeriodRange(period, custom);
+    const prev = getLocalPreviousRange(start, end);
     const useRange = !!(start && end);
 
     const inRange = (d, a, b) => {
@@ -275,7 +274,7 @@ export default function QuotesList({
     : statusFilter.length === 1
       ? statusFilter[0]
       : `${statusFilter.length} selected`;
-  const rangeText = rangeLabel(period, custom);
+  const rangeText = getLocalRangeLabel(period, custom);
 
   return (
     <div>
@@ -299,8 +298,8 @@ export default function QuotesList({
           </div>
         </div>
         <KpiCard title="Conversion rate" sub={rangeText} value={`${kpis.convRateNow}%`} delta={kpis.convDeltaPct.t} positive={kpis.convDeltaPos} />
-        <KpiCard title="Sent" sub={rangeText} value={kpis.sentCountNow} money={currency(kpis.sentValue)} delta={kpis.sentDeltaPct.t} positive={kpis.sentDeltaPct.pos} />
-        <KpiCard title="Converted" sub={rangeText} value={kpis.convCountNow} money={currency(kpis.convValue)} delta={kpis.convertedDeltaPct.t} positive={kpis.convertedDeltaPct.pos} />
+        <KpiCard title="Sent" sub={rangeText} value={kpis.sentCountNow} money={formatCurrency(kpis.sentValue)} delta={kpis.sentDeltaPct.t} positive={kpis.sentDeltaPct.pos} />
+        <KpiCard title="Converted" sub={rangeText} value={kpis.convCountNow} money={formatCurrency(kpis.convValue)} delta={kpis.convertedDeltaPct.t} positive={kpis.convertedDeltaPct.pos} />
       </div>
 
       {/* Filters/Search */}
@@ -407,8 +406,8 @@ export default function QuotesList({
                   </td>
                   <td className="p-3"><div className="truncate max-w-xs">{q._address || 'N/A'}</div></td>
                   <td className="p-3">{q.createdAt ? new Date(q.createdAt).toLocaleDateString() : 'N/A'}</td>
-                  <td className="p-3"><Pill className={STATUS_COLORS[q._status]||STATUS_COLORS.Draft}>{q._status}</Pill></td>
-                  <td className="p-3 font-semibold text-gray-900">{currency(q.total||0)}</td>
+                  <td className="p-3"><Pill className={MERGED_STATUS_COLORS[q._status]||STATUS_COLORS.Draft}>{q._status}</Pill></td>
+                  <td className="p-3 font-semibold text-gray-900">{formatCurrency(q.total||0)}</td>
                   <td className="p-3 w-12 text-right align-middle">
                     <div className="inline-block">
                       <RowActions q={q} onConvert={onConvertQuote} onArchive={(id)=>onArchiveQuotes && onArchiveQuotes([id])} onDelete={(id)=>onDeleteQuotes && onDeleteQuotes([id])} />

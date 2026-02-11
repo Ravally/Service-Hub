@@ -1,40 +1,7 @@
 // src/components/InvoicePrintView.jsx
 import React, { useEffect } from 'react';
-
-const currency = (value, code) => {
-  const num = Number(value || 0);
-  try { return new Intl.NumberFormat(undefined, { style: 'currency', currency: code || 'USD' }).format(num); }
-  catch { return `$${num.toFixed(2)}`; }
-};
-
-const formatDate = (isoString) => isoString ? new Date(isoString).toLocaleDateString() : '-';
-
-const computeTotals = (doc) => {
-  const items = doc.lineItems || [];
-  let subtotalBeforeDiscount = 0;
-  let lineDiscountTotal = 0;
-  items.forEach((it) => {
-    const itemType = it?.type || 'line_item';
-    if (itemType === 'text' || it?.isOptional) return;
-    const qty = parseFloat(it.qty) || 0;
-    const price = parseFloat(it.price) || 0;
-    const lineSub = qty * price;
-    subtotalBeforeDiscount += lineSub;
-    const ldType = it.discountType || 'amount';
-    const ldValueNum = parseFloat(it.discountValue || 0);
-    const ldAmt = ldType === 'percent' ? (lineSub * (ldValueNum / 100)) : ldValueNum;
-    lineDiscountTotal += (Number.isFinite(ldAmt) ? ldAmt : 0);
-  });
-  const quoteDiscType = doc.quoteDiscountType || doc.discountType || 'amount';
-  const quoteDiscValue = parseFloat(doc.quoteDiscountValue ?? doc.discountValue ?? 0);
-  const discountedSubtotal = Math.max(0, subtotalBeforeDiscount - lineDiscountTotal);
-  const quoteDiscAmt = quoteDiscType === 'percent' ? (discountedSubtotal * (quoteDiscValue / 100)) : quoteDiscValue;
-  const afterAllDiscounts = Math.max(0, discountedSubtotal - (Number.isFinite(quoteDiscAmt) ? quoteDiscAmt : 0));
-  const taxRate = parseFloat(doc.taxRate || 0);
-  const taxAmount = afterAllDiscounts * (taxRate / 100);
-  const total = afterAllDiscounts + taxAmount;
-  return { subtotalBeforeDiscount, taxAmount, total, taxRate };
-};
+import { formatCurrency, formatDate } from '../utils';
+import { computeTotals } from '../utils/calculations';
 
 const InvoicePrintView = ({ invoice, client, company, onBack, statusColors }) => {
   useEffect(() => {
@@ -146,8 +113,8 @@ const InvoicePrintView = ({ invoice, client, company, onBack, statusColors }) =>
                   {item.isOptional && <div className="text-xs text-amber-600">Optional</div>}
                 </td>
                 {showQty && <td className="text-center p-3">{item.qty}</td>}
-                {showUnit && <td className="text-right p-3">{currency(item.price || 0, currencyCode)}</td>}
-                {showLineTotals && <td className="text-right p-3">{currency(lineTotal, currencyCode)}</td>}
+                {showUnit && <td className="text-right p-3">{formatCurrency(item.price || 0, currencyCode)}</td>}
+                {showLineTotals && <td className="text-right p-3">{formatCurrency(lineTotal, currencyCode)}</td>}
               </tr>
             );
           })}
@@ -157,12 +124,12 @@ const InvoicePrintView = ({ invoice, client, company, onBack, statusColors }) =>
       {showTotals && (
         <div className="flex justify-end">
           <div className="w-full max-w-sm space-y-2">
-            <div className="flex justify-between text-sm"><span>Subtotal</span><span>{currency(totals.subtotalBeforeDiscount, currencyCode)}</span></div>
-            <div className="flex justify-between text-sm"><span>Tax ({totals.taxRate}%)</span><span>{currency(totals.taxAmount, currencyCode)}</span></div>
+            <div className="flex justify-between text-sm"><span>Subtotal</span><span>{formatCurrency(totals.subtotalBeforeDiscount, currencyCode)}</span></div>
+            <div className="flex justify-between text-sm"><span>Tax ({totals.taxRate}%)</span><span>{formatCurrency(totals.taxAmount, currencyCode)}</span></div>
             {view.showAccountBalance && accountBalance !== null && (
-              <div className="flex justify-between text-sm"><span>Account balance</span><span>{currency(accountBalance, currencyCode)}</span></div>
+              <div className="flex justify-between text-sm"><span>Account balance</span><span>{formatCurrency(accountBalance, currencyCode)}</span></div>
             )}
-            <div className="flex justify-between text-lg font-semibold border-t-2 pt-2"><span>Total</span><span>{currency(totals.total, currencyCode)}</span></div>
+            <div className="flex justify-between text-lg font-semibold border-t-2 pt-2"><span>Total</span><span>{formatCurrency(totals.total, currencyCode)}</span></div>
           </div>
         </div>
       )}

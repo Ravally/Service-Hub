@@ -63,6 +63,7 @@ const DashboardCards = ({ quotes = [], jobs = [], invoices = [], onNewQuote, onN
       const q = quotes.find(x => x.id === j.quoteId);
       return s + (q?.total || 0);
     }, 0);
+    const requiresScheduling = jobs.filter(j => j.status === 'Unscheduled').length;
     const actionRequired = jobs.filter(j => j.status === 'In Progress').length;
     const startedJobs = jobs.filter(j => j.status === 'In Progress').length;
     const completedJobs = jobs.filter(j => j.status === 'Completed').length;
@@ -75,6 +76,7 @@ const DashboardCards = ({ quotes = [], jobs = [], invoices = [], onNewQuote, onN
       accepted,
       draftQu,
       requiresInvoicing,
+      requiresScheduling,
       actionRequired,
       activeJobs,
       pastDueCount,
@@ -139,8 +141,8 @@ const DashboardCards = ({ quotes = [], jobs = [], invoices = [], onNewQuote, onN
           accent={{ bg: 'bg-lime-100', text: 'text-lime-700', bar: 'bg-lime-500' }}
           action={<div className="hidden sm:flex items-center gap-2"><button onClick={onNewJob} className="chip border-lime-300 text-lime-700">New Job</button><span className="chip border-lime-300 text-lime-700">Batch Invoice</span></div>}
         >
+          <StatRow label="Requires scheduling" value={<span>{data.requiresScheduling}</span>} />
           <StatRow label="Requires invoicing" value={<span>{data.requiresInvoicing}</span>} sub={<span>{data.fmt(data.requiresInvoicingSum)}</span>} />
-          <StatRow label="Action required" value={<span>{data.actionRequired}</span>} />
           <StatRow label="Active" value={<span>{data.activeJobs}</span>} />
           <div className="mt-3 text-xs text-gray-500">Last 7 Days</div>
           <div className="mt-2 text-xs text-gray-500 flex items-center gap-4">

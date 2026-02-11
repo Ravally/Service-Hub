@@ -92,36 +92,28 @@ export function usePublicAccess(appState) {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const token = params.get('portalToken');
-    console.log('[Portal] Token from URL:', token);
     if (!token) return;
     const parts = token.split('.');
     if (parts.length < 2) { setPublicError('Invalid portal link.'); return; }
     const uid = parts[0];
     const clientId = parts[1];
-    console.log('[Portal] Parsed - UID:', uid, 'ClientID:', clientId);
     (async () => {
       try {
         const auth = getAuth();
-        console.log('[Portal] Current user before anon sign-in:', auth.currentUser);
         if (!auth.currentUser) {
           try {
             await signInAnonymously(auth);
-            console.log('[Portal] Signed in anonymously');
           } catch (e) {
             console.error('[Portal] Anonymous sign-in failed:', e);
           }
         }
-        console.log('[Portal] Fetching client document...');
         const cSnap = await getDoc(doc(db, `users/${uid}/clients`, clientId));
-        console.log('[Portal] Client document exists:', cSnap.exists());
         if (!cSnap.exists()) { setPublicError('Client not found.'); return; }
 
         const client = { id: cSnap.id, ...cSnap.data() };
-        console.log('[Portal] Client loaded:', client.name);
 
         // Check token expiration
         if (isTokenExpired(client.portalTokenCreatedAt)) {
-          console.log('[Portal] Token expired');
           setPublicError('This portal link has expired. Please contact the business for a new link.');
           return;
         }
@@ -129,7 +121,6 @@ export function usePublicAccess(appState) {
         // Log portal access
         await logPortalAccess(uid, clientId, 'view_portal', { clientName: client.name });
 
-        console.log('[Portal] Setting public portal context');
         setPublicPortalContext({ uid, clientId });
       } catch (err) {
         console.error('Portal load error:', err);

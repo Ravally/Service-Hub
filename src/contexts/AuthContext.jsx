@@ -6,7 +6,7 @@ import {
   onAuthStateChanged,
   signOut
 } from 'firebase/auth';
-import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, collection, query, where, getDocs, deleteDoc } from 'firebase/firestore';
 import { db } from '../firebase/config';
 
 const AuthContext = createContext(null);
@@ -31,27 +31,58 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
-        setUser(firebaseUser);
         setUserId(firebaseUser.uid);
+        const userDocRef = doc(db, 'users', firebaseUser.uid);
+        const userDocSnap = await getDoc(userDocRef);
 
-        try {
-          const profileDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
-          if (profileDoc.exists()) {
-            setUserProfile({ id: profileDoc.id, ...profileDoc.data() });
+        if (userDocSnap.exists()) {
+          setUser(firebaseUser);
+          setUserProfile(userDocSnap.data());
+        } else {
+          // Check for an invite
+          const invitesQuery = query(collection(db, 'invites'), where("email", "==", firebaseUser.email.toLowerCase()));
+          const invitesSnapshot = await getDocs(invitesQuery);
+
+          let userRole = 'member'; // Default role
+          if (!invitesSnapshot.empty) {
+            const inviteDoc = invitesSnapshot.docs[0];
+            userRole = inviteDoc.data().role;
+            await deleteDoc(inviteDoc.ref); // Delete invite after claiming
+          } else {
+            // If no invite, check if they are the VERY first user ever.
+            const usersQuery = query(collection(db, 'users'));
+            const usersSnapshot = await getDocs(usersQuery);
+            if (usersSnapshot.empty) {
+              userRole = 'admin'; // First user is always admin
+            } else {
+              // Block sign-up if not invited and not the first user
+              alert("Sign-up failed: No invitation found for this email address.");
+              await signOut(auth);
+              setUserId(null);
+              setUser(null);
+              setUserProfile(null);
+              setIsLoading(false);
+              return;
+            }
           }
-        } catch (err) {
-          console.error('Error fetching user profile:', err);
+
+          const newUserProfile = {
+            email: firebaseUser.email,
+            role: userRole,
+            createdAt: new Date().toISOString(),
+          };
+
+          await setDoc(userDocRef, newUserProfile);
+          setUser(firebaseUser);
+          setUserProfile(newUserProfile);
         }
-
-        setIsLoading(false);
       } else {
-        setUser(null);
         setUserId(null);
+        setUser(null);
         setUserProfile(null);
-        setIsLoading(false);
       }
+      setIsLoading(false);
     });
-
     return () => unsubscribe();
   }, [auth]);
 
@@ -59,14 +90,6 @@ export function AuthProvider({ children }) {
     try {
       setError('');
       const result = await createUserWithEmailAndPassword(auth, email, password);
-
-      await setDoc(doc(db, 'users', result.user.uid), {
-        email,
-        createdAt: new Date().toISOString(),
-        role: 'owner',
-        ...additionalData,
-      });
-
       return result;
     } catch (err) {
       setError(err.message);
@@ -96,7 +119,6 @@ export function AuthProvider({ children }) {
 
   const updateUserProfile = async (updates) => {
     if (!userId) return;
-
     try {
       await setDoc(doc(db, 'users', userId), updates, { merge: true });
       setUserProfile(prev => ({ ...prev, ...updates }));
@@ -110,6 +132,7 @@ export function AuthProvider({ children }) {
     user,
     userId,
     userProfile,
+    setUserProfile,
     isLoading,
     error,
     signUp,

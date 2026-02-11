@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState } from 'react';
-import { initialCompanySettings, initialInvoiceSettings } from '../constants';
+import { initialCompanySettings, initialInvoiceSettings, initialQuoteState, initialJobState } from '../constants';
 
 const AppStateContext = createContext(null);
 
@@ -32,6 +32,14 @@ export function AppStateProvider({ children }) {
     quoteBody: 'Hi {{clientName}},\n\nPlease find your quote {{documentNumber}} for {{total}}.\n\nView/approve it from the app.\n\nThanks,\n{{companyName}}',
   });
 
+  // Form state
+  const [newQuote, setNewQuote] = useState(initialQuoteState);
+  const [newJob, setNewJob] = useState(initialJobState);
+  const [logoFile, setLogoFile] = useState(null);
+  const [newInvite, setNewInvite] = useState({ email: '', role: 'member' });
+  const [newTemplate, setNewTemplate] = useState({ name: '', price: 0 });
+  const [newStaff, setNewStaff] = useState({ name: '', email: '', role: 'tech', color: '' });
+
   // UI State
   const [activeView, setActiveView] = useState('dashboard');
   const [selectedClient, setSelectedClient] = useState(null);
@@ -52,6 +60,18 @@ export function AppStateProvider({ children }) {
   // UI toggles
   const [showJobForm, setShowJobForm] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [globalQuery, setGlobalQuery] = useState('');
+
+  // Filter state
+  const [quoteStatusFilter, setQuoteStatusFilter] = useState([]);
+  const [jobStatusFilter, setJobStatusFilter] = useState([]);
+  const [assigneeFilter, setAssigneeFilter] = useState('');
+  const [invoiceStatusFilter, setInvoiceStatusFilter] = useState([]);
+
+  // Loading/error
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
 
   // Schedule view state
   const [scheduleView, setScheduleView] = useState(() => {
@@ -83,102 +103,95 @@ export function AppStateProvider({ children }) {
   // Helper to persist schedule view settings
   const updateScheduleView = (view) => {
     setScheduleView(view);
-    try {
-      localStorage.setItem('scheduleView', view);
-    } catch (e) {
-      console.warn('Failed to save schedule view:', e);
-    }
+    try { localStorage.setItem('scheduleView', view); } catch (e) {}
   };
 
   const updateScheduleRange = (range) => {
     setScheduleRange(range);
-    try {
-      localStorage.setItem('scheduleRange', range);
-    } catch (e) {
-      console.warn('Failed to save schedule range:', e);
-    }
+    try { localStorage.setItem('scheduleRange', range); } catch (e) {}
+  };
+
+  // Navigation helper: reset all selections when switching views
+  const navigateToView = (view) => {
+    setActiveView(view);
+    setSelectedClient(null);
+    setSelectedProperty(null);
+    setSelectedJob(null);
+    setSelectedQuote(null);
+    setSelectedInvoice(null);
+    setSidebarOpen(false);
   };
 
   const value = {
     // Data
-    clients,
-    setClients,
-    quotes,
-    setQuotes,
-    jobs,
-    setJobs,
-    invoices,
-    setInvoices,
-    staff,
-    setStaff,
-    quoteTemplates,
-    setQuoteTemplates,
-    notifications,
-    setNotifications,
-    clientNotes,
-    setClientNotes,
+    clients, setClients,
+    quotes, setQuotes,
+    jobs, setJobs,
+    invoices, setInvoices,
+    staff, setStaff,
+    quoteTemplates, setQuoteTemplates,
+    notifications, setNotifications,
+    clientNotes, setClientNotes,
 
     // Settings
-    companySettings,
-    setCompanySettings,
-    invoiceSettings,
-    setInvoiceSettings,
-    emailTemplates,
-    setEmailTemplates,
+    companySettings, setCompanySettings,
+    invoiceSettings, setInvoiceSettings,
+    emailTemplates, setEmailTemplates,
+
+    // Form state
+    newQuote, setNewQuote,
+    newJob, setNewJob,
+    logoFile, setLogoFile,
+    newInvite, setNewInvite,
+    newTemplate, setNewTemplate,
+    newStaff, setNewStaff,
 
     // UI State
-    activeView,
-    setActiveView,
-    selectedClient,
-    setSelectedClient,
-    selectedProperty,
-    setSelectedProperty,
-    selectedJob,
-    setSelectedJob,
-    selectedQuote,
-    setSelectedQuote,
-    selectedInvoice,
-    setSelectedInvoice,
-    invoiceToPrint,
-    setInvoiceToPrint,
-    quoteToPrint,
-    setQuoteToPrint,
-    invoiceCreateContext,
-    setInvoiceCreateContext,
+    activeView, setActiveView,
+    selectedClient, setSelectedClient,
+    selectedProperty, setSelectedProperty,
+    selectedJob, setSelectedJob,
+    selectedQuote, setSelectedQuote,
+    selectedInvoice, setSelectedInvoice,
+    invoiceToPrint, setInvoiceToPrint,
+    quoteToPrint, setQuoteToPrint,
+    invoiceCreateContext, setInvoiceCreateContext,
 
     // Client filters
-    clientSearchTerm,
-    setClientSearchTerm,
-    clientTagFilter,
-    setClientTagFilter,
-    clientBeingEdited,
-    setClientBeingEdited,
-    autoAddProperty,
-    setAutoAddProperty,
+    clientSearchTerm, setClientSearchTerm,
+    clientTagFilter, setClientTagFilter,
+    clientBeingEdited, setClientBeingEdited,
+    autoAddProperty, setAutoAddProperty,
 
     // UI toggles
-    showJobForm,
-    setShowJobForm,
-    showNotifications,
-    setShowNotifications,
+    showJobForm, setShowJobForm,
+    showNotifications, setShowNotifications,
+    sidebarOpen, setSidebarOpen,
+    globalQuery, setGlobalQuery,
+
+    // Filter state
+    quoteStatusFilter, setQuoteStatusFilter,
+    jobStatusFilter, setJobStatusFilter,
+    assigneeFilter, setAssigneeFilter,
+    invoiceStatusFilter, setInvoiceStatusFilter,
+
+    // Loading/error
+    isLoading, setIsLoading,
+    error, setError,
 
     // Schedule
-    scheduleView,
-    updateScheduleView,
-    scheduleRange,
-    updateScheduleRange,
-    calendarDate,
-    setCalendarDate,
+    scheduleView, updateScheduleView,
+    scheduleRange, updateScheduleRange,
+    calendarDate, setCalendarDate,
 
     // Public contexts
-    publicQuoteContext,
-    setPublicQuoteContext,
-    publicMessage,
-    setPublicMessage,
-    publicError,
-    setPublicError,
-    publicPortalContext,
-    setPublicPortalContext,
+    publicQuoteContext, setPublicQuoteContext,
+    publicMessage, setPublicMessage,
+    publicError, setPublicError,
+    publicPortalContext, setPublicPortalContext,
+
+    // Navigation helper
+    navigateToView,
   };
 
   return <AppStateContext.Provider value={value}>{children}</AppStateContext.Provider>;

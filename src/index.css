@@ -12,15 +12,22 @@ body {
 
 @layer base {
   html { @apply antialiased; }
-  body { @apply leading-relaxed text-slate-100 bg-midnight; }
-  h1, h2, h3 { @apply leading-tight text-slate-100 font-display; }
+  body {
+    @apply leading-relaxed text-slate-100;
+    background-color: #0C1220; /* midnight */
+  }
+  h1, h2, h3 {
+    @apply leading-tight text-slate-100;
+    font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  }
   small { @apply leading-snug; }
 }
 
 @layer components {
   /* Card Components - Dark Mode */
   .card {
-    @apply bg-charcoal rounded-xl border border-slate-700/30 shadow-sm overflow-hidden;
+    @apply rounded-xl border border-slate-700/30 shadow-sm overflow-hidden;
+    background-color: #1A2332; /* charcoal */
   }
   .card-header {
     @apply px-4 py-3 border-b border-slate-700/30 flex items-center justify-between;
@@ -29,7 +36,10 @@ body {
   /* Utility Components */
   .chip { @apply px-2 py-0.5 text-xs rounded border; }
   .list-row {
-    @apply px-3 py-3 sm:px-4 hover:bg-charcoal/50 cursor-pointer transition-colors;
+    @apply px-3 py-3 sm:px-4 cursor-pointer transition-colors;
+  }
+  .list-row:hover {
+    background-color: rgba(26, 35, 50, 0.5); /* charcoal with 50% opacity */
   }
   .legend-dot { @apply inline-block h-2.5 w-2.5 rounded-full; }
 
@@ -40,16 +50,41 @@ body {
 
   /* Trellio Button Variants */
   .btn-primary {
-    @apply text-white bg-trellio-teal hover:bg-trellio-teal-deep focus:outline-none focus:ring-2 focus:ring-trellio-teal/40 shadow-sm hover:shadow-md;
+    @apply text-white focus:outline-none focus:ring-2 shadow-sm;
+    background-color: #0EA5A0; /* trellio-teal */
+    --tw-ring-color: rgba(14, 165, 160, 0.4); /* trellio-teal with 40% opacity */
+  }
+  .btn-primary:hover {
+    background-color: #087F7A; /* trellio-teal-deep */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   }
   .btn-secondary {
-    @apply text-slate-300 bg-charcoal border border-slate-700 hover:bg-slate-dark hover:border-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-700/40;
+    @apply text-slate-300 border border-slate-700 focus:outline-none focus:ring-2;
+    background-color: #1A2332; /* charcoal */
+    --tw-ring-color: rgba(51, 65, 85, 0.4); /* slate-700 with 40% opacity */
+  }
+  .btn-secondary:hover {
+    background-color: #2D3B4E; /* slate-dark */
+    border-color: rgb(71, 85, 105); /* slate-600 */
   }
   .btn-accent-coral {
-    @apply text-white bg-signal-coral hover:bg-signal-coral-deep focus:outline-none focus:ring-2 focus:ring-signal-coral/40 shadow-sm hover:shadow-md;
+    @apply text-white focus:outline-none focus:ring-2 shadow-sm;
+    background-color: #F7845E; /* signal-coral */
+    --tw-ring-color: rgba(247, 132, 94, 0.4); /* signal-coral with 40% opacity */
+  }
+  .btn-accent-coral:hover {
+    background-color: #E56840; /* signal-coral-deep */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   }
   .btn-accent-amber {
-    @apply text-charcoal bg-harvest-amber hover:bg-harvest-amber-deep focus:outline-none focus:ring-2 focus:ring-harvest-amber/40 shadow-sm hover:shadow-md;
+    @apply focus:outline-none focus:ring-2 shadow-sm;
+    color: #1A2332; /* charcoal */
+    background-color: #FFAA5C; /* harvest-amber */
+    --tw-ring-color: rgba(255, 170, 92, 0.4); /* harvest-amber with 40% opacity */
+  }
+  .btn-accent-amber:hover {
+    background-color: #FF9633; /* harvest-amber-deep */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   }
 
   /* Legacy button support (for gradual migration) */

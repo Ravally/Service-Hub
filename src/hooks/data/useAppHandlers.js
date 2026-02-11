@@ -367,9 +367,13 @@ export function useAppHandlers(userId, userProfile, appState) {
     if (!db || !userId) return;
     try {
       let token = client.publicPortalToken;
+      const now = new Date().toISOString();
       if (!token) {
         token = `${userId}.${client.id}.${Math.random().toString(36).slice(2,10)}`;
-        await updateDoc(doc(db, `users/${userId}/clients`, client.id), { publicPortalToken: token });
+        await updateDoc(doc(db, `users/${userId}/clients`, client.id), {
+          publicPortalToken: token,
+          portalTokenCreatedAt: now,
+        });
       }
       const link = `${window.location.origin}${window.location.pathname}?portalToken=${encodeURIComponent(token)}`;
       try { window.open(link, '_blank', 'noopener'); } catch (_) {}
@@ -688,9 +692,13 @@ export function useAppHandlers(userId, userProfile, appState) {
   const handlePreviewQuoteAsClient = async (quote) => {
     if (!db || !userId || !quote?.id) return;
     let token = quote.publicApprovalToken;
+    const now = new Date().toISOString();
     if (!token) {
       token = `${userId}.${quote.id}.${Math.random().toString(36).slice(2,10)}`;
-      await updateDoc(doc(db, `users/${userId}/quotes`, quote.id), { publicApprovalToken: token });
+      await updateDoc(doc(db, `users/${userId}/quotes`, quote.id), {
+        publicApprovalToken: token,
+        tokenCreatedAt: now,
+      });
     }
     const link = `${window.location.origin}${window.location.pathname}?quoteToken=${encodeURIComponent(token)}`;
     window.open(link, '_blank', 'noopener,noreferrer');
@@ -711,9 +719,13 @@ export function useAppHandlers(userId, userProfile, appState) {
     if (!db || !userId) return;
     try {
       let token = quote.publicApprovalToken;
+      const now = new Date().toISOString();
       if (!token) {
         token = `${userId}.${quote.id}.${Math.random().toString(36).slice(2,10)}`;
-        await updateDoc(doc(db, `users/${userId}/quotes`, quote.id), { publicApprovalToken: token });
+        await updateDoc(doc(db, `users/${userId}/quotes`, quote.id), {
+          publicApprovalToken: token,
+          tokenCreatedAt: now,
+        });
       }
       const link = `${window.location.origin}${window.location.pathname}?quoteToken=${encodeURIComponent(token)}`;
       window.prompt('Copy approval link:', link);

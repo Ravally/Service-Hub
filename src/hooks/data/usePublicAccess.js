@@ -1,7 +1,36 @@
 import { useEffect } from 'react';
 import { getAuth, signInAnonymously } from 'firebase/auth';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, addDoc, collection } from 'firebase/firestore';
 import { db } from '../../firebase/config';
+
+/**
+ * Check if a token has expired (90 days default)
+ */
+function isTokenExpired(tokenCreatedAt, expiryDays = 90) {
+  if (!tokenCreatedAt) return false; // If no creation date, assume valid (old tokens)
+  const createdDate = new Date(tokenCreatedAt);
+  const expiryDate = new Date(createdDate);
+  expiryDate.setDate(expiryDate.getDate() + expiryDays);
+  return new Date() > expiryDate;
+}
+
+/**
+ * Log portal access for security auditing
+ */
+async function logPortalAccess(uid, clientId, action, metadata = {}) {
+  try {
+    await addDoc(collection(db, `users/${uid}/portalAccessLogs`), {
+      clientId,
+      action, // 'view', 'approve_quote', 'decline_quote', 'pay_invoice', etc.
+      timestamp: new Date().toISOString(),
+      userAgent: navigator.userAgent,
+      ...metadata,
+    });
+  } catch (error) {
+    console.warn('Failed to log portal access:', error);
+    // Don't fail the main operation if logging fails
+  }
+}
 
 /**
  * Hook to detect public quote approval and client portal tokens from the URL.
@@ -30,6 +59,16 @@ export function usePublicAccess(appState) {
         const qSnap = await getDoc(doc(db, `users/${uid}/quotes`, quoteId));
         if (!qSnap.exists()) { setPublicError('Quote not found.'); return; }
         const quote = { id: qSnap.id, ...qSnap.data() };
+
+        // Check token expiration
+        if (isTokenExpired(quote.tokenCreatedAt || quote.createdAt)) {
+          setPublicError('This quote link has expired. Please contact the business for a new link.');
+          return;
+        }
+
+        // Log access
+        await logPortalAccess(uid, quote.clientId, 'view_quote_approval', { quoteId, quoteNumber: quote.quoteNumber });
+
         if (!quote.openedAt) {
           try {
             const openedAt = new Date().toISOString();
@@ -66,6 +105,18 @@ export function usePublicAccess(appState) {
         }
         const cSnap = await getDoc(doc(db, `users/${uid}/clients`, clientId));
         if (!cSnap.exists()) { setPublicError('Client not found.'); return; }
+
+        const client = { id: cSnap.id, ...cSnap.data() };
+
+        // Check token expiration
+        if (isTokenExpired(client.portalTokenCreatedAt)) {
+          setPublicError('This portal link has expired. Please contact the business for a new link.');
+          return;
+        }
+
+        // Log portal access
+        await logPortalAccess(uid, clientId, 'view_portal', { clientName: client.name });
+
         setPublicPortalContext({ uid, clientId });
       } catch (err) {
         console.error('Portal load error:', err);

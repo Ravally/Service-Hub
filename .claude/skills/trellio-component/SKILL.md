@@ -1,6 +1,6 @@
 ---
 name: trellio-component
-description: "Create React/Next.js UI components for Trellio following brand guidelines, design tokens, and project conventions. Use when: building pages, forms, cards, modals, dashboards, tables, navigation, or any user-facing UI. Triggers include: 'create a component', 'build a page', 'add a form', 'new section', 'UI for', or any request involving visual elements, layouts, or interactive features for the Trellio app."
+description: "Create React UI components for Trellio following brand guidelines, design tokens, and project conventions. Use when: building pages, forms, cards, modals, dashboards, tables, navigation, or any user-facing UI. Triggers: 'create a component', 'build a page', 'add a form', 'new section', 'UI for', or any request involving visual elements, layouts, or interactive features."
 ---
 
 # Trellio Component Generator
@@ -11,16 +11,16 @@ Generate production-ready React components for Trellio — a field service manag
 
 ## Tech Stack
 
-- **Framework:** Next.js 14+ (App Router)
-- **Language:** TypeScript (strict mode)
+- **Framework:** React 18+ with Vite
+- **Language:** JavaScript (JSX) — NOT TypeScript
 - **Styling:** Tailwind CSS with custom Trellio theme
-- **State:** React hooks + context (Zustand for global state if needed)
-- **Forms:** React Hook Form + Zod validation
-- **Icons:** Lucide React
+- **State:** React hooks + Context (AuthContext, AppStateContext)
+- **Data:** Firebase/Firestore via custom hooks (useClients, useJobs, etc.)
+- **Icons:** Custom SVG components in `components/icons/`
 
 ## Brand Tokens (Required)
 
-Always use these — never hardcode hex values directly.
+Use Tailwind classes from `tailwind.config.js`. Never hardcode hex values.
 
 | Token | Tailwind Class | Hex | Usage |
 |-------|---------------|-----|-------|
@@ -34,52 +34,123 @@ Always use these — never hardcode hex values directly.
 | Warm Cream | `trellio-cream` | #FFF9F5 | Light page backgrounds |
 | Field Gray | `trellio-gray` | #6B7280 | Secondary text, borders |
 
-## File Structure
+## File Structure (Match Existing)
 
 ```
 src/
 ├── components/
-│   ├── ui/                    # Shared primitives (Button, Input, Card, Modal, Badge)
-│   ├── forms/                 # Form components (JobForm, InvoiceForm, ClientForm)
-│   ├── layout/                # Layout components (Sidebar, Header, MobileNav)
-│   ├── dashboard/             # Dashboard-specific widgets
-│   ├── scheduling/            # Calendar, time slots, dispatch
-│   ├── invoicing/             # Invoice builder, line items, payment
-│   └── clients/               # Client cards, lists, detail views
-├── app/
-│   ├── (dashboard)/           # Authenticated dashboard routes
-│   ├── (marketing)/           # Public marketing pages
-│   └── (auth)/                # Login, signup, forgot password
-└── lib/
-    ├── hooks/                 # Custom hooks
-    ├── utils/                 # Utility functions
-    └── types/                 # Shared TypeScript types
+│   ├── AppContent.jsx          # Main view router (all view switching)
+│   ├── Auth.jsx                # Login/signup
+│   ├── Sidebar.jsx             # Navigation sidebar
+│   ├── DashboardCards.jsx      # Dashboard KPI cards
+│   ├── CalendarView.jsx        # Scheduling calendar
+│   ├── [Feature]List.jsx       # List views (ClientsList, JobsList, etc.)
+│   ├── [Feature]DetailView.jsx # Detail views
+│   ├── [Feature]CreateForm.jsx # Creation forms
+│   ├── common/                 # Reusable primitives (KpiCard, Pill, Chip)
+│   ├── icons/                  # SVG icon components + Trellio logos
+│   ├── clients/                # Client sub-components
+│   ├── jobs/                   # Job sub-components (6 cards + utils)
+│   ├── invoices/               # Invoice sub-components
+│   ├── forms/                  # Form builder, renderer, checklists
+│   ├── settings/               # Settings tab components
+│   ├── timesheets/             # Timesheet components
+│   └── clientPortal/           # Client portal sub-components
+├── hooks/
+│   ├── data/                   # Firestore CRUD hooks (useClients, useJobs, etc.)
+│   ├── ui/                     # UI state hooks (useAsync, useFormState, useToggle)
+│   └── business/               # Business logic hooks (reserved)
+├── contexts/
+│   ├── AuthContext.jsx          # Firebase Auth state
+│   └── AppStateContext.jsx      # App state (collections, filters, navigation)
+├── constants/                   # Status definitions, defaults, field types, limits
+└── utils/                       # Calculations, formatting, date, validation, PDF, SMS
 ```
 
 ## Component Template
 
-Every component must follow this structure:
+Every component must follow this pattern (matches existing codebase):
 
-```tsx
-// src/components/[feature]/ComponentName.tsx
-"use client"; // Only if using hooks, events, or browser APIs
-
-import { type FC } from "react";
-// Group imports: React → Next.js → external libs → internal components → types
-
-interface ComponentNameProps {
-  // Always define explicit prop types — never use `any`
-}
+```jsx
+// src/components/[feature]/ComponentName.jsx
+import { useState, useEffect } from 'react';
+// Group imports: React → Firebase → hooks → components → constants → utils
 
 /**
  * Brief description of what this component does.
- * Used in: [where this component appears]
+ * Used in: [where this component appears in AppContent.jsx]
  */
-export const ComponentName: FC<ComponentNameProps> = ({ ...props }) => {
+export default function ComponentName({ /* props */ }) {
+  // State
+  // Effects
+  // Handlers
+  // Render
   return (
-    {/* Component JSX */}
+    <div className="...">
+      {/* Component JSX */}
+    </div>
   );
-};
+}
+```
+
+**IMPORTANT:** The existing codebase uses `export default function` — follow this pattern, NOT named exports.
+
+## Data Patterns (Firestore)
+
+### Reading data — use existing hooks:
+```jsx
+import { useClients } from '../hooks/data/useClients';
+import { useJobs } from '../hooks/data/useJobs';
+import { useInvoices } from '../hooks/data/useInvoices';
+import { useQuotes } from '../hooks/data/useQuotes';
+
+// In component:
+const { clients, loading } = useClients(companyId);
+```
+
+### Writing data — use existing handlers via AppStateContext:
+```jsx
+import { useAppState } from '../contexts/AppStateContext';
+
+function MyComponent() {
+  const { handlers } = useAppState();
+  
+  const handleSave = async () => {
+    await handlers.handleSaveClient(clientData);
+  };
+}
+```
+
+### Firestore direct (for new collections):
+```jsx
+import { collection, addDoc, updateDoc, doc, query, where, onSnapshot } from 'firebase/firestore';
+import { db } from '../firebase/config';
+
+// Real-time listener
+useEffect(() => {
+  const q = query(
+    collection(db, 'companies', companyId, '[collection]'),
+    where('status', '==', 'active')
+  );
+  const unsub = onSnapshot(q, (snap) => {
+    setItems(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+  });
+  return unsub;
+}, [companyId]);
+```
+
+## View Integration
+
+New views are added to `AppContent.jsx` via the view routing pattern:
+```jsx
+// In AppContent.jsx's render switch:
+{currentView === 'newFeature' && <NewFeatureView />}
+```
+
+Navigation is triggered via AppStateContext:
+```jsx
+const { setCurrentView } = useAppState();
+setCurrentView('newFeature');
 ```
 
 ## Rules
@@ -88,79 +159,44 @@ export const ComponentName: FC<ComponentNameProps> = ({ ...props }) => {
 - **Minimum touch target:** 44x44px (48x48px preferred for field use)
 - **Minimum font size:** 16px body, 14px captions (no smaller)
 - **Contrast ratio:** 4.5:1 minimum for all text
-- **Always include:** `aria-label`, `role`, keyboard navigation, focus indicators
-- **Forms:** Always associate labels with inputs, show inline validation errors
-- **Loading states:** Always show skeleton/spinner — never leave users guessing
+- **Forms:** Always associate labels with inputs, show inline validation
+- **Loading states:** Always show loading indicator — never leave users guessing
 
 ### Responsive Design
 - **Mobile-first:** Write mobile styles first, then `md:` and `lg:` breakpoints
-- **Breakpoints:** `sm: 640px` | `md: 768px` | `lg: 1024px` | `xl: 1280px`
-- **Dashboard layout:** Collapsible sidebar on mobile → persistent sidebar on `lg:`
+- **Sidebar:** Collapsible on mobile → persistent on `lg:`
 - **Tables:** Horizontal scroll on mobile, or convert to card layout
 
-### Naming & Exports
-- **Files:** PascalCase matching component name: `JobCard.tsx`
-- **Named exports only:** `export const JobCard` — never default exports
-- **Props interface:** `ComponentNameProps` — always exported
+### Naming & Patterns
+- **Files:** PascalCase matching component name: `JobCard.jsx`
+- **Default exports:** `export default function ComponentName`
 - **Hooks:** `use` prefix: `useJobs`, `useSchedule`
+- **Handlers:** `handle` prefix: `handleSave`, `handleDelete`
+- **Sub-components:** Feature folder: `jobs/JobInfoCard.jsx`
 
-### State & Data
-- **Server Components by default** — only add `"use client"` when necessary
-- **Data fetching:** Server Components with `async/await`, or React Query for client-side
-- **Forms:** React Hook Form + Zod schema (never uncontrolled without validation)
-- **URL state:** Use `nuqs` or `useSearchParams` for filters, pagination, tabs
+### Status & Lifecycle Patterns
+Use constants from `src/constants/statusConstants.js`:
+```jsx
+import { JOB_STATUSES, INVOICE_STATUSES, QUOTE_STATUSES } from '../constants/statusConstants';
+```
 
 ### Do NOT
+- Use TypeScript — this project is JavaScript (JSX)
 - Use inline styles — always Tailwind classes
 - Hardcode colors — always use Trellio theme tokens
 - Create files longer than 250 lines — split into sub-components
-- Use `any` type — always explicit TypeScript types
-- Skip loading/error/empty states — every data-driven component needs all three
-- Forget dark mode — Trellio uses `class` strategy for dark mode toggling
-
-## Example Patterns
-
-### Button Variants
-```tsx
-// Use consistent button patterns across the app
-<Button variant="primary">   // trellio-teal bg, white text
-<Button variant="secondary">  // border trellio-teal, teal text
-<Button variant="danger">     // trellio-coral bg, white text
-<Button variant="ghost">      // transparent, teal text, hover bg
-```
-
-### Card Pattern (Field-Ready)
-```tsx
-<div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm
-                hover:shadow-md transition-shadow
-                dark:bg-trellio-charcoal dark:border-gray-700">
-  {/* Large touch-friendly content */}
-</div>
-```
-
-### Empty State Pattern
-```tsx
-<div className="flex flex-col items-center justify-center py-12 text-center">
-  <IconComponent className="h-12 w-12 text-trellio-gray mb-4" />
-  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-    No jobs scheduled
-  </h3>
-  <p className="mt-1 text-sm text-trellio-gray max-w-sm">
-    Create your first job to get started with scheduling.
-  </p>
-  <Button variant="primary" className="mt-4">
-    Create Job
-  </Button>
-</div>
-```
+- Skip loading/error/empty states
+- Import from Next.js (no next/link, next/image, etc.)
+- Use Server Components or "use client" directives — this is not Next.js
 
 ## Checklist Before Finishing
 
-- [ ] TypeScript strict — no `any`, no `@ts-ignore`
+- [ ] JavaScript (JSX), not TypeScript
+- [ ] Default export with function declaration
 - [ ] All interactive elements have 44px+ touch targets
-- [ ] Loading, error, and empty states are handled
-- [ ] Responsive: tested at mobile, tablet, and desktop widths
-- [ ] Dark mode classes included
-- [ ] Accessible: labels, ARIA, keyboard nav, focus rings
-- [ ] File is under 250 lines (split if needed)
-- [ ] Named export, proper file location, consistent naming
+- [ ] Loading and empty states handled
+- [ ] Responsive: mobile-first with md: and lg: breakpoints
+- [ ] Brand tokens used — no hardcoded hex colors
+- [ ] File under 250 lines (split into sub-components if needed)
+- [ ] Data accessed via existing hooks/handlers, not raw Firestore calls (unless new collection)
+- [ ] View registered in AppContent.jsx if it's a new page

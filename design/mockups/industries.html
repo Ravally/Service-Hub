@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Trellio works for 50+ home service industries — landscaping, HVAC, plumbing, cleaning, electrical, painting, pest control, and more.">
+<title>Industries — Trellio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--primary:#0EA5A0;--primary-deep:#087F7A;--primary-light:#B2F0ED;--coral:#F7845E;--coral-deep:#E56840;--coral-light:#FFDCC8;--amber:#FFAA5C;--amber-deep:#FF9633;--midnight:#0C1220;--charcoal:#1A2332;--slate:#2D3B4E;--muted:#6B7F96;--silver:#A3B4C8;--cream:#FFF9F5;--white:#FFFFFF;--font-primary:'DM Sans',system-ui,sans-serif;--font-editorial:'Playfair Display',Georgia,serif;--font-data:'JetBrains Mono',monospace;--ease:cubic-bezier(0.16,1,0.3,1);--radius-md:10px;--radius-lg:16px;--radius-xl:20px}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}body{font-family:var(--font-primary);background:var(--cream);color:var(--midnight);-webkit-font-smoothing:antialiased;overflow-x:hidden}img{max-width:100%;display:block}a{text-decoration:none;color:inherit}button{cursor:pointer;font-family:var(--font-primary);border:none}
+.reveal{opacity:0;transform:translateY(40px);transition:opacity 0.8s var(--ease),transform 0.8s var(--ease)}.reveal.visible{opacity:1;transform:translateY(0)}.reveal-delay-1{transition-delay:0.1s}.reveal-delay-2{transition-delay:0.2s}.reveal-delay-3{transition-delay:0.3s}.reveal-delay-4{transition-delay:0.4s}
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 clamp(1.5rem,4vw,4rem);transition:all 0.4s ease}.nav.scrolled{background:rgba(255,249,245,0.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(0,0,0,0.06)}.nav-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:72px}.nav-logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.4rem;letter-spacing:-0.03em;color:var(--midnight)}.nav-logo svg{width:28px;height:28px}.nav-links{display:flex;align-items:center;gap:2rem;list-style:none}.nav-links a{font-size:0.9rem;font-weight:500;color:var(--slate);transition:color 0.2s;position:relative}.nav-links a:hover{color:var(--primary)}.nav-links a.active{color:var(--primary)}.nav-links a.active::after{content:'';position:absolute;bottom:-4px;left:0;right:0;height:2px;background:var(--primary);border-radius:2px}.nav-cta-group{display:flex;align-items:center;gap:1rem}.nav-login{font-size:0.9rem;font-weight:500;color:var(--slate);transition:color 0.2s}.nav-login:hover{color:var(--primary)}.nav-hamburger{display:none;flex-direction:column;gap:5px;background:none;padding:4px}.nav-hamburger span{width:22px;height:2px;background:var(--midnight);border-radius:2px;transition:all 0.3s}.nav-mobile{display:none;position:fixed;inset:0;background:var(--cream);z-index:99;padding:100px 2rem 2rem;flex-direction:column;gap:0.5rem}.nav-mobile.open{display:flex}.nav-mobile a{font-size:1.5rem;font-weight:600;padding:1rem 0;border-bottom:1px solid rgba(0,0,0,0.06);color:var(--midnight)}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:var(--radius-md);font-weight:600;font-size:0.95rem;transition:all 0.35s var(--ease);white-space:nowrap}.btn-primary{background:var(--primary);color:var(--white);box-shadow:0 4px 20px rgba(14,165,160,0.25),inset 0 1px 0 rgba(255,255,255,0.15)}.btn-primary:hover{background:var(--primary-deep);transform:translateY(-2px);box-shadow:0 8px 30px rgba(14,165,160,0.35)}.btn-secondary{background:var(--white);color:var(--midnight);border:1.5px solid rgba(0,0,0,0.1)}.btn-secondary:hover{border-color:var(--primary);color:var(--primary);transform:translateY(-2px)}.btn-sm{padding:10px 20px;font-size:0.85rem}.btn-lg{padding:18px 36px;font-size:1.05rem}.btn-arrow::after{content:'→';transition:transform 0.3s}.btn-arrow:hover::after{transform:translateX(4px)}.btn-outline-white{background:transparent;color:var(--white);border:1.5px solid rgba(255,255,255,0.2)}.btn-outline-white:hover{background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.35);transform:translateY(-2px)}
+.container{max-width:1200px;margin:0 auto;padding:0 clamp(1.5rem,4vw,4rem)}.section-pad{padding-top:clamp(5rem,10vw,8rem);padding-bottom:clamp(5rem,10vw,8rem)}.section-label{font-family:var(--font-data);font-size:0.68rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--primary);margin-bottom:1.25rem;display:flex;align-items:center;gap:10px}.section-label::before{content:'';width:20px;height:1.5px;background:var(--primary);border-radius:2px}.section-title{font-size:clamp(2rem,4.5vw,3rem);font-weight:700;letter-spacing:-0.035em;line-height:1.12;margin-bottom:1.25rem}.section-desc{font-size:1.1rem;color:var(--muted);line-height:1.7;max-width:560px;font-weight:300}
+.gradient-bar{height:3px;background:linear-gradient(90deg,var(--primary),var(--amber),var(--coral),var(--primary-deep));background-size:300% 100%;animation:gradientFlow 8s ease infinite}@keyframes gradientFlow{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+.page-hero{padding:clamp(8rem,14vw,11rem) 0 clamp(3rem,6vw,5rem);position:relative;overflow:hidden;background:var(--cream);text-align:center}.page-hero::before{content:'';position:absolute;top:-30%;left:50%;transform:translateX(-50%);width:80%;height:80%;background:radial-gradient(ellipse,rgba(14,165,160,0.06) 0%,transparent 65%);pointer-events:none}.page-hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(14,165,160,0.15),transparent)}.page-hero .section-label{justify-content:center}.page-hero .section-title{max-width:700px;margin:0 auto 1.25rem}.page-hero .section-desc{max-width:550px;margin:0 auto}
+
+/* ============================================
+   INDUSTRIES GRID
+   ============================================ */
+.industries-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+}
+.industry-card {
+  background: var(--white);
+  border: 1px solid rgba(0,0,0,0.05);
+  border-radius: var(--radius-xl);
+  padding: 2.25rem 1.75rem;
+  transition: all 0.4s var(--ease);
+  position: relative;
+  overflow: hidden;
+}
+.industry-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+.industry-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 50px rgba(12,18,32,0.08);
+  border-color: rgba(14,165,160,0.15);
+}
+.industry-card:hover::before { opacity: 1; }
+.industry-card:nth-child(3n+1)::before { background: linear-gradient(90deg, var(--primary), var(--primary-light)); }
+.industry-card:nth-child(3n+2)::before { background: linear-gradient(90deg, var(--coral), var(--coral-light)); }
+.industry-card:nth-child(3n+3)::before { background: linear-gradient(90deg, var(--amber), var(--primary)); }
+.industry-emoji { font-size: 2.2rem; margin-bottom: 1.25rem; }
+.industry-card h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; letter-spacing: -0.01em; }
+.industry-card p { font-size: 0.85rem; color: var(--muted); line-height: 1.6; font-weight: 300; margin-bottom: 1rem; }
+.industry-link {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--primary);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: gap 0.3s;
+}
+.industry-link:hover { gap: 8px; }
+
+/* ============================================
+   SPOTLIGHT SECTIONS
+   ============================================ */
+.spotlight {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(3rem,6vw,5rem);
+  align-items: center;
+}
+.spotlight.reverse .spotlight-visual { order: -1; }
+.spotlight-content { max-width: 500px; }
+.spotlight-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+.spotlight-badge span {
+  font-family: var(--font-data);
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border-radius: 100px;
+  font-weight: 500;
+  background: rgba(14,165,160,0.08);
+  color: var(--primary);
+}
+.spotlight-content h2 {
+  font-size: clamp(1.8rem,3.5vw,2.4rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  margin-bottom: 1rem;
+}
+.spotlight-content p {
+  font-size: 1.05rem;
+  color: var(--muted);
+  line-height: 1.7;
+  font-weight: 300;
+  margin-bottom: 1.5rem;
+}
+.spotlight-stats {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  padding: 1.25rem 0;
+  border-top: 1px solid rgba(0,0,0,0.06);
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+.spotlight-stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: -0.02em;
+}
+.spotlight-stat-label {
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+/* Spotlight visual card */
+.spotlight-visual-card {
+  background: var(--white);
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(12,18,32,0.06);
+}
+.spotlight-visual-header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.spotlight-visual-title { font-weight: 600; font-size: 0.9rem; }
+.spotlight-visual-tag {
+  font-family: var(--font-data);
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--primary);
+  background: rgba(14,165,160,0.08);
+  padding: 4px 10px;
+  border-radius: 100px;
+}
+.spotlight-visual-body { padding: 1.5rem; }
+.spotlight-quote {
+  font-family: var(--font-editorial);
+  font-style: italic;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: var(--slate);
+  padding: 1.5rem;
+  border-left: 3px solid var(--primary);
+  background: rgba(14,165,160,0.03);
+  border-radius: 0 12px 12px 0;
+  margin-bottom: 1rem;
+}
+.spotlight-author {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.spotlight-avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.75rem;
+  color: white;
+  background: linear-gradient(135deg, var(--primary), var(--primary-deep));
+}
+.spotlight-author-name { font-weight: 600; font-size: 0.85rem; }
+.spotlight-author-role { font-size: 0.72rem; color: var(--muted); }
+
+/* Dark variant */
+.dark-section{background:var(--midnight);color:var(--white);position:relative;overflow:hidden}
+.dark-section::before{content:'';position:absolute;top:-30%;right:-20%;width:50%;height:70%;background:radial-gradient(ellipse,rgba(14,165,160,0.08) 0%,transparent 60%);pointer-events:none}
+.dark-section .section-desc{color:var(--silver)}
+.dark-section .spotlight-content p{color:var(--silver)}
+.dark-section .spotlight-stats{border-color:rgba(255,255,255,0.06)}
+.dark-section .spotlight-visual-card{background:var(--charcoal);border-color:rgba(255,255,255,0.06)}
+.dark-section .spotlight-visual-header{border-color:rgba(255,255,255,0.04)}
+.dark-section .spotlight-visual-title{color:var(--white)}
+.dark-section .spotlight-quote{color:var(--silver);background:rgba(14,165,160,0.06)}
+
+/* More industries list */
+.more-industries {
+  background: var(--white);
+  border-top: 1px solid rgba(0,0,0,0.04);
+}
+.more-header { text-align: center; max-width: 600px; margin: 0 auto 3rem; }
+.more-header .section-label { justify-content: center; }
+.more-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+}
+.more-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  background: var(--cream);
+  border: 1px solid rgba(0,0,0,0.05);
+  border-radius: 100px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--slate);
+  transition: all 0.3s;
+}
+.more-tag:hover {
+  border-color: rgba(14,165,160,0.2);
+  background: rgba(14,165,160,0.04);
+  color: var(--primary);
+  transform: translateY(-2px);
+}
+
+/* CTA */
+.cta-section{background:var(--midnight);color:var(--white);text-align:center;position:relative;overflow:hidden}.cta-section::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%,rgba(14,165,160,0.1) 0%,transparent 50%),radial-gradient(ellipse at 70% 50%,rgba(247,132,94,0.06) 0%,transparent 50%);pointer-events:none}.cta-lattice{position:absolute;inset:0;opacity:0.025;background-image:linear-gradient(30deg,var(--primary) 1px,transparent 1px),linear-gradient(-30deg,var(--primary) 1px,transparent 1px);background-size:50px 86px;pointer-events:none}.cta-content{position:relative;z-index:2;max-width:650px;margin:0 auto}.cta-section .section-label{justify-content:center}.cta-section .section-title{color:var(--white)}.cta-section .section-desc{color:var(--silver);margin:0 auto 2.5rem}.cta-buttons{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}.cta-note{font-size:0.78rem;color:var(--muted);margin-top:1.5rem}
+
+/* Footer */
+.footer{background:var(--midnight);color:var(--silver);border-top:1px solid rgba(255,255,255,0.04);padding:4rem 0 2.5rem}.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3rem}.footer-brand p{font-size:0.88rem;color:var(--muted);line-height:1.7;margin-top:1rem;max-width:280px;font-weight:300}.footer-logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.25rem;color:var(--white)}.footer-logo svg{width:24px;height:24px}.footer-col h4{font-size:0.7rem;font-family:var(--font-data);letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);margin-bottom:1.25rem}.footer-col ul{list-style:none}.footer-col li{margin-bottom:0.75rem}.footer-col a{font-size:0.88rem;color:var(--silver);transition:color 0.2s;font-weight:300}.footer-col a:hover{color:var(--primary)}.footer-bottom{display:flex;align-items:center;justify-content:space-between;padding-top:2rem;border-top:1px solid rgba(255,255,255,0.04);font-size:0.78rem;color:var(--muted)}.footer-legal{display:flex;gap:1.5rem}.footer-legal a{color:var(--muted);transition:color 0.2s}.footer-legal a:hover{color:var(--silver)}
+
+@media(max-width:1024px){.industries-grid{grid-template-columns:repeat(2,1fr)}.spotlight{grid-template-columns:1fr;gap:2.5rem}.spotlight.reverse .spotlight-visual{order:0}.footer-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:768px){.nav-links{display:none}.nav-hamburger{display:flex}.industries-grid{grid-template-columns:1fr}.footer-grid{grid-template-columns:1fr;gap:2rem}.footer-bottom{flex-direction:column;gap:1rem;text-align:center}}
+</style>
+</head>
+<body>
+<div class="gradient-bar"></div>
+<nav class="nav" id="nav"><div class="nav-inner"><a href="index.html" class="nav-logo"><svg viewBox="0 0 36 36" fill="none"><path d="M6 28V14L18 6L30 14V28" stroke="#0EA5A0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 20H30" stroke="#0EA5A0" stroke-width="2" stroke-linecap="round" opacity="0.7"/><circle cx="18" cy="6" r="2.5" fill="#0EA5A0"/><circle cx="6" cy="14" r="1.8" fill="#F7845E" opacity="0.8"/><circle cx="30" cy="14" r="1.8" fill="#FFAA5C" opacity="0.8"/></svg>trellio</a><ul class="nav-links"><li><a href="features.html">Features</a></li><li><a href="pricing.html">Pricing</a></li><li><a href="industries.html" class="active">Industries</a></li><li><a href="about.html">About</a></li><li><a href="contact.html">Contact</a></li></ul><div class="nav-cta-group"><a href="#" class="nav-login">Log in</a><a href="#" class="btn btn-primary btn-sm">Start Free Trial</a></div><button class="nav-hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button></div></nav>
+<div class="nav-mobile" id="mobile-nav"><a href="index.html">Home</a><a href="features.html">Features</a><a href="pricing.html">Pricing</a><a href="industries.html">Industries</a><a href="about.html">About</a><a href="contact.html">Contact</a></div>
+
+<section class="page-hero">
+  <div class="container">
+    <div class="section-label reveal">Industries</div>
+    <h1 class="section-title reveal reveal-delay-1">Whatever your trade,<br/>Trellio's got your crew</h1>
+    <p class="section-desc reveal reveal-delay-2">From lawn care to electrical — if you send crews to job sites, Trellio streamlines your entire operation across 50+ industries.</p>
+  </div>
+</section>
+
+<!-- PRIMARY INDUSTRIES GRID -->
+<section class="section-pad" style="padding-top:2rem">
+  <div class="container">
+    <div class="industries-grid">
+      <div class="industry-card reveal"><div class="industry-emoji">🌿</div><h3>Landscaping & Lawn Care</h3><p>Mowing schedules, seasonal contracts, crew routing — manage it all from one app built for outdoor crews.</p><a href="#" class="industry-link">See how →</a></div>
+      <div class="industry-card reveal reveal-delay-1"><div class="industry-emoji">❄️</div><h3>HVAC</h3><p>Schedule installs, track warranty work, send on-my-way texts, and invoice from the job site.</p><a href="#" class="industry-link">See how →</a></div>
+      <div class="industry-card reveal reveal-delay-2"><div class="industry-emoji">🔧</div><h3>Plumbing</h3><p>Emergency dispatch, recurring maintenance, and instant invoicing for residential and commercial plumbing.</p><a href="#" class="industry-link">See how →</a></div>
+      <div class="industry-card reveal reveal-delay-3"><div class="industry-emoji">🧹</div><h3>Cleaning Services</h3><p>Recurring schedules, client checklists, team assignments — keep every property spotless and on track.</p><a href="#" class="industry-link">See how →</a></div>
+      <div class="industry-card reveal"><div class="industry-emoji">⚡</div><h3>Electrical</h3><p>Quote complex jobs, track permits, manage multi-day installs, and get signed off on-site.</p><a href="#" class="industry-link">See how →</a></div>
+      <div class="industry-card reveal reveal-delay-1"><div class="industry-emoji">🎨</div><h3>Painting</h3><p>Room-by-room quoting, before/after photos, crew time tracking, and professional invoices clients love.</p><a href="#" class="industry-link">See how →</a></div>
+      <div class="industry-card reveal reveal-delay-2"><div class="industry-emoji">🐛</div><h3>Pest Control</h3><p>Recurring treatment schedules, inspection forms, chemical logs, and automated appointment reminders.</p><a href="#" class="industry-link">See how →</a></div>
+      <div class="industry-card reveal reveal-delay-3"><div class="industry-emoji">🏗️</div><h3>General Contracting</h3><p>Multi-phase projects, subcontractor coordination, expense tracking, and detailed job costing.</p><a href="#" class="industry-link">See how →</a></div>
+    </div>
+  </div>
+</section>
+
+<!-- SPOTLIGHT 1: LANDSCAPING -->
+<section class="dark-section section-pad">
+  <div class="container">
+    <div class="spotlight">
+      <div class="spotlight-content reveal">
+        <div class="spotlight-badge">🌿 <span>Landscaping</span></div>
+        <h2>GreenScape grew 140% in one year with Trellio</h2>
+        <p>Derek Kim started GreenScape with a truck and a mower. Within 12 months of switching to Trellio, his crew grew from 6 to 22 — and revenue followed.</p>
+        <div class="spotlight-stats">
+          <div><div class="spotlight-stat-value">22</div><div class="spotlight-stat-label">Crew members</div></div>
+          <div><div class="spotlight-stat-value">140%</div><div class="spotlight-stat-label">Revenue growth</div></div>
+          <div><div class="spotlight-stat-value">4.9★</div><div class="spotlight-stat-label">Google rating</div></div>
+        </div>
+        <a href="#" class="btn btn-primary btn-arrow">Read the Full Story </a>
+      </div>
+      <div class="spotlight-visual reveal reveal-delay-2">
+        <div class="spotlight-visual-card">
+          <div class="spotlight-visual-header">
+            <div class="spotlight-visual-title">Customer Story</div>
+            <div class="spotlight-visual-tag">Landscaping</div>
+          </div>
+          <div class="spotlight-visual-body">
+            <div class="spotlight-quote">"The client hub alone is worth it. Our customers approve quotes and pay online. We look professional and get paid faster than ever."</div>
+            <div class="spotlight-author">
+              <div class="spotlight-avatar">DK</div>
+              <div><div class="spotlight-author-name">Derek Kim</div><div class="spotlight-author-role">Owner, GreenScape Landscaping</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SPOTLIGHT 2: CLEANING -->
+<section class="section-pad">
+  <div class="container">
+    <div class="spotlight reverse">
+      <div class="spotlight-content reveal">
+        <div class="spotlight-badge">🧹 <span>Cleaning</span></div>
+        <h2>Pristine Clean tripled their client base in 8 months</h2>
+        <p>Sofia Alvarez was drowning in phone calls and sticky notes. With Trellio's automated scheduling and client portal, she went from 20 recurring clients to 60.</p>
+        <div class="spotlight-stats">
+          <div><div class="spotlight-stat-value">60</div><div class="spotlight-stat-label">Recurring clients</div></div>
+          <div><div class="spotlight-stat-value">3×</div><div class="spotlight-stat-label">Client growth</div></div>
+          <div><div class="spotlight-stat-value">12hrs</div><div class="spotlight-stat-label">Saved per week</div></div>
+        </div>
+        <a href="#" class="btn btn-primary btn-arrow">Read the Full Story </a>
+      </div>
+      <div class="spotlight-visual reveal reveal-delay-2">
+        <div class="spotlight-visual-card">
+          <div class="spotlight-visual-header">
+            <div class="spotlight-visual-title">Customer Story</div>
+            <div class="spotlight-visual-tag">Cleaning</div>
+          </div>
+          <div class="spotlight-visual-body">
+            <div class="spotlight-quote">"My crew can see their schedule, clock in, and send invoices from the truck. I stopped chasing paperwork and started chasing growth."</div>
+            <div class="spotlight-author">
+              <div class="spotlight-avatar" style="background:linear-gradient(135deg,var(--coral),var(--coral-deep))">SA</div>
+              <div><div class="spotlight-author-name">Sofia Alvarez</div><div class="spotlight-author-role">Founder, Pristine Clean Co.</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MORE INDUSTRIES -->
+<section class="more-industries section-pad">
+  <div class="container">
+    <div class="more-header">
+      <div class="section-label reveal">50+ Industries</div>
+      <h2 class="section-title reveal reveal-delay-1">And many, many more</h2>
+    </div>
+    <div class="more-grid reveal">
+      <div class="more-tag">🚰 Plumbing</div><div class="more-tag">🌲 Tree Care</div><div class="more-tag">🏠 Handyman</div><div class="more-tag">🚗 Mobile Detailing</div><div class="more-tag">🐾 Pet Services</div><div class="more-tag">☀️ Solar</div><div class="more-tag">🏊 Pool Cleaning</div><div class="more-tag">🪟 Window Cleaning</div><div class="more-tag">🧱 Masonry</div><div class="more-tag">🔐 Locksmith</div><div class="more-tag">🛠️ Appliance Repair</div><div class="more-tag">🏡 Roofing</div><div class="more-tag">🚿 Pressure Washing</div><div class="more-tag">❄️ Snow Removal</div><div class="more-tag">🧽 Carpet Cleaning</div><div class="more-tag">🏗️ Fencing</div><div class="more-tag">💡 Lighting</div><div class="more-tag">📺 Home Theater</div><div class="more-tag">🔧 Garage Doors</div><div class="more-tag">🌱 Irrigation</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section section-pad">
+  <div class="cta-lattice"></div>
+  <div class="container"><div class="cta-content">
+    <div class="section-label reveal">Your Industry</div>
+    <h2 class="section-title reveal reveal-delay-1">Don't see your trade?<br/>We've got you covered.</h2>
+    <p class="section-desc reveal reveal-delay-2">Trellio works for any business that sends crews to job sites. Start your free trial and see how it fits your workflow.</p>
+    <div class="cta-buttons reveal reveal-delay-3"><a href="#" class="btn btn-primary btn-lg btn-arrow">Start Free Trial </a><a href="contact.html" class="btn btn-outline-white btn-lg">Talk to Sales</a></div>
+    <p class="cta-note reveal reveal-delay-4">Free for 14 days · No credit card required · Cancel anytime</p>
+  </div></div>
+</section>
+
+<footer class="footer"><div class="container"><div class="footer-grid"><div class="footer-brand"><div class="footer-logo"><svg viewBox="0 0 36 36" fill="none"><path d="M6 28V14L18 6L30 14V28" stroke="#0EA5A0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 20H30" stroke="#0EA5A0" stroke-width="2" stroke-linecap="round" opacity="0.7"/><circle cx="18" cy="6" r="2.5" fill="#0EA5A0"/><circle cx="6" cy="14" r="1.8" fill="#F7845E" opacity="0.8"/><circle cx="30" cy="14" r="1.8" fill="#FFAA5C" opacity="0.8"/></svg>trellio</div><p>The service hub that helps your crew grow upward.</p></div><div class="footer-col"><h4>Product</h4><ul><li><a href="features.html">Features</a></li><li><a href="pricing.html">Pricing</a></li><li><a href="#">Mobile App</a></li><li><a href="#">Integrations</a></li></ul></div><div class="footer-col"><h4>Company</h4><ul><li><a href="about.html">About</a></li><li><a href="contact.html">Contact</a></li><li><a href="#">Careers</a></li><li><a href="#">Press</a></li></ul></div><div class="footer-col"><h4>Resources</h4><ul><li><a href="#">Help Center</a></li><li><a href="#">Academy</a></li><li><a href="#">Blog</a></li><li><a href="#">Podcast</a></li></ul></div></div><div class="footer-bottom"><span>© 2026 Trellio. All rights reserved.</span><div class="footer-legal"><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Cookies</a></div></div></div></footer>
+
+<script>
+const r=document.querySelectorAll('.reveal');new IntersectionObserver(e=>{e.forEach(el=>{if(el.isIntersecting)el.target.classList.add('visible')})},{threshold:0.1,rootMargin:'0px 0px -40px 0px'}).observe&&r.forEach(el=>new IntersectionObserver(e=>{e.forEach(en=>{if(en.isIntersecting)en.target.classList.add('visible')})},{threshold:0.1,rootMargin:'0px 0px -40px 0px'}).observe(el));
+document.getElementById('nav');window.addEventListener('scroll',()=>{document.getElementById('nav').classList.toggle('scrolled',window.scrollY>50)});
+const h=document.getElementById('hamburger'),m=document.getElementById('mobile-nav');let o=false;h.addEventListener('click',()=>{o=!o;m.classList.toggle('open');const s=h.querySelectorAll('span');if(o){s[0].style.transform='rotate(45deg) translate(5px,5px)';s[1].style.opacity='0';s[2].style.transform='rotate(-45deg) translate(5px,-5px)'}else{s[0].style.transform='';s[1].style.opacity='';s[2].style.transform=''}});
+</script>
+</body>
+</html>

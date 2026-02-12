@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Contact Trellio — Get in touch with our sales team, support crew, or partnerships team. We'd love to hear from you.">
+<title>Contact — Trellio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--primary:#0EA5A0;--primary-deep:#087F7A;--primary-light:#B2F0ED;--coral:#F7845E;--coral-deep:#E56840;--coral-light:#FFDCC8;--amber:#FFAA5C;--amber-deep:#FF9633;--midnight:#0C1220;--charcoal:#1A2332;--slate:#2D3B4E;--muted:#6B7F96;--silver:#A3B4C8;--cream:#FFF9F5;--white:#FFFFFF;--font-primary:'DM Sans',system-ui,sans-serif;--font-editorial:'Playfair Display',Georgia,serif;--font-data:'JetBrains Mono',monospace;--ease:cubic-bezier(0.16,1,0.3,1);--radius-md:10px;--radius-lg:16px;--radius-xl:20px}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}body{font-family:var(--font-primary);background:var(--cream);color:var(--midnight);-webkit-font-smoothing:antialiased;overflow-x:hidden}a{text-decoration:none;color:inherit}button{cursor:pointer;font-family:var(--font-primary);border:none}
+.reveal{opacity:0;transform:translateY(40px);transition:opacity 0.8s var(--ease),transform 0.8s var(--ease)}.reveal.visible{opacity:1;transform:translateY(0)}.reveal-delay-1{transition-delay:0.1s}.reveal-delay-2{transition-delay:0.2s}.reveal-delay-3{transition-delay:0.3s}.reveal-delay-4{transition-delay:0.4s}
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 clamp(1.5rem,4vw,4rem);transition:all 0.4s ease}.nav.scrolled{background:rgba(255,249,245,0.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(0,0,0,0.06)}.nav-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:72px}.nav-logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.4rem;letter-spacing:-0.03em;color:var(--midnight)}.nav-logo svg{width:28px;height:28px}.nav-links{display:flex;align-items:center;gap:2rem;list-style:none}.nav-links a{font-size:0.9rem;font-weight:500;color:var(--slate);transition:color 0.2s;position:relative}.nav-links a:hover{color:var(--primary)}.nav-links a.active{color:var(--primary)}.nav-links a.active::after{content:'';position:absolute;bottom:-4px;left:0;right:0;height:2px;background:var(--primary);border-radius:2px}.nav-cta-group{display:flex;align-items:center;gap:1rem}.nav-login{font-size:0.9rem;font-weight:500;color:var(--slate);transition:color 0.2s}.nav-login:hover{color:var(--primary)}.nav-hamburger{display:none;flex-direction:column;gap:5px;background:none;padding:4px}.nav-hamburger span{width:22px;height:2px;background:var(--midnight);border-radius:2px;transition:all 0.3s}.nav-mobile{display:none;position:fixed;inset:0;background:var(--cream);z-index:99;padding:100px 2rem 2rem;flex-direction:column;gap:0.5rem}.nav-mobile.open{display:flex}.nav-mobile a{font-size:1.5rem;font-weight:600;padding:1rem 0;border-bottom:1px solid rgba(0,0,0,0.06);color:var(--midnight)}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:var(--radius-md);font-weight:600;font-size:0.95rem;transition:all 0.35s var(--ease);white-space:nowrap}.btn-primary{background:var(--primary);color:var(--white);box-shadow:0 4px 20px rgba(14,165,160,0.25),inset 0 1px 0 rgba(255,255,255,0.15)}.btn-primary:hover{background:var(--primary-deep);transform:translateY(-2px);box-shadow:0 8px 30px rgba(14,165,160,0.35)}.btn-sm{padding:10px 20px;font-size:0.85rem}.btn-lg{padding:18px 36px;font-size:1.05rem}.btn-arrow::after{content:'→';transition:transform 0.3s}.btn-arrow:hover::after{transform:translateX(4px)}.btn-full{width:100%;justify-content:center}
+.container{max-width:1200px;margin:0 auto;padding:0 clamp(1.5rem,4vw,4rem)}.section-pad{padding-top:clamp(5rem,10vw,8rem);padding-bottom:clamp(5rem,10vw,8rem)}.section-label{font-family:var(--font-data);font-size:0.68rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--primary);margin-bottom:1.25rem;display:flex;align-items:center;gap:10px}.section-label::before{content:'';width:20px;height:1.5px;background:var(--primary);border-radius:2px}.section-title{font-size:clamp(2rem,4.5vw,3rem);font-weight:700;letter-spacing:-0.035em;line-height:1.12;margin-bottom:1.25rem}.section-desc{font-size:1.1rem;color:var(--muted);line-height:1.7;max-width:560px;font-weight:300}
+.gradient-bar{height:3px;background:linear-gradient(90deg,var(--primary),var(--amber),var(--coral),var(--primary-deep));background-size:300% 100%;animation:gradientFlow 8s ease infinite}@keyframes gradientFlow{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+.page-hero{padding:clamp(8rem,14vw,11rem) 0 clamp(3rem,6vw,5rem);position:relative;overflow:hidden;background:var(--cream);text-align:center}.page-hero::before{content:'';position:absolute;top:-30%;left:50%;transform:translateX(-50%);width:80%;height:80%;background:radial-gradient(ellipse,rgba(14,165,160,0.06) 0%,transparent 65%);pointer-events:none}.page-hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(14,165,160,0.15),transparent)}.page-hero .section-label{justify-content:center}.page-hero .section-title{max-width:700px;margin:0 auto 1.25rem}.page-hero .section-desc{max-width:550px;margin:0 auto}
+
+/* ============================================
+   CONTACT LAYOUT
+   ============================================ */
+.contact-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(3rem, 5vw, 5rem);
+  align-items: start;
+}
+
+/* CONTACT CARDS */
+.contact-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+.contact-card {
+  background: var(--white);
+  border: 1px solid rgba(0,0,0,0.05);
+  border-radius: var(--radius-xl);
+  padding: 1.75rem;
+  transition: all 0.4s var(--ease);
+  display: flex;
+  align-items: flex-start;
+  gap: 1.25rem;
+}
+.contact-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 36px rgba(12,18,32,0.06);
+  border-color: rgba(14,165,160,0.15);
+}
+.contact-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+.contact-icon.teal { background: rgba(14,165,160,0.08); }
+.contact-icon.coral { background: rgba(247,132,94,0.08); }
+.contact-icon.amber { background: rgba(255,170,92,0.08); }
+.contact-icon.dark { background: rgba(12,18,32,0.06); }
+.contact-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.3rem; }
+.contact-card p { font-size: 0.88rem; color: var(--muted); line-height: 1.55; font-weight: 300; }
+.contact-card a.contact-link {
+  display: inline-block;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--primary);
+  margin-top: 0.5rem;
+  transition: gap 0.3s;
+}
+.contact-card a.contact-link:hover { text-decoration: underline; }
+
+/* Response time */
+.response-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  background: rgba(14,165,160,0.04);
+  border: 1px solid rgba(14,165,160,0.1);
+  border-radius: var(--radius-lg);
+  margin-top: 0.5rem;
+}
+.response-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #22C55E;
+  animation: pulse 2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+@keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.3); } 50% { box-shadow: 0 0 0 6px rgba(34,197,94,0); } }
+.response-bar p {
+  font-size: 0.82rem;
+  color: var(--slate);
+}
+.response-bar strong { font-weight: 600; }
+
+/* FORM */
+.contact-form-card {
+  background: var(--white);
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: var(--radius-xl);
+  padding: 2.5rem;
+  box-shadow: 0 20px 60px rgba(12,18,32,0.06);
+  position: relative;
+  overflow: hidden;
+}
+.contact-form-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary), var(--amber), var(--coral));
+}
+.form-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+  letter-spacing: -0.02em;
+}
+.form-subtitle {
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin-bottom: 2rem;
+  font-weight: 300;
+}
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.form-group.full { grid-column: 1 / -1; }
+.form-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--slate);
+}
+.form-input,
+.form-select,
+.form-textarea {
+  padding: 12px 16px;
+  border: 1.5px solid rgba(0,0,0,0.08);
+  border-radius: var(--radius-md);
+  font-family: var(--font-primary);
+  font-size: 0.9rem;
+  color: var(--midnight);
+  background: var(--cream);
+  transition: all 0.3s;
+  outline: none;
+  width: 100%;
+}
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(14,165,160,0.08);
+  background: var(--white);
+}
+.form-input::placeholder,
+.form-textarea::placeholder {
+  color: var(--silver);
+  font-weight: 300;
+}
+.form-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%236B7F96' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 40px;
+  cursor: pointer;
+}
+.form-textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+.form-submit {
+  margin-top: 0.5rem;
+}
+.form-note {
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-top: 1rem;
+  text-align: center;
+}
+
+/* Success state */
+.form-success {
+  display: none;
+  text-align: center;
+  padding: 3rem 1rem;
+}
+.form-success.show { display: block; }
+.form-success-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(14,165,160,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  margin: 0 auto 1.5rem;
+}
+.form-success h3 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+.form-success p {
+  font-size: 0.95rem;
+  color: var(--muted);
+  line-height: 1.6;
+  font-weight: 300;
+}
+
+/* ============================================
+   OFFICES
+   ============================================ */
+.offices-section {
+  background: var(--midnight);
+  color: var(--white);
+  position: relative;
+  overflow: hidden;
+}
+.offices-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 30% 50%, rgba(14,165,160,0.08) 0%, transparent 50%);
+  pointer-events: none;
+}
+.offices-header { text-align: center; max-width: 500px; margin: 0 auto 3.5rem; position: relative; z-index: 2; }
+.offices-header .section-label { justify-content: center; }
+.offices-header .section-title { color: var(--white); }
+.offices-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  position: relative;
+  z-index: 2;
+}
+.office-card {
+  background: var(--charcoal);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: var(--radius-xl);
+  padding: 2rem;
+  transition: all 0.4s var(--ease);
+}
+.office-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(14,165,160,0.2);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.2);
+}
+.office-flag { font-size: 2rem; margin-bottom: 1rem; }
+.office-card h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.35rem; }
+.office-card .office-city { font-size: 0.85rem; color: var(--silver); font-weight: 300; margin-bottom: 1rem; }
+.office-detail {
+  font-size: 0.8rem;
+  color: var(--muted);
+  line-height: 1.7;
+  font-weight: 300;
+}
+.office-detail strong { color: var(--silver); font-weight: 500; }
+
+/* ============================================
+   HELP LINKS
+   ============================================ */
+.help-section { background: var(--white); border-top: 1px solid rgba(0,0,0,0.04); }
+.help-header { text-align: center; max-width: 500px; margin: 0 auto 3rem; }
+.help-header .section-label { justify-content: center; }
+.help-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+.help-card {
+  background: var(--cream);
+  border: 1px solid rgba(0,0,0,0.05);
+  border-radius: var(--radius-xl);
+  padding: 2rem;
+  text-align: center;
+  transition: all 0.4s var(--ease);
+}
+.help-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 36px rgba(12,18,32,0.06);
+  border-color: rgba(14,165,160,0.15);
+}
+.help-icon { font-size: 2rem; margin-bottom: 1rem; }
+.help-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.4rem; }
+.help-card p { font-size: 0.85rem; color: var(--muted); line-height: 1.55; font-weight: 300; margin-bottom: 1rem; }
+.help-link {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--primary);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: gap 0.3s;
+}
+.help-link:hover { gap: 8px; }
+
+/* Footer */
+.footer{background:var(--midnight);color:var(--silver);border-top:1px solid rgba(255,255,255,0.04);padding:4rem 0 2.5rem}.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3rem}.footer-brand p{font-size:0.88rem;color:var(--muted);line-height:1.7;margin-top:1rem;max-width:280px;font-weight:300}.footer-logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.25rem;color:var(--white)}.footer-logo svg{width:24px;height:24px}.footer-col h4{font-size:0.7rem;font-family:var(--font-data);letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);margin-bottom:1.25rem}.footer-col ul{list-style:none}.footer-col li{margin-bottom:0.75rem}.footer-col a{font-size:0.88rem;color:var(--silver);transition:color 0.2s;font-weight:300}.footer-col a:hover{color:var(--primary)}.footer-bottom{display:flex;align-items:center;justify-content:space-between;padding-top:2rem;border-top:1px solid rgba(255,255,255,0.04);font-size:0.78rem;color:var(--muted)}.footer-legal{display:flex;gap:1.5rem}.footer-legal a{color:var(--muted);transition:color 0.2s}.footer-legal a:hover{color:var(--silver)}
+
+@media(max-width:1024px){.contact-layout{grid-template-columns:1fr;gap:2.5rem}.offices-grid{grid-template-columns:1fr 1fr}.help-grid{grid-template-columns:1fr}.footer-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:768px){.nav-links{display:none}.nav-hamburger{display:flex}.form-grid{grid-template-columns:1fr}.offices-grid{grid-template-columns:1fr}.footer-grid{grid-template-columns:1fr;gap:2rem}.footer-bottom{flex-direction:column;gap:1rem;text-align:center}}
+</style>
+</head>
+<body>
+<div class="gradient-bar"></div>
+<nav class="nav" id="nav"><div class="nav-inner"><a href="index.html" class="nav-logo"><svg viewBox="0 0 36 36" fill="none"><path d="M6 28V14L18 6L30 14V28" stroke="#0EA5A0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 20H30" stroke="#0EA5A0" stroke-width="2" stroke-linecap="round" opacity="0.7"/><circle cx="18" cy="6" r="2.5" fill="#0EA5A0"/><circle cx="6" cy="14" r="1.8" fill="#F7845E" opacity="0.8"/><circle cx="30" cy="14" r="1.8" fill="#FFAA5C" opacity="0.8"/></svg>trellio</a><ul class="nav-links"><li><a href="features.html">Features</a></li><li><a href="pricing.html">Pricing</a></li><li><a href="industries.html">Industries</a></li><li><a href="about.html">About</a></li><li><a href="contact.html" class="active">Contact</a></li></ul><div class="nav-cta-group"><a href="#" class="nav-login">Log in</a><a href="#" class="btn btn-primary btn-sm">Start Free Trial</a></div><button class="nav-hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button></div></nav>
+<div class="nav-mobile" id="mobile-nav"><a href="index.html">Home</a><a href="features.html">Features</a><a href="pricing.html">Pricing</a><a href="industries.html">Industries</a><a href="about.html">About</a><a href="contact.html">Contact</a></div>
+
+<!-- HERO -->
+<section class="page-hero">
+  <div class="container">
+    <div class="section-label reveal">Contact</div>
+    <h1 class="section-title reveal reveal-delay-1">Let's talk about<br/>growing your crew</h1>
+    <p class="section-desc reveal reveal-delay-2">Whether you're ready to start your trial or have questions about how Trellio fits your business — we're here.</p>
+  </div>
+</section>
+
+<!-- CONTACT FORM + INFO -->
+<section class="section-pad" style="padding-top:2rem">
+  <div class="container">
+    <div class="contact-layout">
+
+      <!-- LEFT: CONTACT CARDS -->
+      <div class="contact-cards">
+        <div class="contact-card reveal">
+          <div class="contact-icon teal">💬</div>
+          <div>
+            <h3>Sales</h3>
+            <p>Talk to our team about which plan fits your business. We'll walk you through a personalized demo.</p>
+            <a href="mailto:sales@trellio.app" class="contact-link">sales@trellio.app →</a>
+          </div>
+        </div>
+        <div class="contact-card reveal reveal-delay-1">
+          <div class="contact-icon coral">🛠️</div>
+          <div>
+            <h3>Support</h3>
+            <p>Already a customer? Our support crew is available by chat, email, and phone — real humans, real help.</p>
+            <a href="mailto:support@trellio.app" class="contact-link">support@trellio.app →</a>
+          </div>
+        </div>
+        <div class="contact-card reveal reveal-delay-2">
+          <div class="contact-icon amber">🤝</div>
+          <div>
+            <h3>Partnerships</h3>
+            <p>Interested in integrating with Trellio, reselling, or co-marketing? Let's build something together.</p>
+            <a href="mailto:partners@trellio.app" class="contact-link">partners@trellio.app →</a>
+          </div>
+        </div>
+        <div class="contact-card reveal reveal-delay-3">
+          <div class="contact-icon dark">📰</div>
+          <div>
+            <h3>Press & Media</h3>
+            <p>For media inquiries, interviews, and press kits.</p>
+            <a href="mailto:press@trellio.app" class="contact-link">press@trellio.app →</a>
+          </div>
+        </div>
+        <div class="response-bar reveal reveal-delay-4">
+          <div class="response-dot"></div>
+          <p><strong>We're online.</strong> Average response time is under 2 hours during business hours (9am–6pm EST).</p>
+        </div>
+      </div>
+
+      <!-- RIGHT: FORM -->
+      <div class="contact-form-card reveal reveal-delay-1">
+        <div id="form-container">
+          <div class="form-title">Send us a message</div>
+          <div class="form-subtitle">Fill out the form and we'll get back to you within one business day.</div>
+          <div class="form-grid" id="contact-form">
+            <div class="form-group">
+              <label class="form-label">First Name</label>
+              <input type="text" class="form-input" placeholder="Jess" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Last Name</label>
+              <input type="text" class="form-input" placeholder="Rivera" required>
+            </div>
+            <div class="form-group full">
+              <label class="form-label">Work Email</label>
+              <input type="email" class="form-input" placeholder="jess@greenscapellc.com" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Company Name</label>
+              <input type="text" class="form-input" placeholder="GreenScape LLC">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Crew Size</label>
+              <select class="form-select">
+                <option value="" disabled selected>Select</option>
+                <option>Just me</option>
+                <option>2–5</option>
+                <option>6–15</option>
+                <option>16–50</option>
+                <option>50+</option>
+              </select>
+            </div>
+            <div class="form-group full">
+              <label class="form-label">What can we help with?</label>
+              <select class="form-select">
+                <option value="" disabled selected>Select a topic</option>
+                <option>I want a demo</option>
+                <option>Pricing question</option>
+                <option>Technical support</option>
+                <option>Partnership inquiry</option>
+                <option>Press / media</option>
+                <option>Something else</option>
+              </select>
+            </div>
+            <div class="form-group full">
+              <label class="form-label">Message</label>
+              <textarea class="form-textarea" placeholder="Tell us about your business and what you're looking for..."></textarea>
+            </div>
+            <div class="form-group full form-submit">
+              <button class="btn btn-primary btn-full btn-lg" id="submit-btn" onclick="submitForm()">Send Message</button>
+            </div>
+          </div>
+          <p class="form-note">By submitting this form, you agree to our <a href="#" style="color:var(--primary)">Privacy Policy</a>. We'll never spam you.</p>
+        </div>
+        <div class="form-success" id="form-success">
+          <div class="form-success-icon">✓</div>
+          <h3>Message sent!</h3>
+          <p>Thanks for reaching out. Our team will get back to you within one business day. In the meantime, you can <a href="#" style="color:var(--primary);font-weight:600">start your free trial</a> and explore Trellio on your own.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- OFFICES -->
+<section class="offices-section section-pad">
+  <div class="container">
+    <div class="offices-header">
+      <div class="section-label reveal">Our Offices</div>
+      <h2 class="section-title reveal reveal-delay-1">Where we work</h2>
+    </div>
+    <div class="offices-grid">
+      <div class="office-card reveal">
+        <div class="office-flag">🇺🇸</div>
+        <h3>HQ — Austin, TX</h3>
+        <div class="office-city">United States</div>
+        <div class="office-detail">
+          <strong>Address:</strong> 400 Colorado St, Suite 800<br>Austin, TX 78701<br><br>
+          <strong>Phone:</strong> +1 (512) 555-0140
+        </div>
+      </div>
+      <div class="office-card reveal reveal-delay-1">
+        <div class="office-flag">🇨🇦</div>
+        <h3>Toronto</h3>
+        <div class="office-city">Canada</div>
+        <div class="office-detail">
+          <strong>Address:</strong> 200 University Ave, Suite 300<br>Toronto, ON M5H 3C6<br><br>
+          <strong>Phone:</strong> +1 (416) 555-0190
+        </div>
+      </div>
+      <div class="office-card reveal reveal-delay-2">
+        <div class="office-flag">🇬🇧</div>
+        <h3>London</h3>
+        <div class="office-city">United Kingdom</div>
+        <div class="office-detail">
+          <strong>Address:</strong> 1 Finsbury Ave, Level 4<br>London EC2M 2PF<br><br>
+          <strong>Phone:</strong> +44 20 7555 0140
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HELP LINKS -->
+<section class="help-section section-pad">
+  <div class="container">
+    <div class="help-header">
+      <div class="section-label reveal">Resources</div>
+      <h2 class="section-title reveal reveal-delay-1">Other ways to get help</h2>
+    </div>
+    <div class="help-grid">
+      <div class="help-card reveal">
+        <div class="help-icon">📖</div>
+        <h3>Help Center</h3>
+        <p>Step-by-step guides, video tutorials, and FAQs for every Trellio feature.</p>
+        <a href="#" class="help-link">Browse articles →</a>
+      </div>
+      <div class="help-card reveal reveal-delay-1">
+        <div class="help-icon">🎓</div>
+        <h3>Trellio Academy</h3>
+        <p>Free courses on scheduling, invoicing, and growing your service business.</p>
+        <a href="#" class="help-link">Start learning →</a>
+      </div>
+      <div class="help-card reveal reveal-delay-2">
+        <div class="help-icon">👥</div>
+        <h3>Community</h3>
+        <p>Join 5,000+ service pros sharing tips, templates, and success stories.</p>
+        <a href="#" class="help-link">Join the community →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer"><div class="container"><div class="footer-grid"><div class="footer-brand"><div class="footer-logo"><svg viewBox="0 0 36 36" fill="none"><path d="M6 28V14L18 6L30 14V28" stroke="#0EA5A0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 20H30" stroke="#0EA5A0" stroke-width="2" stroke-linecap="round" opacity="0.7"/><circle cx="18" cy="6" r="2.5" fill="#0EA5A0"/><circle cx="6" cy="14" r="1.8" fill="#F7845E" opacity="0.8"/><circle cx="30" cy="14" r="1.8" fill="#FFAA5C" opacity="0.8"/></svg>trellio</div><p>The service hub that helps your crew grow upward.</p></div><div class="footer-col"><h4>Product</h4><ul><li><a href="features.html">Features</a></li><li><a href="pricing.html">Pricing</a></li><li><a href="#">Mobile App</a></li><li><a href="#">Integrations</a></li></ul></div><div class="footer-col"><h4>Company</h4><ul><li><a href="about.html">About</a></li><li><a href="contact.html">Contact</a></li><li><a href="#">Careers</a></li><li><a href="#">Press</a></li></ul></div><div class="footer-col"><h4>Resources</h4><ul><li><a href="#">Help Center</a></li><li><a href="#">Academy</a></li><li><a href="#">Blog</a></li><li><a href="#">Podcast</a></li></ul></div></div><div class="footer-bottom"><span>© 2026 Trellio. All rights reserved.</span><div class="footer-legal"><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Cookies</a></div></div></div></footer>
+
+<script>
+document.querySelectorAll('.reveal').forEach(el=>new IntersectionObserver(e=>{e.forEach(en=>{if(en.isIntersecting)en.target.classList.add('visible')})},{threshold:0.1,rootMargin:'0px 0px -40px 0px'}).observe(el));
+window.addEventListener('scroll',()=>{document.getElementById('nav').classList.toggle('scrolled',window.scrollY>50)});
+const h=document.getElementById('hamburger'),m=document.getElementById('mobile-nav');let o=false;h.addEventListener('click',()=>{o=!o;m.classList.toggle('open');const s=h.querySelectorAll('span');if(o){s[0].style.transform='rotate(45deg) translate(5px,5px)';s[1].style.opacity='0';s[2].style.transform='rotate(-45deg) translate(5px,-5px)'}else{s[0].style.transform='';s[1].style.opacity='';s[2].style.transform=''}});
+
+function submitForm(){
+  document.getElementById('form-container').style.display='none';
+  document.getElementById('form-success').classList.add('show');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Trellio Features — Smart scheduling, instant invoicing, mobile app, client hub, AI tools, and real-time reporting for field service businesses.">
+<title>Features — Trellio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============================================
+   TOKENS (shared across all pages)
+   ============================================ */
+:root {
+  --primary:#0EA5A0;--primary-deep:#087F7A;--primary-light:#B2F0ED;--primary-subtle:rgba(14,165,160,0.06);
+  --coral:#F7845E;--coral-deep:#E56840;--coral-light:#FFDCC8;
+  --amber:#FFAA5C;--amber-deep:#FF9633;
+  --midnight:#0C1220;--charcoal:#1A2332;--slate:#2D3B4E;--muted:#6B7F96;--silver:#A3B4C8;--cream:#FFF9F5;--white:#FFFFFF;
+  --font-primary:'DM Sans',system-ui,sans-serif;--font-editorial:'Playfair Display',Georgia,serif;--font-data:'JetBrains Mono',monospace;
+  --ease:cubic-bezier(0.16,1,0.3,1);--radius-md:10px;--radius-lg:16px;--radius-xl:20px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-primary);background:var(--cream);color:var(--midnight);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img{max-width:100%;display:block}a{text-decoration:none;color:inherit}button{cursor:pointer;font-family:var(--font-primary);border:none}
+
+/* Reveal */
+.reveal{opacity:0;transform:translateY(40px);transition:opacity 0.8s var(--ease),transform 0.8s var(--ease)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:0.1s}.reveal-delay-2{transition-delay:0.2s}.reveal-delay-3{transition-delay:0.3s}.reveal-delay-4{transition-delay:0.4s}
+
+/* ============================================
+   NAV (identical to homepage)
+   ============================================ */
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 clamp(1.5rem,4vw,4rem);transition:all 0.4s ease}
+.nav.scrolled{background:rgba(255,249,245,0.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(0,0,0,0.06)}
+.nav-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:72px}
+.nav-logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.4rem;letter-spacing:-0.03em;color:var(--midnight)}
+.nav-logo svg{width:28px;height:28px}
+.nav-links{display:flex;align-items:center;gap:2rem;list-style:none}
+.nav-links a{font-size:0.9rem;font-weight:500;color:var(--slate);transition:color 0.2s;position:relative}
+.nav-links a:hover{color:var(--primary)}
+.nav-links a.active{color:var(--primary)}
+.nav-links a.active::after{content:'';position:absolute;bottom:-4px;left:0;right:0;height:2px;background:var(--primary);border-radius:2px}
+.nav-cta-group{display:flex;align-items:center;gap:1rem}
+.nav-login{font-size:0.9rem;font-weight:500;color:var(--slate);transition:color 0.2s}
+.nav-login:hover{color:var(--primary)}
+.nav-hamburger{display:none;flex-direction:column;gap:5px;background:none;padding:4px}
+.nav-hamburger span{width:22px;height:2px;background:var(--midnight);border-radius:2px;transition:all 0.3s}
+.nav-mobile{display:none;position:fixed;inset:0;background:var(--cream);z-index:99;padding:100px 2rem 2rem;flex-direction:column;gap:0.5rem}
+.nav-mobile.open{display:flex}
+.nav-mobile a{font-size:1.5rem;font-weight:600;padding:1rem 0;border-bottom:1px solid rgba(0,0,0,0.06);color:var(--midnight)}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:var(--radius-md);font-weight:600;font-size:0.95rem;transition:all 0.35s var(--ease);white-space:nowrap}
+.btn-primary{background:var(--primary);color:var(--white);box-shadow:0 4px 20px rgba(14,165,160,0.25),inset 0 1px 0 rgba(255,255,255,0.15)}
+.btn-primary:hover{background:var(--primary-deep);transform:translateY(-2px);box-shadow:0 8px 30px rgba(14,165,160,0.35)}
+.btn-secondary{background:var(--white);color:var(--midnight);border:1.5px solid rgba(0,0,0,0.1)}
+.btn-secondary:hover{border-color:var(--primary);color:var(--primary);transform:translateY(-2px)}
+.btn-sm{padding:10px 20px;font-size:0.85rem}
+.btn-lg{padding:18px 36px;font-size:1.05rem}
+.btn-arrow::after{content:'→';transition:transform 0.3s}.btn-arrow:hover::after{transform:translateX(4px)}
+
+/* Section utilities */
+.container{max-width:1200px;margin:0 auto;padding:0 clamp(1.5rem,4vw,4rem)}
+.section-pad{padding-top:clamp(5rem,10vw,8rem);padding-bottom:clamp(5rem,10vw,8rem)}
+.section-label{font-family:var(--font-data);font-size:0.68rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--primary);margin-bottom:1.25rem;display:flex;align-items:center;gap:10px}
+.section-label::before{content:'';width:20px;height:1.5px;background:var(--primary);border-radius:2px}
+.section-title{font-size:clamp(2rem,4.5vw,3rem);font-weight:700;letter-spacing:-0.035em;line-height:1.12;margin-bottom:1.25rem}
+.section-desc{font-size:1.1rem;color:var(--muted);line-height:1.7;max-width:560px;font-weight:300}
+
+/* Gradient bar */
+.gradient-bar{height:3px;background:linear-gradient(90deg,var(--primary),var(--amber),var(--coral),var(--primary-deep));background-size:300% 100%;animation:gradientFlow 8s ease infinite}
+@keyframes gradientFlow{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+/* ============================================
+   PAGE HERO (subpage variant)
+   ============================================ */
+.page-hero {
+  padding: clamp(8rem,14vw,11rem) 0 clamp(3rem,6vw,5rem);
+  position: relative;
+  overflow: hidden;
+  background: var(--cream);
+  text-align: center;
+}
+.page-hero::before {
+  content:'';position:absolute;top:-30%;left:50%;transform:translateX(-50%);
+  width:80%;height:80%;
+  background:radial-gradient(ellipse,rgba(14,165,160,0.06) 0%,transparent 65%);
+  pointer-events:none;
+}
+.page-hero::after {
+  content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(14,165,160,0.15),transparent);
+}
+.page-hero .section-label { justify-content: center; }
+.page-hero .section-title { max-width: 700px; margin: 0 auto 1.25rem; }
+.page-hero .section-desc { max-width: 550px; margin: 0 auto; }
+
+/* ============================================
+   FEATURE ROWS (alternating layout)
+   ============================================ */
+.feature-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(3rem,6vw,5rem);
+  align-items: center;
+}
+.feature-row.reverse .feature-row-visual { order: -1; }
+.feature-row-content { max-width: 500px; }
+.feature-row-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-data);
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border-radius: 100px;
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+}
+.feature-row-badge.teal { background: rgba(14,165,160,0.08); color: var(--primary); }
+.feature-row-badge.coral { background: rgba(247,132,94,0.08); color: var(--coral); }
+.feature-row-badge.amber { background: rgba(255,170,92,0.08); color: var(--amber); }
+.feature-row-content h2 {
+  font-size: clamp(1.8rem,3.5vw,2.4rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  margin-bottom: 1rem;
+}
+.feature-row-content p {
+  font-size: 1.05rem;
+  color: var(--muted);
+  line-height: 1.7;
+  font-weight: 300;
+  margin-bottom: 1.5rem;
+}
+.feature-row-bullets {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  margin-bottom: 2rem;
+}
+.feature-row-bullets li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.95rem;
+  color: var(--slate);
+  line-height: 1.5;
+}
+.bullet-check {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+  font-size: 0.65rem;
+  font-weight: 700;
+}
+.bullet-check.teal { background: rgba(14,165,160,0.1); color: var(--primary); }
+.bullet-check.coral { background: rgba(247,132,94,0.1); color: var(--coral); }
+.bullet-check.amber { background: rgba(255,170,92,0.1); color: var(--amber); }
+
+/* Feature mockup cards */
+.feature-row-visual { position: relative; }
+.feature-mockup-card {
+  background: var(--white);
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(12,18,32,0.08);
+  transition: transform 0.5s var(--ease);
+}
+.feature-mockup-card:hover { transform: translateY(-4px); }
+.feature-mockup-header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.feature-mockup-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.feature-mockup-tag {
+  font-family: var(--font-data);
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--primary);
+  background: rgba(14,165,160,0.08);
+  padding: 4px 10px;
+  border-radius: 100px;
+}
+.feature-mockup-body { padding: 1.5rem; }
+
+/* Schedule mockup */
+.schedule-grid {
+  display: grid;
+  grid-template-columns: 50px 1fr;
+  gap: 0;
+}
+.schedule-time {
+  font-family: var(--font-data);
+  font-size: 0.6rem;
+  color: var(--muted);
+  padding: 0.75rem 0;
+  border-right: 2px solid rgba(0,0,0,0.04);
+  text-align: right;
+  padding-right: 12px;
+}
+.schedule-event {
+  padding: 0.6rem 0.85rem;
+  margin: 0.25rem 0 0.25rem 12px;
+  border-radius: 8px;
+  border-left: 3px solid var(--primary);
+  background: rgba(14,165,160,0.04);
+}
+.schedule-event:nth-child(4) { border-color: var(--coral); background: rgba(247,132,94,0.04); }
+.schedule-event:nth-child(6) { border-color: var(--amber); background: rgba(255,170,92,0.04); }
+.schedule-event-title { font-size: 0.8rem; font-weight: 600; }
+.schedule-event-meta { font-size: 0.68rem; color: var(--muted); margin-top: 2px; }
+
+/* Invoice mockup */
+.invoice-preview {
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.invoice-header-bar {
+  background: var(--primary);
+  color: white;
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.invoice-header-bar span { font-weight: 600; font-size: 0.9rem; }
+.invoice-status {
+  font-family: var(--font-data);
+  font-size: 0.6rem;
+  background: rgba(255,255,255,0.2);
+  padding: 3px 10px;
+  border-radius: 100px;
+  letter-spacing: 0.08em;
+}
+.invoice-body { padding: 1.25rem; }
+.invoice-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.65rem 0;
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+  font-size: 0.85rem;
+}
+.invoice-row:last-child { border-bottom: none; }
+.invoice-row .label { color: var(--muted); font-weight: 300; }
+.invoice-row .value { font-weight: 600; }
+.invoice-total {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem 0 0;
+  margin-top: 0.5rem;
+  border-top: 2px solid var(--midnight);
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+.invoice-btn {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.88rem;
+  margin-top: 1rem;
+  text-align: center;
+}
+
+/* CRM mockup */
+.crm-client {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 10px;
+  border: 1px solid rgba(0,0,0,0.05);
+  margin-bottom: 0.75rem;
+  transition: all 0.3s;
+}
+.crm-client:hover { background: rgba(14,165,160,0.03); border-color: rgba(14,165,160,0.15); }
+.crm-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: white;
+  flex-shrink: 0;
+}
+.crm-avatar.t { background: linear-gradient(135deg,var(--primary),var(--primary-deep)); }
+.crm-avatar.c { background: linear-gradient(135deg,var(--coral),var(--coral-deep)); }
+.crm-avatar.a { background: linear-gradient(135deg,var(--amber),var(--amber-deep)); }
+.crm-name { font-weight: 600; font-size: 0.88rem; }
+.crm-detail { font-size: 0.72rem; color: var(--muted); margin-top: 1px; }
+.crm-status {
+  margin-left: auto;
+  font-family: var(--font-data);
+  font-size: 0.58rem;
+  padding: 4px 10px;
+  border-radius: 100px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+.crm-status.active { background: rgba(14,165,160,0.08); color: var(--primary); }
+.crm-status.pending { background: rgba(255,170,92,0.08); color: var(--amber-deep); }
+.crm-status.lead { background: rgba(247,132,94,0.08); color: var(--coral); }
+
+/* Reports mockup */
+.report-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  height: 140px;
+  padding: 1rem 0;
+}
+.report-bar {
+  flex: 1;
+  border-radius: 6px 6px 0 0;
+  position: relative;
+  transition: all 0.4s var(--ease);
+  min-height: 12px;
+}
+.report-bar:hover { opacity: 0.8; transform: scaleY(1.05); transform-origin: bottom; }
+.report-bar.teal { background: var(--primary); }
+.report-bar.teal-light { background: var(--primary-light); }
+.report-bar.coral { background: var(--coral); }
+.report-bar.amber { background: var(--amber); }
+.report-labels {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(0,0,0,0.06);
+}
+.report-label {
+  font-family: var(--font-data);
+  font-size: 0.55rem;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.report-kpis {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+.report-kpi { text-align: center; }
+.report-kpi-value { font-size: 1.2rem; font-weight: 700; }
+.report-kpi-value.teal { color: var(--primary); }
+.report-kpi-value.coral { color: var(--coral); }
+.report-kpi-value.amber { color: var(--amber); }
+.report-kpi-label { font-size: 0.62rem; color: var(--muted); font-family: var(--font-data); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 2px; }
+
+/* AI mockup */
+.ai-chat { display: flex; flex-direction: column; gap: 0.75rem; }
+.ai-msg {
+  max-width: 85%;
+  padding: 0.85rem 1.1rem;
+  border-radius: 14px;
+  font-size: 0.85rem;
+  line-height: 1.55;
+}
+.ai-msg.user {
+  align-self: flex-end;
+  background: var(--primary);
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+.ai-msg.bot {
+  align-self: flex-start;
+  background: rgba(0,0,0,0.04);
+  color: var(--slate);
+  border-bottom-left-radius: 4px;
+}
+.ai-msg .bot-label {
+  font-family: var(--font-data);
+  font-size: 0.55rem;
+  color: var(--primary);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  display: block;
+}
+.ai-typing {
+  align-self: flex-start;
+  display: flex;
+  gap: 4px;
+  padding: 0.85rem 1.1rem;
+}
+.ai-typing span {
+  width: 6px; height: 6px;
+  background: var(--muted);
+  border-radius: 50%;
+  animation: typingDot 1.4s ease-in-out infinite;
+}
+.ai-typing span:nth-child(2) { animation-delay: 0.2s; }
+.ai-typing span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes typingDot {
+  0%,100% { opacity:0.3; transform:translateY(0); }
+  50% { opacity:1; transform:translateY(-4px); }
+}
+
+/* Dark section variant */
+.dark-section {
+  background: var(--midnight);
+  color: var(--white);
+  position: relative;
+  overflow: hidden;
+}
+.dark-section::before {
+  content:'';position:absolute;top:-30%;left:-20%;width:60%;height:80%;
+  background:radial-gradient(ellipse,rgba(14,165,160,0.08) 0%,transparent 60%);pointer-events:none;
+}
+.dark-section .section-desc { color: var(--silver); }
+.dark-section .feature-mockup-card {
+  background: var(--charcoal);
+  border-color: rgba(255,255,255,0.06);
+}
+.dark-section .feature-mockup-header { border-color: rgba(255,255,255,0.04); }
+.dark-section .feature-mockup-title { color: var(--white); }
+.dark-section .schedule-event { background: rgba(14,165,160,0.08); }
+.dark-section .schedule-event:nth-child(4) { background: rgba(247,132,94,0.06); }
+.dark-section .schedule-event:nth-child(6) { background: rgba(255,170,92,0.06); }
+.dark-section .schedule-event-title { color: var(--white); }
+.dark-section .schedule-time { border-color: rgba(255,255,255,0.06); }
+.dark-section .feature-row-bullets li { color: var(--silver); }
+
+/* Divider */
+.section-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0,0,0,0.06), transparent);
+  margin: 0;
+}
+.dark-section + .section-divider,
+.section-divider + .dark-section {
+  background: none;
+}
+
+/* ============================================
+   FEATURES OVERVIEW GRID
+   ============================================ */
+.features-overview {
+  background: var(--white);
+  border-top: 1px solid rgba(0,0,0,0.04);
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+}
+.overview-header { text-align: center; max-width: 600px; margin: 0 auto 3.5rem; }
+.overview-header .section-label { justify-content: center; }
+.overview-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: rgba(0,0,0,0.04);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+.overview-item {
+  background: var(--white);
+  padding: 2rem 1.5rem;
+  text-align: center;
+  transition: all 0.3s;
+}
+.overview-item:hover { background: var(--cream); }
+.overview-icon { font-size: 1.5rem; margin-bottom: 0.85rem; }
+.overview-item h4 { font-size: 0.9rem; font-weight: 600; margin-bottom: 0.4rem; }
+.overview-item p { font-size: 0.78rem; color: var(--muted); line-height: 1.5; font-weight: 300; }
+
+/* ============================================
+   CTA (same as homepage)
+   ============================================ */
+.cta-section{background:var(--midnight);color:var(--white);text-align:center;position:relative;overflow:hidden}
+.cta-section::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%,rgba(14,165,160,0.1) 0%,transparent 50%),radial-gradient(ellipse at 70% 50%,rgba(247,132,94,0.06) 0%,transparent 50%);pointer-events:none}
+.cta-lattice{position:absolute;inset:0;opacity:0.025;background-image:linear-gradient(30deg,var(--primary) 1px,transparent 1px),linear-gradient(-30deg,var(--primary) 1px,transparent 1px);background-size:50px 86px;pointer-events:none}
+.cta-content{position:relative;z-index:2;max-width:650px;margin:0 auto}
+.cta-section .section-label{justify-content:center}.cta-section .section-title{color:var(--white)}
+.cta-section .section-desc{color:var(--silver);margin:0 auto 2.5rem}
+.cta-buttons{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+.cta-note{font-size:0.78rem;color:var(--muted);margin-top:1.5rem}
+.cta-tagline{font-family:var(--font-editorial);font-style:italic;font-size:1.1rem;color:var(--coral);margin-top:3rem;opacity:0.8}
+
+/* ============================================
+   FOOTER (identical)
+   ============================================ */
+.footer{background:var(--midnight);color:var(--silver);border-top:1px solid rgba(255,255,255,0.04);padding:4rem 0 2.5rem}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3rem}
+.footer-brand p{font-size:0.88rem;color:var(--muted);line-height:1.7;margin-top:1rem;max-width:280px;font-weight:300}
+.footer-logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.25rem;color:var(--white)}
+.footer-logo svg{width:24px;height:24px}
+.footer-col h4{font-size:0.7rem;font-family:var(--font-data);letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);margin-bottom:1.25rem}
+.footer-col ul{list-style:none}.footer-col li{margin-bottom:0.75rem}
+.footer-col a{font-size:0.88rem;color:var(--silver);transition:color 0.2s;font-weight:300}.footer-col a:hover{color:var(--primary)}
+.footer-bottom{display:flex;align-items:center;justify-content:space-between;padding-top:2rem;border-top:1px solid rgba(255,255,255,0.04);font-size:0.78rem;color:var(--muted)}
+.footer-legal{display:flex;gap:1.5rem}.footer-legal a{color:var(--muted);transition:color 0.2s}.footer-legal a:hover{color:var(--silver)}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media(max-width:1024px){
+  .feature-row{grid-template-columns:1fr;gap:2.5rem}
+  .feature-row.reverse .feature-row-visual{order:0}
+  .overview-grid{grid-template-columns:repeat(2,1fr)}
+  .footer-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:768px){
+  .nav-links{display:none}.nav-hamburger{display:flex}
+  .overview-grid{grid-template-columns:1fr}
+  .footer-grid{grid-template-columns:1fr;gap:2rem}
+  .footer-bottom{flex-direction:column;gap:1rem;text-align:center}
+  .report-kpis{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="gradient-bar"></div>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <svg viewBox="0 0 36 36" fill="none"><path d="M6 28V14L18 6L30 14V28" stroke="#0EA5A0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 20H30" stroke="#0EA5A0" stroke-width="2" stroke-linecap="round" opacity="0.7"/><circle cx="18" cy="6" r="2.5" fill="#0EA5A0"/><circle cx="6" cy="14" r="1.8" fill="#F7845E" opacity="0.8"/><circle cx="30" cy="14" r="1.8" fill="#FFAA5C" opacity="0.8"/></svg>
+      trellio
+    </a>
+    <ul class="nav-links">
+      <li><a href="features.html" class="active">Features</a></li>
+      <li><a href="pricing.html">Pricing</a></li>
+      <li><a href="industries.html">Industries</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <div class="nav-cta-group">
+      <a href="#" class="nav-login">Log in</a>
+      <a href="#" class="btn btn-primary btn-sm">Start Free Trial</a>
+    </div>
+    <button class="nav-hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="nav-mobile" id="mobile-nav">
+  <a href="index.html">Home</a><a href="features.html">Features</a><a href="pricing.html">Pricing</a><a href="industries.html">Industries</a><a href="about.html">About</a><a href="contact.html">Contact</a>
+</div>
+
+<!-- PAGE HERO -->
+<section class="page-hero">
+  <div class="container">
+    <div class="section-label reveal">Features</div>
+    <h1 class="section-title reveal reveal-delay-1">Every tool your business needs.<br/>One app. Zero headaches.</h1>
+    <p class="section-desc reveal reveal-delay-2">From first quote to final payment, Trellio keeps your crew organized, your clients impressed, and your business growing.</p>
+  </div>
+</section>
+
+<!-- FEATURE 1: SCHEDULING -->
+<section class="section-pad">
+  <div class="container">
+    <div class="feature-row">
+      <div class="feature-row-content reveal">
+        <div class="feature-row-badge teal">📋 Scheduling & Dispatch</div>
+        <h2>Your whole crew,<br/>one calendar</h2>
+        <p>Drag-and-drop scheduling with real-time crew availability. Route optimization keeps your team moving. Automated dispatch notifications mean nobody's left guessing.</p>
+        <ul class="feature-row-bullets">
+          <li><span class="bullet-check teal">✓</span>Color-coded drag-and-drop calendar</li>
+          <li><span class="bullet-check teal">✓</span>Route optimization to cut drive time</li>
+          <li><span class="bullet-check teal">✓</span>Automated crew notifications & reminders</li>
+          <li><span class="bullet-check teal">✓</span>Online booking from your website</li>
+        </ul>
+        <a href="#" class="btn btn-primary btn-arrow">Try Scheduling Free </a>
+      </div>
+      <div class="feature-row-visual reveal reveal-delay-2">
+        <div class="feature-mockup-card">
+          <div class="feature-mockup-header">
+            <div class="feature-mockup-title">Schedule — Thu, Feb 12</div>
+            <div class="feature-mockup-tag">Live</div>
+          </div>
+          <div class="feature-mockup-body">
+            <div class="schedule-grid">
+              <div class="schedule-time">8:00</div>
+              <div class="schedule-event">
+                <div class="schedule-event-title">🔧 HVAC Install — Martin Residence</div>
+                <div class="schedule-event-meta">Team Alpha · Marcus, Jin · 3hrs est.</div>
+              </div>
+              <div class="schedule-time">10:30</div>
+              <div class="schedule-event">
+                <div class="schedule-event-title">🪠 Emergency Repair — Oak St Office</div>
+                <div class="schedule-event-meta">Team Bravo · Sofia · 1.5hrs est.</div>
+              </div>
+              <div class="schedule-time">1:00</div>
+              <div class="schedule-event">
+                <div class="schedule-event-title">🌿 Landscape Reno — Kim Property</div>
+                <div class="schedule-event-meta">Team Charlie · Derek, Mia · 4hrs est.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- FEATURE 2: INVOICING -->
+<section class="section-pad">
+  <div class="container">
+    <div class="feature-row reverse">
+      <div class="feature-row-content reveal">
+        <div class="feature-row-badge coral">💰 Invoicing & Payments</div>
+        <h2>Get paid before you<br/>leave the driveway</h2>
+        <p>One-tap invoicing from the job site. Automated reminders chase the money so you don't have to. Online payments mean cash in your account — on average 4× faster.</p>
+        <ul class="feature-row-bullets">
+          <li><span class="bullet-check coral">✓</span>One-tap invoicing from the field</li>
+          <li><span class="bullet-check coral">✓</span>Automated follow-up reminders</li>
+          <li><span class="bullet-check coral">✓</span>Online credit card & ACH payments</li>
+          <li><span class="bullet-check coral">✓</span>Instant payouts to your bank</li>
+        </ul>
+        <a href="#" class="btn btn-primary btn-arrow">Try Invoicing Free </a>
+      </div>
+      <div class="feature-row-visual reveal reveal-delay-2">
+        <div class="feature-mockup-card">
+          <div class="feature-mockup-header">
+            <div class="feature-mockup-title">Invoice #1247</div>
+            <div class="feature-mockup-tag">Sent</div>
+          </div>
+          <div class="feature-mockup-body">
+            <div class="invoice-preview">
+              <div class="invoice-header-bar">
+                <span>Martin Residence — HVAC</span>
+                <span class="invoice-status">AWAITING PAYMENT</span>
+              </div>
+              <div class="invoice-body">
+                <div class="invoice-row"><span class="label">HVAC Unit Installation</span><span class="value">$3,200.00</span></div>
+                <div class="invoice-row"><span class="label">Ductwork Modification</span><span class="value">$680.00</span></div>
+                <div class="invoice-row"><span class="label">Thermostat Setup</span><span class="value">$150.00</span></div>
+                <div class="invoice-row"><span class="label">Labor (6 hrs × $95)</span><span class="value">$570.00</span></div>
+                <div class="invoice-total"><span>Total Due</span><span>$4,600.00</span></div>
+                <button class="invoice-btn">Pay Now — Secure Checkout</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- FEATURE 3: CLIENT HUB (dark) -->
+<section class="dark-section section-pad">
+  <div class="container">
+    <div class="feature-row">
+      <div class="feature-row-content reveal">
+        <div class="feature-row-badge teal">👥 Client Management</div>
+        <h2>Every client detail,<br/>one tap away</h2>
+        <p>Complete client profiles with job history, billing records, notes, and photos. Your crew has context before they arrive. Your office has answers before they ask.</p>
+        <ul class="feature-row-bullets">
+          <li><span class="bullet-check teal">✓</span>Full client history & job records</li>
+          <li><span class="bullet-check teal">✓</span>Automated lead tracking & tagging</li>
+          <li><span class="bullet-check teal">✓</span>Client self-serve portal (Client Hub)</li>
+          <li><span class="bullet-check teal">✓</span>Two-way SMS & email communication</li>
+        </ul>
+        <a href="#" class="btn btn-primary btn-arrow">Try CRM Free </a>
+      </div>
+      <div class="feature-row-visual reveal reveal-delay-2">
+        <div class="feature-mockup-card">
+          <div class="feature-mockup-header">
+            <div class="feature-mockup-title">Active Clients</div>
+            <div class="feature-mockup-tag">247 total</div>
+          </div>
+          <div class="feature-mockup-body">
+            <div class="crm-client">
+              <div class="crm-avatar t">JM</div>
+              <div><div class="crm-name">James Martin</div><div class="crm-detail">1247 Maple Dr · 8 past jobs · $12,400 lifetime</div></div>
+              <span class="crm-status active">Active</span>
+            </div>
+            <div class="crm-client">
+              <div class="crm-avatar c">SR</div>
+              <div><div class="crm-name">Sarah Rodriguez</div><div class="crm-detail">893 Oak Ave · Quote pending · $2,100 est.</div></div>
+              <span class="crm-status pending">Pending</span>
+            </div>
+            <div class="crm-client">
+              <div class="crm-avatar a">TW</div>
+              <div><div class="crm-name">Tom Williams</div><div class="crm-detail">New request via website · Lawn care</div></div>
+              <span class="crm-status lead">New Lead</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURE 4: REPORTING -->
+<section class="section-pad">
+  <div class="container">
+    <div class="feature-row reverse">
+      <div class="feature-row-content reveal">
+        <div class="feature-row-badge amber">📊 Reporting & Insights</div>
+        <h2>Know your numbers<br/>at a glance</h2>
+        <p>Revenue projections, crew efficiency, job profitability, and expense tracking — all in real-time dashboards built for business owners, not accountants.</p>
+        <ul class="feature-row-bullets">
+          <li><span class="bullet-check amber">✓</span>20+ built-in business reports</li>
+          <li><span class="bullet-check amber">✓</span>Revenue heatmap by service area</li>
+          <li><span class="bullet-check amber">✓</span>Job profitability tracking</li>
+          <li><span class="bullet-check amber">✓</span>QuickBooks Online sync</li>
+        </ul>
+        <a href="#" class="btn btn-primary btn-arrow">Try Reporting Free </a>
+      </div>
+      <div class="feature-row-visual reveal reveal-delay-2">
+        <div class="feature-mockup-card">
+          <div class="feature-mockup-header">
+            <div class="feature-mockup-title">Revenue — Last 7 Days</div>
+            <div class="feature-mockup-tag">Live</div>
+          </div>
+          <div class="feature-mockup-body">
+            <div class="report-chart">
+              <div class="report-bar teal" style="height:55%"></div>
+              <div class="report-bar teal" style="height:72%"></div>
+              <div class="report-bar teal" style="height:48%"></div>
+              <div class="report-bar coral" style="height:90%"></div>
+              <div class="report-bar teal" style="height:65%"></div>
+              <div class="report-bar amber" style="height:100%"></div>
+              <div class="report-bar teal-light" style="height:40%"></div>
+            </div>
+            <div class="report-labels">
+              <span class="report-label">Mon</span><span class="report-label">Tue</span><span class="report-label">Wed</span><span class="report-label">Thu</span><span class="report-label">Fri</span><span class="report-label">Sat</span><span class="report-label">Sun</span>
+            </div>
+            <div class="report-kpis">
+              <div class="report-kpi"><div class="report-kpi-value teal">$28.4K</div><div class="report-kpi-label">Revenue</div></div>
+              <div class="report-kpi"><div class="report-kpi-value coral">94.2%</div><div class="report-kpi-label">Efficiency</div></div>
+              <div class="report-kpi"><div class="report-kpi-value amber">$184</div><div class="report-kpi-label">Avg Job Value</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- FEATURE 5: AI -->
+<section class="dark-section section-pad">
+  <div class="container">
+    <div class="feature-row">
+      <div class="feature-row-content reveal">
+        <div class="feature-row-badge coral">🤖 Trellio AI</div>
+        <h2>Your smartest<br/>crew member</h2>
+        <p>Let AI answer customer calls 24/7, draft quotes, generate email campaigns, and flag upsell opportunities. Your crew stays in the field — not on the phone.</p>
+        <ul class="feature-row-bullets">
+          <li><span class="bullet-check coral">✓</span>AI Receptionist — answers calls 24/7</li>
+          <li><span class="bullet-check coral">✓</span>Voice commands from the job site</li>
+          <li><span class="bullet-check coral">✓</span>Auto-generated email campaigns</li>
+          <li><span class="bullet-check coral">✓</span>Smart quote suggestions</li>
+        </ul>
+        <a href="#" class="btn btn-primary btn-arrow">Try Trellio AI Free </a>
+      </div>
+      <div class="feature-row-visual reveal reveal-delay-2">
+        <div class="feature-mockup-card">
+          <div class="feature-mockup-header">
+            <div class="feature-mockup-title">Trellio AI Receptionist</div>
+            <div class="feature-mockup-tag">Active</div>
+          </div>
+          <div class="feature-mockup-body">
+            <div class="ai-chat">
+              <div class="ai-msg user">Hey, I need someone to come fix my AC — it's making a weird noise and not cooling</div>
+              <div class="ai-msg bot">
+                <span class="bot-label">Trellio AI</span>
+                I'm sorry to hear that! I can get a technician out to you. We have availability tomorrow at 10:30 AM or 2:00 PM. Which works better for you? The diagnostic visit is $95.
+              </div>
+              <div class="ai-msg user">10:30 works. Can you send me a confirmation?</div>
+              <div class="ai-msg bot">
+                <span class="bot-label">Trellio AI</span>
+                Done! ✅ You're booked for tomorrow at 10:30 AM. I've sent a confirmation text and email with the details. Our technician Marcus will arrive in a branded van. Is there anything else?
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- OVERVIEW GRID -->
+<section class="features-overview section-pad">
+  <div class="container">
+    <div class="overview-header">
+      <div class="section-label reveal">And Much More</div>
+      <h2 class="section-title reveal reveal-delay-1">Every feature your<br/>business needs</h2>
+    </div>
+    <div class="overview-grid reveal">
+      <div class="overview-item"><div class="overview-icon">🗓️</div><h4>Online Booking</h4><p>Let clients book directly from your site</p></div>
+      <div class="overview-item"><div class="overview-icon">📍</div><h4>GPS Tracking</h4><p>See your whole crew in real-time</p></div>
+      <div class="overview-item"><div class="overview-icon">📸</div><h4>Job Site Photos</h4><p>Before/after shots attached to every job</p></div>
+      <div class="overview-item"><div class="overview-icon">⏱️</div><h4>Time Tracking</h4><p>Crew clock-in/out from the app</p></div>
+      <div class="overview-item"><div class="overview-icon">💬</div><h4>On-My-Way Texts</h4><p>One-tap ETA alerts to clients</p></div>
+      <div class="overview-item"><div class="overview-icon">📧</div><h4>Email Campaigns</h4><p>Automated re-engagement emails</p></div>
+      <div class="overview-item"><div class="overview-icon">⭐</div><h4>Review Requests</h4><p>Auto-request Google reviews post-job</p></div>
+      <div class="overview-item"><div class="overview-icon">🔗</div><h4>Integrations</h4><p>QuickBooks, Mailchimp, Zapier & more</p></div>
+      <div class="overview-item"><div class="overview-icon">📝</div><h4>Job Forms</h4><p>Custom checklists & inspection forms</p></div>
+      <div class="overview-item"><div class="overview-icon">💳</div><h4>Card Reader</h4><p>Accept payments on-site with a tap</p></div>
+      <div class="overview-item"><div class="overview-icon">🏷️</div><h4>Expense Tracking</h4><p>Log expenses & receipts per job</p></div>
+      <div class="overview-item"><div class="overview-icon">🌐</div><h4>Website Builder</h4><p>SEO-ready site in minutes</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section section-pad">
+  <div class="cta-lattice"></div>
+  <div class="container">
+    <div class="cta-content">
+      <div class="section-label reveal">Ready?</div>
+      <h2 class="section-title reveal reveal-delay-1">See every feature<br/>in action — free</h2>
+      <p class="section-desc reveal reveal-delay-2">Start your 14-day free trial today. No credit card, no commitment. Your crew will thank you.</p>
+      <div class="cta-buttons reveal reveal-delay-3">
+        <a href="#" class="btn btn-primary btn-lg btn-arrow">Start Free Trial </a>
+        <a href="#" class="btn btn-secondary btn-lg" style="border-color:rgba(255,255,255,0.15);color:var(--white);">Talk to Sales</a>
+      </div>
+      <p class="cta-note reveal reveal-delay-4">Free for 14 days · No credit card required · Cancel anytime</p>
+      <p class="cta-tagline reveal reveal-delay-4">"Structure your growth."</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo"><svg viewBox="0 0 36 36" fill="none"><path d="M6 28V14L18 6L30 14V28" stroke="#0EA5A0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 20H30" stroke="#0EA5A0" stroke-width="2" stroke-linecap="round" opacity="0.7"/><circle cx="18" cy="6" r="2.5" fill="#0EA5A0"/><circle cx="6" cy="14" r="1.8" fill="#F7845E" opacity="0.8"/><circle cx="30" cy="14" r="1.8" fill="#FFAA5C" opacity="0.8"/></svg>trellio</div>
+        <p>The service hub that helps your crew grow upward. Quote, schedule, invoice, and get paid — all from one place.</p>
+      </div>
+      <div class="footer-col"><h4>Product</h4><ul><li><a href="features.html">Features</a></li><li><a href="pricing.html">Pricing</a></li><li><a href="#">Mobile App</a></li><li><a href="#">Integrations</a></li></ul></div>
+      <div class="footer-col"><h4>Company</h4><ul><li><a href="about.html">About</a></li><li><a href="contact.html">Contact</a></li><li><a href="#">Careers</a></li><li><a href="#">Press</a></li></ul></div>
+      <div class="footer-col"><h4>Resources</h4><ul><li><a href="#">Help Center</a></li><li><a href="#">Academy</a></li><li><a href="#">Blog</a></li><li><a href="#">Podcast</a></li></ul></div>
+    </div>
+    <div class="footer-bottom"><span>© 2026 Trellio. All rights reserved.</span><div class="footer-legal"><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Cookies</a></div></div>
+  </div>
+</footer>
+
+<script>
+const revealElements=document.querySelectorAll('.reveal');
+const revealObserver=new IntersectionObserver(e=>{e.forEach(el=>{if(el.isIntersecting)el.target.classList.add('visible')})},{threshold:0.1,rootMargin:'0px 0px -40px 0px'});
+revealElements.forEach(el=>revealObserver.observe(el));
+const nav=document.getElementById('nav');
+window.addEventListener('scroll',()=>{nav.classList.toggle('scrolled',window.scrollY>50)});
+const hamburger=document.getElementById('hamburger'),mobileNav=document.getElementById('mobile-nav');let menuOpen=false;
+hamburger.addEventListener('click',()=>{menuOpen=!menuOpen;mobileNav.classList.toggle('open');const s=hamburger.querySelectorAll('span');if(menuOpen){s[0].style.transform='rotate(45deg) translate(5px,5px)';s[1].style.opacity='0';s[2].style.transform='rotate(-45deg) translate(5px,-5px)'}else{s[0].style.transform='';s[1].style.opacity='';s[2].style.transform=''}});
+</script>
+</body>
+</html>

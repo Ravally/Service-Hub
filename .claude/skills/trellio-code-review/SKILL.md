@@ -1,6 +1,6 @@
 ---
 name: trellio-code-review
-description: "Review Trellio code for quality, security, performance, accessibility, and adherence to project conventions. Use when: reviewing code, checking a PR, auditing files, validating a feature implementation, or when asked to 'review', 'check', 'audit', 'validate', or 'look over' code. Also use after completing a feature to self-review before committing."
+description: "Review Trellio code for quality, security, performance, accessibility, and adherence to project conventions. Use when: reviewing code, checking a PR, auditing files, validating a feature, or asked to 'review', 'check', 'audit', or 'look over' code. Also use after completing a feature to self-review before committing."
 context: fork
 agent: Explore
 allowed-tools: Read, Grep, Glob
@@ -10,168 +10,132 @@ allowed-tools: Read, Grep, Glob
 
 ## Overview
 
-Perform thorough code reviews for the Trellio field service management platform. Review against project conventions, security best practices, performance, accessibility, and TypeScript correctness.
+Review code for Trellio (React + Vite + Firebase/Firestore + Tailwind). Focus on security (especially multi-tenancy), code quality, accessibility, and performance.
 
-## Review Process
+Severity ratings:
+- 🔴 **BLOCKER** — Must fix (security holes, data leaks, crashes)
+- 🟡 **WARNING** — Should fix (performance, accessibility, conventions)
+- 🟢 **SUGGESTION** — Nice to have (readability, style)
 
-Run through each category below. For each issue found, rate severity:
-
-- 🔴 **BLOCKER** — Must fix before merge (security holes, data leaks, crashes)
-- 🟡 **WARNING** — Should fix (performance, accessibility, convention violations)
-- 🟢 **SUGGESTION** — Nice to have (readability, style, minor improvements)
-
-### 1. Security Review
-
-Check for these **blockers**:
+## 1. Security Review
 
 ```
-[ ] Auth check at the top of every API route and Server Action
-[ ] organizationId scoping on EVERY database query (multi-tenancy leak = critical)
-[ ] Zod validation on all user input before it touches the database
-[ ] No raw SQL with string interpolation (SQL injection risk)
-[ ] No secrets/API keys/credentials in code (check for hardcoded strings)
-[ ] Stripe webhook signature verification on payment endpoints
-[ ] No `dangerouslySetInnerHTML` without sanitization
-[ ] CSRF protection on Server Actions (Next.js handles this, but verify)
-[ ] Rate limiting on public-facing endpoints (login, signup, password reset)
-[ ] File upload validation (type, size) if applicable
+[ ] All Firestore reads/writes scoped under companies/{companyId}
+[ ] No companyId taken from client input — always from AuthContext/user profile
+[ ] Cloud Functions verify context.auth before processing
+[ ] Public routes use token-based access (publicToken pattern)
+[ ] No Firebase config secrets exposed beyond standard client SDK config
+[ ] No dangerouslySetInnerHTML without sanitization
+[ ] Firestore security rules cover any new collections
+[ ] Stripe webhook signatures verified in Cloud Functions
+[ ] No raw user input written to Firestore without validation
 ```
 
-**Multi-tenancy is the #1 security concern.** Every single database read/write must be scoped to `session.user.organizationId`. A missing org filter means one customer can see another's data.
+**Multi-tenancy is the #1 concern.** Every Firestore path must include `companies/{companyId}`. Missing this means one customer sees another's data.
 
-### 2. TypeScript Review
-
-```
-[ ] No `any` types — every variable, param, and return type is explicit
-[ ] No `@ts-ignore` or `@ts-expect-error` without a comment explaining why
-[ ] Props interfaces exported and properly named (ComponentNameProps)
-[ ] Zod schemas infer types: `type Job = z.infer<typeof jobSchema>`
-[ ] Discriminated unions used for state (not boolean flags)
-[ ] Proper null handling (no non-null assertions `!` without justification)
-[ ] Generic types where reuse is clear
-```
-
-### 3. Component Review (React/Next.js)
+## 2. JavaScript & React Review
 
 ```
-[ ] Server Components by default — "use client" only when necessary
-[ ] Named exports (not default exports)
+[ ] No TypeScript (project is JSX) — no .ts/.tsx files
+[ ] Default exports: export default function ComponentName
+[ ] Props destructured in function signature
+[ ] No unused imports or variables
+[ ] useEffect cleanup functions for subscriptions (return unsub)
+[ ] useEffect dependency arrays correct (no missing/extra deps)
+[ ] No state updates on unmounted components
+[ ] Event handlers use handle prefix (handleSave, handleDelete)
+[ ] Constants used from src/constants/ — no magic strings
+[ ] Utility functions from src/utils/ — no duplicated logic
+```
+
+## 3. Component Review
+
+```
 [ ] File under 250 lines — split if larger
-[ ] Loading, error, and empty states handled
-[ ] Touch targets 44px+ (48px preferred for field-use components)
+[ ] Loading and empty states handled
+[ ] Touch targets 44px+ (field workers use gloves/sunlight)
 [ ] Minimum 16px font body, 14px captions
-[ ] Dark mode classes included (dark: prefix)
 [ ] ARIA labels on interactive elements
-[ ] Keyboard navigation works (tab, enter, escape)
-[ ] Focus rings visible
+[ ] Focus rings visible for keyboard navigation
 [ ] Brand tokens used — no hardcoded hex colors
-[ ] Responsive: mobile styles first, then md: and lg:
+[ ] Responsive: mobile-first with md: and lg: breakpoints
 [ ] No inline styles — Tailwind only
-[ ] Images have alt text, use next/image
-[ ] Links use next/link
+[ ] Images have alt text
+[ ] New views registered in AppContent.jsx
+[ ] Navigation via setCurrentView (not browser routing)
 ```
 
-### 4. API / Backend Review
+## 4. Data / Firestore Review
 
 ```
-[ ] Route handlers start with auth check
-[ ] Proper HTTP status codes (see trellio-api skill for reference)
-[ ] Zod validation on request body AND query params
-[ ] Error responses use apiError() helper — no raw NextResponse.json
-[ ] List endpoints have pagination (page, limit, total, totalPages)
-[ ] Database queries scoped to organizationId
-[ ] Service layer used for complex business logic (not all in route handler)
-[ ] Server Actions return typed state objects
-[ ] revalidatePath() called after mutations
-[ ] try/catch with console.error on every handler
-[ ] No N+1 queries — use include/select or batch queries
+[ ] All collections under companies/{companyId}
+[ ] serverTimestamp() on createdAt and updatedAt
+[ ] Real-time subscriptions use onSnapshot (not getDoc for UI data)
+[ ] Subscriptions cleaned up in useEffect return
+[ ] Handlers follow existing pattern in hooks/data/
+[ ] New handlers registered in useAppHandlers.js
+[ ] Status values match src/constants/statusConstants.js
+[ ] No unbounded queries (always filter or limit)
+[ ] Money stored as decimal numbers (app convention)
+[ ] Composite indexes added for multi-field queries
 ```
 
-### 5. Database / Prisma Review
+## 5. Performance Review
 
 ```
-[ ] organizationId on every business model
-[ ] Cascade delete from Organization
-[ ] createdAt + updatedAt on every model
-[ ] Money stored as Int (cents) — never Float
-[ ] Composite indexes with organizationId first
-[ ] No raw SQL unless absolutely necessary
-[ ] Soft delete (deletedAt) on critical business models
-[ ] Migration name is descriptive
-[ ] Enum values are SCREAMING_SNAKE_CASE
-[ ] No breaking schema changes without data migration plan
+[ ] No unnecessary re-renders (stable handler references)
+[ ] Firestore subscriptions don't over-fetch (use where/limit)
+[ ] Large lists use pagination or virtual scrolling
+[ ] No synchronous heavy computation in render
+[ ] Images optimized (compressed, sized appropriately)
+[ ] No duplicate Firestore subscriptions for same data
+[ ] useEffect dependencies don't cause infinite loops
 ```
 
-### 6. Performance Review
-
-```
-[ ] No unnecessary re-renders (check useCallback, useMemo usage)
-[ ] Images optimized with next/image
-[ ] Heavy computations not running on every render
-[ ] Database queries use select/include to avoid over-fetching
-[ ] Pagination on all list queries — no unbounded findMany()
-[ ] No synchronous operations blocking the event loop
-[ ] Lazy loading for heavy components (dynamic imports)
-[ ] Proper caching headers on API routes where appropriate
-```
-
-### 7. Code Quality
+## 6. Code Quality
 
 ```
 [ ] Functions do one thing — under 40 lines preferred
-[ ] Variable names are descriptive (not x, temp, data, item)
-[ ] No commented-out code blocks (delete it, git has history)
-[ ] No console.log left in (except console.error in catch blocks)
+[ ] Variable names are descriptive (not x, temp, data)
+[ ] No commented-out code blocks
+[ ] No console.log left in (except error handlers)
 [ ] DRY — no duplicated logic across files
 [ ] Constants extracted — no magic numbers or strings
-[ ] Error messages are user-friendly (not technical jargon)
-[ ] Consistent code style with rest of codebase
+[ ] Error messages are user-friendly
+[ ] Consistent with rest of codebase patterns
 ```
 
 ## Output Format
 
-Structure your review like this:
-
 ```
-## Code Review: [filename or feature name]
+## Code Review: [filename or feature]
 
 ### Summary
-[1-2 sentence overview: what this code does and overall quality impression]
+[1-2 sentences: what this does, overall quality]
 
 ### 🔴 Blockers (X found)
-1. **[File:Line]** — [Description of issue]
-   → Fix: [Specific fix recommendation]
+1. **[File:Line]** — [Issue]
+   → Fix: [Specific recommendation]
 
 ### 🟡 Warnings (X found)
-1. **[File:Line]** — [Description of issue]
-   → Fix: [Specific fix recommendation]
+1. **[File:Line]** — [Issue]
+   → Fix: [Recommendation]
 
 ### 🟢 Suggestions (X found)
-1. **[File:Line]** — [Description of issue]
-   → Consider: [Improvement recommendation]
+1. **[File:Line]** — [Improvement]
 
 ### ✅ What's Good
-- [Highlight things done well — reinforce good patterns]
+- [Highlight good patterns]
 
 ### Verdict
 [APPROVE / REQUEST CHANGES / NEEDS DISCUSSION]
 ```
 
-## Self-Review Mode
+## Self-Review Checklist
 
-After completing a feature, run this skill on your own output before committing. Focus especially on:
-
-1. Multi-tenancy: Did every query get `organizationId`?
-2. Types: Any `any` or missing types?
-3. States: Are loading/error/empty states all handled?
-4. Accessibility: Would a field tech on a bright day with gloves struggle?
-5. Security: Could another org's data leak through any path?
-
-## Rules
-
-- **Be specific** — reference exact file names and line numbers
-- **Be constructive** — explain WHY something is a problem, not just that it is
-- **Prioritize security** — multi-tenancy and auth issues are always blockers
-- **Acknowledge good work** — highlight patterns that should be replicated
-- **Don't nitpick formatting** — Prettier and ESLint handle that
-- **Focus on logic and architecture** — that's where reviews add the most value
+After building a feature, check:
+1. Every Firestore path includes `companyId`?
+2. Subscriptions cleaned up on unmount?
+3. Loading/empty states handled?
+4. File under 250 lines?
+5. Brand tokens, no hardcoded colors?

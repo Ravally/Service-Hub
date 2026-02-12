@@ -1,415 +1,290 @@
 ---
-name: trellio-db-migration
-description: "Create and manage Prisma database schemas, models, migrations, and seed data for Trellio. Use when: adding database tables, creating models, modifying schema, writing migrations, setting up relationships, adding indexes, creating seed data, or any database structure work. Triggers include: 'add a table', 'create a model', 'database schema', 'migration', 'prisma', 'add a field', 'relationship between', 'seed data', or requests about data modeling for jobs, clients, invoices, schedules, or crew."
+name: trellio-db
+description: "Design and manage Firestore collections, documents, indexes, and data models for Trellio. Use when: adding new collections, designing document schemas, creating composite indexes, writing data migration scripts, updating security rules, or any database structure work. Triggers: 'add a collection', 'data model', 'Firestore', 'database schema', 'add a field', 'indexes', 'security rules', or requests about data modeling for jobs, clients, invoices, schedules, or crew."
 ---
 
-# Trellio Database Migration Builder
+# Trellio Firestore Data Design
 
 ## Overview
 
-Manage Prisma schema and migrations for Trellio — a multi-tenant field service management platform. The database handles jobs, clients, invoices, scheduling, crew management, payments, and business analytics for home service companies.
+Design and manage Cloud Firestore data structures for Trellio — a multi-tenant field service management platform. Firestore is the sole database. All business data is scoped under `companies/{companyId}/`.
 
 ## Tech Stack
 
-- **ORM:** Prisma 5+
-- **Database:** PostgreSQL 15+
-- **Schema file:** `prisma/schema.prisma`
-- **Seed file:** `prisma/seed.ts`
-
-## Commands Reference
-
-```bash
-# Generate Prisma Client after schema changes
-npx prisma generate
-
-# Create migration (development)
-npx prisma migrate dev --name descriptive-migration-name
-
-# Apply migrations (production)
-npx prisma migrate deploy
-
-# Reset database (development only — destroys data)
-npx prisma migrate reset
-
-# Seed database
-npx prisma db seed
-
-# View database in browser
-npx prisma studio
-```
+- **Database:** Cloud Firestore (NoSQL, document-based)
+- **Auth:** Firebase Authentication
+- **Backend:** Firebase Cloud Functions (when server-side logic needed)
+- **Client SDK:** Firebase JS SDK v9+ (modular imports)
 
 ## Multi-Tenancy Model
 
-Trellio is **multi-tenant by organization**. This is the most critical architectural decision in the schema.
+**Every business document lives under `companies/{companyId}/`.** This is non-negotiable.
 
-```prisma
-// EVERY business-data model MUST include this:
-model Job {
-  organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+```
+companies/{companyId}/clients/{clientId}
+companies/{companyId}/jobs/{jobId}
+companies/{companyId}/quotes/{quoteId}
+companies/{companyId}/invoices/{invoiceId}
+```
 
-  // Add composite index for tenant-scoped queries:
-  @@index([organizationId, status])
-  @@index([organizationId, scheduledDate])
+The `companyId` comes from the authenticated user's profile:
+```javascript
+// From AuthContext:
+const user = auth.currentUser;
+const userDoc = await getDoc(doc(db, 'users', user.uid));
+const companyId = userDoc.data().companyId;
+```
+
+## Existing Collections (Do Not Break)
+
+### `users/{uid}` (top-level, not under companies)
+```javascript
+{
+  uid: "firebase-auth-uid",
+  email: "owner@brightplumbing.com",
+  displayName: "Sam Rivera",
+  role: "owner",           // owner | admin | manager | technician
+  companyId: "company-id", // links to their company
+  inviteCode: "ABC123",    // for team member onboarding
+  createdAt: Timestamp,
+  updatedAt: Timestamp
 }
 ```
 
-**Rules:**
-- Every model that stores business data MUST have `organizationId`
-- Every query MUST filter by `organizationId`
-- System-level models (User, Organization, Subscription) are exceptions
-- Use `onDelete: Cascade` from Organization so deleting an org cleans up everything
-
-## Core Schema Structure
-
-This is the foundational schema. When adding new models, follow these patterns:
-
-```prisma
-// prisma/schema.prisma
-
-generator client {
-  provider = "prisma-client-js"
-}
-
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
-// ============================================================
-// SYSTEM MODELS (no organizationId)
-// ============================================================
-
-model User {
-  id             String   @id @default(cuid())
-  email          String   @unique
-  name           String
-  hashedPassword String?
-  avatarUrl      String?
-  role           UserRole @default(MEMBER)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-
-  // Relations
-  organizationId String?
-  organization   Organization? @relation(fields: [organizationId], references: [id])
-  createdJobs    Job[]         @relation("CreatedBy")
-  assignedJobs   JobAssignment[]
-
-  @@index([organizationId])
-  @@index([email])
-}
-
-model Organization {
-  id        String   @id @default(cuid())
-  name      String
-  slug      String   @unique
-  phone     String?
-  email     String?
-  address   String?
-  timezone  String   @default("America/New_York")
-  logoUrl   String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relations
-  users    User[]
-  clients  Client[]
-  jobs     Job[]
-  invoices Invoice[]
-  services ServiceType[]
-
-  @@index([slug])
-}
-
-// ============================================================
-// BUSINESS MODELS (always include organizationId)
-// ============================================================
-
-model Client {
-  id        String   @id @default(cuid())
-  firstName String
-  lastName  String
-  email     String?
-  phone     String
-  company   String?
-  address   String?
-  city      String?
-  state     String?
-  zip       String?
-  notes     String?
-  tags      String[] @default([])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Tenant
-  organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-
-  // Relations
-  jobs     Job[]
-  invoices Invoice[]
-
-  @@index([organizationId, lastName])
-  @@index([organizationId, email])
-  @@index([organizationId, phone])
+### `companies/{companyId}`
+```javascript
+{
+  name: "Bright Plumbing Co.",
+  slug: "bright-plumbing",
+  phone: "(555) 123-4567",
+  email: "office@brightplumbing.com",
+  timezone: "America/New_York",
+  logoUrl: "https://...",
+  settings: {
+    invoiceDefaults: { paymentTerms: "net30", taxRate: 8.5, ... },
+    quoteDefaults: { ... },
+    branding: { primaryColor: "#0EA5A0", ... },
+    notifications: { ... }
+  },
+  createdAt: Timestamp,
+  updatedAt: Timestamp
 }
 ```
+
+### `companies/{companyId}/clients/{clientId}`
+```javascript
+{
+  firstName: "Maria",
+  lastName: "Chen",
+  email: "maria@example.com",
+  phone: "(555) 234-5678",
+  company: "Chen Properties",
+  addresses: [
+    {
+      label: "Primary",
+      street1: "123 Oak Street",
+      street2: "",
+      city: "Austin",
+      state: "TX",
+      zip: "78701",
+      country: "US",
+      lat: 30.2672,
+      lng: -97.7431,
+      isPrimary: true,
+      isBilling: true
+    }
+  ],
+  contacts: [
+    { name: "John Chen", phone: "(555) 234-5679", email: "john@example.com", role: "Spouse" }
+  ],
+  tags: ["VIP", "Residential"],
+  leadSource: "Google",
+  customFields: {},
+  notes: "Prefers morning appointments",
+  portalToken: "random-token-string",
+  status: "active",           // active | inactive | lead
+  createdAt: Timestamp,
+  updatedAt: Timestamp
+}
+```
+
+### `companies/{companyId}/jobs/{jobId}`
+```javascript
+{
+  title: "Water heater replacement",
+  clientId: "client-doc-id",
+  propertyIndex: 0,          // index into client's addresses array
+  status: "scheduled",       // unscheduled | scheduled | in_progress | completed | cancelled
+  assignees: ["staff-id-1", "staff-id-2"],
+  scheduledDate: Timestamp,
+  scheduledEndDate: Timestamp,
+  lineItems: [
+    { description: "50-gal water heater", quantity: 1, unitCost: 850, total: 850 },
+    { description: "Installation labor", quantity: 3, unitCost: 95, total: 285 }
+  ],
+  labour: [
+    { staffId: "staff-id-1", hours: 3, rate: 95, total: 285 }
+  ],
+  expenses: [
+    { description: "Parts from supplier", amount: 45, receiptUrl: "https://..." }
+  ],
+  visits: [
+    { date: Timestamp, notes: "Assessed existing unit", completed: true }
+  ],
+  notes: "Client wants same-day if possible",
+  attachments: [],
+  checklistTemplateId: "template-id",   // linked form/checklist
+  quoteId: "quote-id-if-converted",
+  createdAt: Timestamp,
+  updatedAt: Timestamp
+}
+```
+
+### `companies/{companyId}/quotes/{quoteId}`
+```javascript
+{
+  clientId: "client-doc-id",
+  quoteNumber: "Q-001",
+  status: "draft",           // draft | sent | awaiting_approval | approved | converted | declined | archived
+  lineItems: [
+    { description: "Service", quantity: 1, unitCost: 500, total: 500, required: true }
+  ],
+  optionalItems: [
+    { description: "Extended warranty", quantity: 1, unitCost: 150, total: 150 }
+  ],
+  discount: { type: "percent", value: 10 },   // percent | fixed
+  taxRate: 8.5,
+  subtotal: 500,
+  taxAmount: 42.5,
+  total: 542.5,
+  depositRequired: true,
+  depositAmount: 200,
+  clientMessage: "Thank you for choosing us!",
+  internalNotes: "",
+  publicToken: "random-token",    // for public approval link
+  signatureDataUrl: "",           // base64 signature if captured
+  templateId: "",                 // if created from template
+  sentAt: Timestamp,
+  approvedAt: Timestamp,
+  createdAt: Timestamp,
+  updatedAt: Timestamp
+}
+```
+
+### `companies/{companyId}/invoices/{invoiceId}`
+```javascript
+{
+  clientId: "client-doc-id",
+  jobId: "job-id-if-linked",
+  quoteId: "quote-id-if-linked",
+  invoiceNumber: "INV-001",
+  status: "draft",           // draft | sent | unpaid | partially_paid | paid | overdue | void
+  lineItems: [
+    { description: "Service", quantity: 1, unitCost: 500, total: 500 }
+  ],
+  discount: { type: "fixed", value: 0 },
+  taxRate: 8.5,
+  subtotal: 500,
+  taxAmount: 42.5,
+  total: 542.5,
+  amountPaid: 0,
+  paymentTerms: "net30",      // due_today | due_on_receipt | net7 | net14 | net15 | net30 | net60
+  dueDate: Timestamp,
+  paymentSettings: {
+    acceptCard: true,
+    acceptACH: true,
+    acceptPartialPayments: false
+  },
+  clientViewSettings: {
+    showQuantities: true,
+    showUnitCosts: true,
+    showTotals: true,
+    showLateStamp: true
+  },
+  clientMessage: "",
+  internalNotes: "",
+  attachments: [],
+  stripePaymentLink: "",
+  sentAt: Timestamp,
+  paidAt: Timestamp,
+  createdAt: Timestamp,
+  updatedAt: Timestamp
+}
+```
+
+## Adding a New Collection
+
+### Step 1: Define the document schema
+Document it clearly with all fields, types, and defaults.
+
+### Step 2: Create the data hook
+```
+src/hooks/data/use[Features].js
+```
+Follow the existing `onSnapshot` subscription pattern.
+
+### Step 3: Create the handler module
+```
+src/hooks/data/[feature]Handlers.js
+```
+Follow the existing `create[Feature]Handlers(companyId)` pattern.
+
+### Step 4: Register in useAppHandlers
+Add the new handlers to `useAppHandlers.js` so they're available through context.
+
+### Step 5: Create composite indexes (if needed)
+Add to `firestore.indexes.json`:
+```json
+{
+  "indexes": [
+    {
+      "collectionGroup": "[collection]",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    }
+  ]
+}
+```
+Deploy: `firebase deploy --only firestore:indexes`
+
+### Step 6: Update security rules
+Add rules for the new collection in `firestore.rules`.
 
 ## Naming Conventions
 
 | Element | Convention | Example |
 |---------|-----------|---------|
-| Models | PascalCase, singular | `Job`, `Client`, `Invoice` |
-| Fields | camelCase | `scheduledDate`, `lineItems` |
-| Enums | PascalCase name, SCREAMING_SNAKE values | `enum JobStatus { SCHEDULED, IN_PROGRESS }` |
-| Relations | Descriptive, camelCase | `createdBy`, `assignedJobs` |
-| Indexes | Composite: `[organizationId, ...]` first | `@@index([organizationId, status])` |
-| Migration names | kebab-case, descriptive | `add-job-scheduling-fields` |
-| Join tables | Both names, alphabetical | `JobAssignment` (not `AssignedJob`) |
-
-## Field Patterns
-
-### Standard Timestamps (on EVERY model)
-```prisma
-createdAt DateTime @default(now())
-updatedAt DateTime @updatedAt
-```
-
-### Soft Delete (for business-critical data)
-```prisma
-deletedAt DateTime?
-isActive  Boolean  @default(true)
-
-@@index([organizationId, isActive])
-```
-
-### Money Fields
-```prisma
-// ALWAYS store money as integers (cents) — never Float or Decimal for currency
-amount      Int    // $150.00 = 15000
-taxRate     Int    @default(0)  // 8.5% = 850 (basis points)
-taxAmount   Int    @default(0)  // calculated cents
-totalAmount Int    // amount + taxAmount
-currency    String @default("USD")
-```
-
-### Status Enums
-```prisma
-enum JobStatus {
-  DRAFT
-  SCHEDULED
-  DISPATCHED
-  IN_PROGRESS
-  COMPLETED
-  CANCELLED
-}
-
-enum InvoiceStatus {
-  DRAFT
-  SENT
-  VIEWED
-  PAID
-  OVERDUE
-  VOID
-}
-
-enum PaymentMethod {
-  CASH
-  CHECK
-  CARD
-  BANK_TRANSFER
-  OTHER
-}
-```
-
-### Address (Embedded Pattern)
-```prisma
-// Since Prisma doesn't support embedded objects, use prefixed fields:
-address     String?
-city        String?
-state       String?
-zip         String?
-latitude    Float?
-longitude   Float?
-
-// Or for models that need multiple addresses:
-model Address {
-  id     String      @id @default(cuid())
-  type   AddressType @default(SERVICE)
-  line1  String
-  line2  String?
-  city   String
-  state  String
-  zip    String
-  lat    Float?
-  lng    Float?
-
-  clientId String
-  client   Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
-
-  @@index([clientId])
-}
-```
-
-## Migration Workflow
-
-### Adding a new feature
-
-1. **Edit `schema.prisma`** — add/modify models
-2. **Generate migration:**
-   ```bash
-   npx prisma migrate dev --name add-scheduling-feature
-   ```
-3. **Review the generated SQL** in `prisma/migrations/[timestamp]_add_scheduling_feature/migration.sql`
-4. **Update seed data** if needed
-5. **Run `npx prisma generate`** to update the client
-
-### Adding a field to an existing model
-
-```prisma
-// Adding a new optional field (safe — no data loss)
-model Job {
-  priority  JobPriority @default(NORMAL)  // new enum with default
-  metadata  Json?                          // new nullable JSON field
-}
-```
-
-```bash
-npx prisma migrate dev --name add-job-priority-and-metadata
-```
-
-### Adding a required field to a table with existing data
-
-```prisma
-// Step 1: Add as optional first
-model Job {
-  dispatchZone String?  // nullable initially
-}
-
-// Step 2: Migrate, backfill data, then make required
-// In the migration SQL, add: UPDATE "Job" SET "dispatchZone" = 'default' WHERE "dispatchZone" IS NULL;
-// Step 3: Change to required
-model Job {
-  dispatchZone String
-}
-```
-
-## Index Strategy
-
-```prisma
-// ALWAYS index organizationId first in composite indexes
-// This ensures tenant-scoped queries are fast
-
-model Job {
-  // Primary tenant queries
-  @@index([organizationId, status])
-  @@index([organizationId, scheduledDate])
-  @@index([organizationId, clientId])
-
-  // Search / filtering
-  @@index([organizationId, createdAt])
-
-  // Unique constraints within tenant
-  @@unique([organizationId, jobNumber])
-}
-```
-
-**Index rules:**
-- Every `organizationId` foreign key gets an index
-- Composite indexes: `organizationId` always first
-- Add indexes for any field used in `WHERE`, `ORDER BY`, or `JOIN`
-- Unique constraints within tenant: `@@unique([organizationId, fieldName])`
-- Don't over-index — each index slows down writes
-
-## Seed Data Template
-
-```typescript
-// prisma/seed.ts
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
-
-async function main() {
-  // Clean slate (development only)
-  await prisma.job.deleteMany();
-  await prisma.client.deleteMany();
-  await prisma.user.deleteMany();
-  await prisma.organization.deleteMany();
-
-  // Create demo organization
-  const org = await prisma.organization.create({
-    data: {
-      name: "Bright Plumbing Co.",
-      slug: "bright-plumbing",
-      phone: "(555) 123-4567",
-      email: "office@brightplumbing.com",
-      timezone: "America/New_York",
-    },
-  });
-
-  // Create demo user
-  const owner = await prisma.user.create({
-    data: {
-      email: "owner@brightplumbing.com",
-      name: "Sam Rivera",
-      role: "OWNER",
-      organizationId: org.id,
-    },
-  });
-
-  // Create demo clients
-  const clients = await Promise.all(
-    [
-      { firstName: "Maria", lastName: "Chen", phone: "(555) 234-5678", address: "123 Oak Street" },
-      { firstName: "James", lastName: "Wilson", phone: "(555) 345-6789", address: "456 Maple Ave" },
-      { firstName: "Aisha", lastName: "Patel", phone: "(555) 456-7890", address: "789 Pine Road" },
-    ].map((c) =>
-      prisma.client.create({
-        data: { ...c, organizationId: org.id },
-      })
-    )
-  );
-
-  console.log(`Seeded: 1 org, 1 user, ${clients.length} clients`);
-}
-
-main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(() => prisma.$disconnect());
-```
-
-Add to `package.json`:
-```json
-{
-  "prisma": {
-    "seed": "tsx prisma/seed.ts"
-  }
-}
-```
+| Collections | lowercase plural | `clients`, `jobs`, `invoices` |
+| Document fields | camelCase | `firstName`, `scheduledDate`, `lineItems` |
+| Status values | snake_case | `in_progress`, `awaiting_approval` |
+| Timestamps | camelCase + At suffix | `createdAt`, `sentAt`, `approvedAt` |
+| References | docId as string | `clientId: "abc123"` |
+| Nested objects | camelCase | `paymentSettings`, `clientViewSettings` |
+| Arrays of objects | camelCase plural | `lineItems`, `addresses`, `contacts` |
 
 ## Rules
 
-- **Money is ALWAYS integers** (cents) — never Float or Decimal
-- **organizationId on every business model** — no exceptions
-- **Cascade deletes from Organization** — `onDelete: Cascade`
-- **Timestamps on every model** — `createdAt` + `updatedAt`
-- **Descriptive migration names** — `add-invoice-line-items` not `update-schema`
-- **Review generated SQL** before applying — check for data loss
-- **Soft delete** for jobs, invoices, clients — use `deletedAt` + `isActive`
-- **Never store derived data** — calculate totals at query time or in application layer
-- **String IDs** with `@default(cuid())` — never auto-increment integers
+- **companyId scoping** on every business collection — no exceptions
+- **serverTimestamp()** for createdAt and updatedAt — always
+- **Document IDs** auto-generated by Firestore (don't hardcode)
+- **Money as decimal numbers** (not cents) — the app uses `toFixed(2)` for display
+- **Don't deeply nest** — max 2 levels: `companies/{id}/[collection]/{id}`
+- **Arrays for small lists** (lineItems, contacts, addresses) — not subcollections
+- **Subcollections for large/queryable data** (jobs, invoices, clients)
+- **Status values** must match `src/constants/statusConstants.js`
+- **Indexes** needed for any compound query (status + date, assignee + status, etc.)
 
 ## Checklist Before Finishing
 
-- [ ] Every business model has `organizationId` with relation and cascade delete
-- [ ] `createdAt` and `updatedAt` on every model
-- [ ] Money stored as Int (cents)
-- [ ] Composite indexes with `organizationId` first
-- [ ] Enum values are SCREAMING_SNAKE_CASE
-- [ ] Migration name is descriptive kebab-case
-- [ ] Seed data is updated for new models
-- [ ] No breaking changes without a migration plan for existing data
+- [ ] Collection lives under `companies/{companyId}/`
+- [ ] Document schema documented with all fields and types
+- [ ] createdAt and updatedAt with serverTimestamp()
+- [ ] Data hook created (`use[Features].js`)
+- [ ] Handler module created (`[feature]Handlers.js`)
+- [ ] Handlers registered in useAppHandlers.js
+- [ ] Security rules updated
+- [ ] Composite indexes added if queries use multiple fields
+- [ ] Status values match constants

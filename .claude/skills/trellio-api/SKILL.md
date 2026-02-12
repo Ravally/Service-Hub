@@ -1,272 +1,208 @@
 ---
 name: trellio-api
-description: "Build Next.js API route handlers for Trellio following RESTful conventions, validation, error handling, and auth patterns. Use when: creating endpoints, building API routes, adding server actions, handling form submissions, integrating with Prisma, or any backend logic. Triggers include: 'create an endpoint', 'add an API route', 'build the backend for', 'server action', 'handle form submission', or requests involving data CRUD, authentication, or third-party integrations."
+description: "Build backend logic, Firebase Functions, Firestore rules, and data handlers for Trellio. Use when: creating cloud functions, writing Firestore security rules, building data handlers, integrating third-party APIs (Stripe, Twilio, email), or any server-side logic. Triggers: 'create a function', 'cloud function', 'backend for', 'Firestore rules', 'security rules', 'webhook', 'API integration', or requests involving data processing, payments, or notifications."
 ---
 
-# Trellio API Endpoint Builder
+# Trellio Backend / Firebase Functions
 
 ## Overview
 
-Build secure, consistent API endpoints for Trellio's field service platform. All endpoints handle jobs, clients, invoices, scheduling, crew management, and payments for home service businesses.
+Build secure backend logic for Trellio's field service platform. The app uses Firebase as its entire backend — Firestore for data, Firebase Auth for authentication, Firebase Functions for server-side logic, and Firebase Hosting for deployment.
 
 ## Tech Stack
 
-- **Runtime:** Next.js 14+ App Router (Route Handlers + Server Actions)
-- **ORM:** Prisma with PostgreSQL
-- **Validation:** Zod
-- **Auth:** NextAuth.js v5 (Auth.js)
-- **Language:** TypeScript (strict)
+- **Database:** Cloud Firestore (NoSQL)
+- **Auth:** Firebase Authentication (email/password + invite system)
+- **Backend:** Firebase Cloud Functions (Node.js)
+- **Payments:** Stripe (connected via Functions)
+- **SMS:** Twilio (via Functions)
+- **Email:** Firebase Extensions or SendGrid (via Functions)
+- **Hosting:** Firebase Hosting
+- **Language:** JavaScript (Node.js for Functions, JSX for client)
 
-## File Structure
+## Firestore Data Model
+
+### Collection Structure
+
+Trellio is **multi-tenant by company**. All business data nests under `companies/{companyId}/`.
 
 ```
-src/
-├── app/
-│   └── api/
-│       ├── jobs/
-│       │   ├── route.ts              # GET (list), POST (create)
-│       │   └── [jobId]/
-│       │       ├── route.ts          # GET, PATCH, DELETE single job
-│       │       ├── assign/route.ts   # POST assign crew
-│       │       └── complete/route.ts # POST mark complete
-│       ├── clients/
-│       │   ├── route.ts
-│       │   └── [clientId]/route.ts
-│       ├── invoices/
-│       │   ├── route.ts
-│       │   └── [invoiceId]/route.ts
-│       ├── schedule/
-│       │   └── route.ts
-│       └── webhooks/
-│           ├── stripe/route.ts
-│           └── twilio/route.ts
-├── lib/
-│   ├── api/
-│   │   ├── errors.ts         # Standardized error classes
-│   │   ├── response.ts       # Response helpers
-│   │   └── middleware.ts      # Auth, rate limiting, logging
-│   ├── validations/
-│   │   ├── job.ts             # Zod schemas for jobs
-│   │   ├── client.ts
-│   │   └── invoice.ts
-│   └── services/
-│       ├── job.service.ts     # Business logic layer
-│       ├── client.service.ts
-│       └── invoice.service.ts
-└── server/
-    └── actions/               # Server Actions for forms
-        ├── job-actions.ts
-        ├── client-actions.ts
-        └── invoice-actions.ts
+users/{uid}                          # System-level user profiles
+  - email, name, role, companyId, inviteCode, createdAt
+
+companies/{companyId}                # Company/organization settings
+  - name, slug, phone, email, address, timezone, logoUrl, settings
+  
+companies/{companyId}/clients/{id}   # Client records
+  - firstName, lastName, email, phone, company, addresses[], contacts[], tags[]
+  
+companies/{companyId}/jobs/{id}      # Job records
+  - title, clientId, status, scheduledDate, assignees[], lineItems[], visits[]
+  
+companies/{companyId}/quotes/{id}    # Quote records
+  - clientId, status, lineItems[], optionalItems[], discount, tax, depositRequired
+  
+companies/{companyId}/invoices/{id}  # Invoice records
+  - clientId, jobId, status, lineItems[], discount, tax, paymentTerms, amountPaid
+  
+companies/{companyId}/formTemplates/{id}    # Form/checklist templates
+companies/{companyId}/formResponses/{id}    # Completed form submissions
+companies/{companyId}/timesheets/{id}       # Time tracking entries
+companies/{companyId}/staff/{id}            # Staff/team members
+companies/{companyId}/notifications/{id}    # In-app notifications
+companies/{companyId}/products/{id}         # Product/service catalog
 ```
 
-## Route Handler Template
+### Key Rules
+- **Everything under companies/{companyId}/** — this is the tenant boundary
+- **User's companyId** links them to their company — stored on the user doc
+- **clientId, jobId, quoteId** — cross-references use Firestore doc IDs
+- **Status fields** — always use values from `src/constants/statusConstants.js`
+- **Money** — store as numbers (not cents in this codebase — the app uses decimal dollars with `toFixed(2)` for display)
+- **Timestamps** — use `serverTimestamp()` for createdAt/updatedAt
 
-```typescript
-// src/app/api/[resource]/route.ts
-import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
-import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
-import { apiResponse, apiError } from "@/lib/api/response";
+## Client-Side Data Handlers
 
-// Define Zod schema at the top of the file
-const createResourceSchema = z.object({
-  name: z.string().min(1).max(255),
-  // ... fields
+The existing pattern for data mutations is handler modules in `src/hooks/data/`:
+
+```
+hooks/data/
+├── useAppHandlers.js        # Orchestrator — imports and exposes all handlers
+├── clientHandlers.js        # Client CRUD
+├── quoteHandlers.js         # Quote lifecycle (create, send, approve, convert)
+├── jobHandlers.js           # Job CRUD
+├── invoiceHandlers.js       # Invoice lifecycle
+├── settingsHandlers.js      # Settings save operations
+├── handlerUtils.js          # Shared utilities (generateId, timestamps, etc.)
+├── useClients.js            # Client data subscription hook
+├── useQuotes.js             # Quote data subscription hook
+├── useJobs.js               # Job data subscription hook
+├── useInvoices.js           # Invoice data subscription hook
+├── useFirestore.js          # Generic Firestore CRUD
+├── useFirebaseSubscriptions.js  # Real-time listener setup
+├── useFormTemplates.js      # Form template CRUD
+├── useFormResponses.js      # Form response management
+├── useTimeTracking.js       # Time entry CRUD
+└── usePublicAccess.js       # Public token-based access
+```
+
+### Handler Pattern (follow this for new features):
+
+```javascript
+// src/hooks/data/[feature]Handlers.js
+import { collection, addDoc, updateDoc, deleteDoc, doc, serverTimestamp } from 'firebase/firestore';
+import { db } from '../../firebase/config';
+
+export function create[Feature]Handlers(companyId) {
+  const collectionRef = collection(db, 'companies', companyId, '[features]');
+
+  const handleCreate = async (data) => {
+    const docRef = await addDoc(collectionRef, {
+      ...data,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    });
+    return docRef.id;
+  };
+
+  const handleUpdate = async (id, updates) => {
+    const ref = doc(db, 'companies', companyId, '[features]', id);
+    await updateDoc(ref, {
+      ...updates,
+      updatedAt: serverTimestamp(),
+    });
+  };
+
+  const handleDelete = async (id) => {
+    const ref = doc(db, 'companies', companyId, '[features]', id);
+    await deleteDoc(ref);
+  };
+
+  return { handleCreate, handleUpdate, handleDelete };
+}
+```
+
+Then register in `useAppHandlers.js` so it's available via `AppStateContext`.
+
+### Data Subscription Hook Pattern:
+
+```javascript
+// src/hooks/data/use[Features].js
+import { useState, useEffect } from 'react';
+import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
+import { db } from '../../firebase/config';
+
+export function use[Features](companyId) {
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!companyId) return;
+    const q = query(
+      collection(db, 'companies', companyId, '[features]'),
+      orderBy('createdAt', 'desc')
+    );
+    const unsub = onSnapshot(q, (snap) => {
+      setItems(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+      setLoading(false);
+    });
+    return unsub;
+  }, [companyId]);
+
+  return { items, loading };
+}
+```
+
+## Firebase Cloud Functions
+
+For server-side logic (webhooks, email sending, scheduled tasks):
+
+```javascript
+// functions/index.js
+const functions = require('firebase-functions');
+const admin = require('firebase-admin');
+admin.initializeApp();
+
+// Stripe webhook handler
+exports.stripeWebhook = functions.https.onRequest(async (req, res) => {
+  const sig = req.headers['stripe-signature'];
+  // Verify signature, process event, update Firestore
 });
 
-// GET /api/[resource] — List with pagination & filtering
-export async function GET(request: NextRequest) {
-  try {
-    const session = await auth();
-    if (!session?.user?.organizationId) {
-      return apiError("Unauthorized", 401);
-    }
-
-    const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get("page") ?? "1");
-    const limit = Math.min(parseInt(searchParams.get("limit") ?? "20"), 100);
-    const search = searchParams.get("search") ?? undefined;
-    const status = searchParams.get("status") ?? undefined;
-
-    const where = {
-      organizationId: session.user.organizationId,
-      ...(search && {
-        OR: [
-          { name: { contains: search, mode: "insensitive" as const } },
-          { email: { contains: search, mode: "insensitive" as const } },
-        ],
-      }),
-      ...(status && { status }),
-    };
-
-    const [items, total] = await Promise.all([
-      prisma.resource.findMany({
-        where,
-        skip: (page - 1) * limit,
-        take: limit,
-        orderBy: { createdAt: "desc" },
-      }),
-      prisma.resource.count({ where }),
-    ]);
-
-    return apiResponse({
-      data: items,
-      pagination: {
-        page,
-        limit,
-        total,
-        totalPages: Math.ceil(total / limit),
-      },
-    });
-  } catch (error) {
-    console.error("[GET /api/resource]", error);
-    return apiError("Internal server error", 500);
-  }
-}
-
-// POST /api/[resource] — Create
-export async function POST(request: NextRequest) {
-  try {
-    const session = await auth();
-    if (!session?.user?.organizationId) {
-      return apiError("Unauthorized", 401);
-    }
-
-    const body = await request.json();
-    const validated = createResourceSchema.safeParse(body);
-
-    if (!validated.success) {
-      return apiError("Validation failed", 422, validated.error.flatten());
-    }
-
-    const item = await prisma.resource.create({
-      data: {
-        ...validated.data,
-        organizationId: session.user.organizationId,
-        createdById: session.user.id,
-      },
-    });
-
-    return apiResponse({ data: item }, 201);
-  } catch (error) {
-    console.error("[POST /api/resource]", error);
-    return apiError("Internal server error", 500);
-  }
-}
-```
-
-## Response Helpers
-
-Always use these — never construct raw NextResponse in route handlers:
-
-```typescript
-// src/lib/api/response.ts
-import { NextResponse } from "next/server";
-
-export function apiResponse<T>(data: T, status = 200) {
-  return NextResponse.json(
-    { success: true, ...data },
-    { status }
-  );
-}
-
-export function apiError(
-  message: string,
-  status: number,
-  details?: unknown
-) {
-  return NextResponse.json(
-    {
-      success: false,
-      error: { message, ...(details && { details }) },
-    },
-    { status }
-  );
-}
-```
-
-## Error Status Codes
-
-| Code | When to Use |
-|------|-------------|
-| 200 | Successful GET, PATCH |
-| 201 | Successful POST (created) |
-| 204 | Successful DELETE (no content) |
-| 400 | Malformed request body or params |
-| 401 | No session / not authenticated |
-| 403 | Authenticated but wrong organization / no permission |
-| 404 | Resource not found (within user's org scope) |
-| 409 | Conflict (duplicate, scheduling overlap) |
-| 422 | Zod validation failed |
-| 429 | Rate limited |
-| 500 | Unexpected server error |
-
-## Server Actions Template
-
-Use for form submissions in the dashboard:
-
-```typescript
-// src/server/actions/job-actions.ts
-"use server";
-
-import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
-import { revalidatePath } from "next/cache";
-import { z } from "zod";
-
-const createJobSchema = z.object({
-  title: z.string().min(1, "Job title is required").max(255),
-  clientId: z.string().cuid(),
-  scheduledDate: z.string().datetime(),
-  estimatedDuration: z.number().min(15).max(480), // minutes
-  notes: z.string().max(2000).optional(),
+// Send invoice email (callable)
+exports.sendInvoiceEmail = functions.https.onCall(async (data, context) => {
+  if (!context.auth) throw new functions.https.HttpsError('unauthenticated', 'Login required');
+  const { invoiceId, companyId } = data;
+  // Fetch invoice, generate PDF, send email
 });
 
-export type CreateJobState = {
-  success: boolean;
-  error?: string;
-  fieldErrors?: Record<string, string[]>;
-};
+// Scheduled: Mark overdue invoices
+exports.markOverdueInvoices = functions.pubsub.schedule('every 24 hours').onRun(async () => {
+  // Query invoices past due date, update status to 'overdue'
+});
+```
 
-export async function createJob(
-  _prevState: CreateJobState,
-  formData: FormData
-): Promise<CreateJobState> {
-  const session = await auth();
-  if (!session?.user?.organizationId) {
-    return { success: false, error: "Unauthorized" };
-  }
+## Firestore Security Rules
 
-  const raw = Object.fromEntries(formData);
-  const validated = createJobSchema.safeParse({
-    ...raw,
-    estimatedDuration: Number(raw.estimatedDuration),
-  });
-
-  if (!validated.success) {
-    return {
-      success: false,
-      fieldErrors: validated.error.flatten().fieldErrors,
-    };
-  }
-
-  try {
-    await prisma.job.create({
-      data: {
-        ...validated.data,
-        organizationId: session.user.organizationId,
-        createdById: session.user.id,
-        status: "SCHEDULED",
-      },
-    });
-
-    revalidatePath("/dashboard/jobs");
-    return { success: true };
-  } catch (error) {
-    console.error("[createJob]", error);
-    return { success: false, error: "Failed to create job. Please try again." };
+```javascript
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Users can read/write their own profile
+    match /users/{userId} {
+      allow read, write: if request.auth.uid == userId;
+    }
+    
+    // Company data — only members of that company
+    match /companies/{companyId}/{document=**} {
+      allow read, write: if request.auth != null 
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.companyId == companyId;
+    }
+    
+    // Public access (quotes, client portal) via token
+    match /companies/{companyId}/quotes/{quoteId} {
+      allow read: if resource.data.publicToken == request.resource.data.publicToken;
+    }
   }
 }
 ```
@@ -274,50 +210,36 @@ export async function createJob(
 ## Rules
 
 ### Security
-- **Always check auth first** — every handler starts with `const session = await auth()`
-- **Always scope to organization** — every query includes `organizationId` from session
-- **Never trust client input** — validate everything with Zod before touching the database
-- **Sanitize search queries** — use Prisma's built-in parameterized queries (never raw SQL with user input)
-- **Webhook routes:** Verify signatures (Stripe: `stripe.webhooks.constructEvent`)
+- **Company scoping:** Every Firestore read/write goes through `companies/{companyId}/`
+- **Auth check:** Cloud Functions always verify `context.auth`
+- **Public routes:** Use token-based access (existing pattern in `usePublicAccess.js`)
+- **Never trust client input:** Validate in Cloud Functions for sensitive operations (payments, status changes)
 
 ### Architecture
-- **Route Handlers** for external API / AJAX calls
-- **Server Actions** for form submissions within the dashboard
-- **Service layer** (`lib/services/`) for complex business logic shared between routes and actions
-- **Keep route handlers thin** — validation → service call → response
-- **One Zod schema per operation** (create, update, filter) — keep in `lib/validations/`
-
-### Pagination & Filtering
-- Default 20 items per page, max 100
-- Always return `{ data, pagination: { page, limit, total, totalPages } }`
-- Support `?search=`, `?status=`, `?sort=`, `?page=`, `?limit=`
-
-### Multi-tenancy
-- Trellio is multi-tenant — every query MUST include `organizationId`
-- Never expose data across organizations
-- Use `session.user.organizationId` — never accept orgId from client
+- **Client-side handlers** for CRUD that the user initiates (create job, edit client)
+- **Cloud Functions** for: webhooks, scheduled tasks, email/SMS sending, payment processing, anything requiring secrets
+- **Security Rules** as the enforced access layer — never rely only on client-side checks
 
 ### Naming
-- **Route files:** `route.ts` in appropriate directory
-- **Schemas:** `createJobSchema`, `updateJobSchema`, `jobFilterSchema`
-- **Services:** `job.service.ts` → `export const jobService = { create, update, list, ... }`
-- **Actions:** `job-actions.ts` → `export async function createJob(...)`
+- **Handlers:** `[feature]Handlers.js` → `create[Feature]Handlers(companyId)`
+- **Hooks:** `use[Features].js` → `use[Features](companyId)`
+- **Functions:** `functions/[feature].js` → descriptive export name
+- **Collections:** lowercase plural: `clients`, `jobs`, `invoices`, `quotes`
 
 ### Do NOT
-- Return raw Prisma errors to the client
-- Use `any` — type all function parameters and returns
-- Skip validation — even "simple" endpoints need Zod
-- Forget pagination on list endpoints
-- Build complex logic directly in route handlers — extract to services
-- Use raw SQL unless absolutely necessary (Prisma handles 99% of cases)
+- Use Prisma, PostgreSQL, or SQL — this is Firestore
+- Use Next.js patterns (Route Handlers, Server Actions, middleware)
+- Store secrets in client code — use Cloud Function environment config
+- Skip `serverTimestamp()` on createdAt/updatedAt
+- Create deeply nested subcollections (max 2 levels: `companies/{id}/[collection]`)
+- Forget to update `useAppHandlers.js` when adding new handlers
 
 ## Checklist Before Finishing
 
-- [ ] Auth check at the top of every handler
-- [ ] Organization scoping on every database query
-- [ ] Zod validation on all input (body, params, searchParams)
-- [ ] Proper error status codes and messages
-- [ ] Pagination on list endpoints
-- [ ] `try/catch` with `console.error` and generic error response
-- [ ] TypeScript types — no `any`, return types on functions
-- [ ] `revalidatePath` called in Server Actions after mutations
+- [ ] Data scoped under `companies/{companyId}/`
+- [ ] Handlers follow existing pattern and registered in useAppHandlers
+- [ ] Real-time subscriptions via onSnapshot (not one-time reads for UI data)
+- [ ] `serverTimestamp()` on createdAt and updatedAt
+- [ ] Security rules updated if new collection added
+- [ ] Cloud Functions for anything requiring secrets or server-side processing
+- [ ] Error handling with user-friendly messages

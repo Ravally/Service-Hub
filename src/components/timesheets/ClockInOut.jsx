@@ -105,12 +105,12 @@ export default function ClockInOut({ job, currentUserId, staff = [] }) {
   const selectedStaff = staff.find((s) => s.id === selectedStaffId);
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
+    <div className="bg-charcoal rounded-lg shadow-md p-6">
       {/* Header */}
       <div className="mb-6">
-        <h3 className="text-lg font-semibold text-gray-900">Time Clock</h3>
+        <h3 className="text-lg font-semibold text-slate-100">Time Clock</h3>
         {job && (
-          <p className="text-sm text-gray-600 mt-1">
+          <p className="text-sm text-slate-400 mt-1">
             Job: <span className="font-medium">{job.jobNumber || job.id.substring(0, 8)}</span> - {job.title}
           </p>
         )}
@@ -119,13 +119,13 @@ export default function ClockInOut({ job, currentUserId, staff = [] }) {
       {/* Staff Selection */}
       {!activeEntry && (
         <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-slate-300 mb-2">
             Select Staff Member
           </label>
           <select
             value={selectedStaffId}
             onChange={(e) => setSelectedStaffId(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-slate-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             disabled={isProcessing}
           >
             <option value="">Select staff member</option>
@@ -157,10 +157,10 @@ export default function ClockInOut({ job, currentUserId, staff = [] }) {
           )}
         </div>
       ) : (
-        <div className="bg-gray-50 border-2 border-gray-300 rounded-lg p-6 mb-6 text-center">
-          <div className="text-sm text-gray-500 font-medium mb-2">NOT CLOCKED IN</div>
-          <div className="text-4xl font-bold text-gray-400 mb-2 font-mono">00:00:00</div>
-          <div className="text-sm text-gray-500">
+        <div className="bg-midnight/60 border-2 border-slate-700 rounded-lg p-6 mb-6 text-center">
+          <div className="text-sm text-slate-400 font-medium mb-2">NOT CLOCKED IN</div>
+          <div className="text-4xl font-bold text-slate-500 mb-2 font-mono">00:00:00</div>
+          <div className="text-sm text-slate-400">
             {selectedStaff?.name || 'Select a staff member'}
           </div>
         </div>
@@ -172,7 +172,7 @@ export default function ClockInOut({ job, currentUserId, staff = [] }) {
           <button
             onClick={handleClockIn}
             disabled={isProcessing || !selectedStaffId || !job}
-            className="w-full px-6 py-4 text-lg font-semibold text-white bg-green-600 rounded-lg hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors shadow-md"
+            className="w-full px-6 py-4 text-lg font-semibold text-white bg-green-600 rounded-lg hover:bg-green-700 disabled:bg-slate-600 disabled:cursor-not-allowed transition-colors shadow-md"
           >
             {isProcessing ? 'Clocking In...' : '▶ Clock In'}
           </button>
@@ -180,7 +180,7 @@ export default function ClockInOut({ job, currentUserId, staff = [] }) {
           <button
             onClick={handleClockOut}
             disabled={isProcessing}
-            className="w-full px-6 py-4 text-lg font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors shadow-md"
+            className="w-full px-6 py-4 text-lg font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:bg-slate-600 disabled:cursor-not-allowed transition-colors shadow-md"
           >
             {isProcessing ? 'Clocking Out...' : '⏹ Clock Out'}
           </button>
@@ -188,7 +188,7 @@ export default function ClockInOut({ job, currentUserId, staff = [] }) {
       </div>
 
       {/* Help Text */}
-      <div className="mt-4 text-xs text-gray-500 text-center">
+      <div className="mt-4 text-xs text-slate-400 text-center">
         {!activeEntry
           ? 'Click "Clock In" to start tracking time on this job'
           : 'Click "Clock Out" when you finish working'}

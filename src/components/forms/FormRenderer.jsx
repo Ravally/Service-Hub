@@ -144,8 +144,8 @@ export default function FormRenderer({
     const metadata = FIELD_TYPE_METADATA[field.type];
 
     const commonClasses = `w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
-      hasError ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
-    } ${readOnly ? 'bg-gray-50' : ''}`;
+      hasError ? 'border-red-500 focus:ring-red-500' : 'border-slate-700 focus:ring-blue-500'
+    } ${readOnly ? 'bg-midnight/60' : ''}`;
 
     switch (field.type) {
       case FIELD_TYPES.TEXT:
@@ -252,9 +252,9 @@ export default function FormRenderer({
                       handleFieldChange(field.id, newSelected);
                     }}
                     disabled={readOnly}
-                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                    className="w-4 h-4 text-blue-600 border-slate-700 rounded focus:ring-2 focus:ring-blue-500"
                   />
-                  <span className="text-sm text-gray-700">{option}</span>
+                  <span className="text-sm text-slate-300">{option}</span>
                 </label>
               );
             })}
@@ -273,9 +273,9 @@ export default function FormRenderer({
                   checked={value === option}
                   onChange={(e) => handleFieldChange(field.id, e.target.value)}
                   disabled={readOnly}
-                  className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-2 focus:ring-blue-500"
+                  className="w-4 h-4 text-blue-600 border-slate-700 focus:ring-2 focus:ring-blue-500"
                 />
-                <span className="text-sm text-gray-700">{option}</span>
+                <span className="text-sm text-slate-300">{option}</span>
               </label>
             ))}
           </div>
@@ -289,9 +289,9 @@ export default function FormRenderer({
               checked={value === true}
               onChange={(e) => handleFieldChange(field.id, e.target.checked)}
               disabled={readOnly}
-              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+              className="w-4 h-4 text-blue-600 border-slate-700 rounded focus:ring-2 focus:ring-blue-500"
             />
-            <span className="text-sm text-gray-700">{field.label}</span>
+            <span className="text-sm text-slate-300">{field.label}</span>
           </label>
         );
 
@@ -311,27 +311,27 @@ export default function FormRenderer({
               disabled={readOnly}
               className="text-sm"
             />
-            {value && <span className="text-sm text-gray-600">📷 {value}</span>}
+            {value && <span className="text-sm text-slate-400">📷 {value}</span>}
           </div>
         );
 
       case FIELD_TYPES.SIGNATURE:
         return (
-          <div className="border border-gray-300 rounded-md p-4 text-center bg-gray-50">
-            <p className="text-sm text-gray-500">✍️ Signature capture placeholder</p>
-            {value && <p className="text-xs text-gray-400 mt-2">Signed: {value}</p>}
+          <div className="border border-slate-700 rounded-md p-4 text-center bg-midnight/60">
+            <p className="text-sm text-slate-400">✍️ Signature capture placeholder</p>
+            {value && <p className="text-xs text-slate-500 mt-2">Signed: {value}</p>}
           </div>
         );
 
       case FIELD_TYPES.SECTION_HEADER:
         return (
-          <h3 className="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2">
+          <h3 className="text-lg font-semibold text-slate-100 border-b border-slate-700/30 pb-2">
             {field.label}
           </h3>
         );
 
       default:
-        return <p className="text-sm text-gray-500">Unknown field type: {field.type}</p>;
+        return <p className="text-sm text-slate-400">Unknown field type: {field.type}</p>;
     }
   };
 
@@ -340,7 +340,7 @@ export default function FormRenderer({
       {template.fields?.map((field) => (
         <div key={field.id}>
           {field.type !== FIELD_TYPES.CHECKBOX && field.type !== FIELD_TYPES.SECTION_HEADER && (
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-slate-300 mb-1">
               {field.label}
               {field.required && <span className="text-red-500 ml-1">*</span>}
             </label>
@@ -349,7 +349,7 @@ export default function FormRenderer({
           {renderField(field)}
 
           {field.helpText && field.type !== FIELD_TYPES.SECTION_HEADER && (
-            <p className="mt-1 text-xs text-gray-500">{field.helpText}</p>
+            <p className="mt-1 text-xs text-slate-400">{field.helpText}</p>
           )}
 
           {showValidation && touched[field.id] && errors[field.id] && (

@@ -140,11 +140,11 @@ export default function ChecklistBuilder({ template = null, onSave, onCancel }) 
   };
 
   return (
-    <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-sm border border-gray-200">
+    <div className="max-w-4xl mx-auto bg-charcoal rounded-lg shadow-sm border border-slate-700/30">
       {/* Header */}
-      <div className="border-b border-gray-200 p-6">
+      <div className="border-b border-slate-700/30 p-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-2xl font-bold text-gray-900">
+          <h2 className="text-2xl font-bold text-slate-100">
             {template?.id ? 'Edit Checklist Template' : 'Create Checklist Template'}
           </h2>
           <div className="flex items-center gap-2">
@@ -158,7 +158,7 @@ export default function ChecklistBuilder({ template = null, onSave, onCancel }) 
             {onCancel && (
               <button
                 onClick={onCancel}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                className="px-4 py-2 text-sm font-medium text-slate-300 bg-charcoal border border-slate-700 rounded-md hover:bg-midnight/60"
               >
                 Cancel
               </button>
@@ -169,7 +169,7 @@ export default function ChecklistBuilder({ template = null, onSave, onCancel }) 
         {/* Template Info */}
         <div className="space-y-3">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-slate-300 mb-1">
               Template Name <span className="text-red-500">*</span>
             </label>
             <input
@@ -177,12 +177,12 @@ export default function ChecklistBuilder({ template = null, onSave, onCancel }) 
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               placeholder="e.g., Pool Service Checklist"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-slate-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-slate-300 mb-1">
               Description
             </label>
             <input
@@ -190,7 +190,7 @@ export default function ChecklistBuilder({ template = null, onSave, onCancel }) 
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               placeholder="Brief description of this checklist"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-slate-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
         </div>
@@ -209,7 +209,7 @@ export default function ChecklistBuilder({ template = null, onSave, onCancel }) 
       </div>
 
       {/* Add Item Input */}
-      <div className="p-6 bg-gray-50 border-b border-gray-200">
+      <div className="p-6 bg-midnight/60 border-b border-slate-700/30">
         <div className="flex gap-2">
           <input
             type="text"
@@ -217,7 +217,7 @@ export default function ChecklistBuilder({ template = null, onSave, onCancel }) 
             onChange={(e) => setNewItemText(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="Add checklist item..."
-            className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="flex-1 px-3 py-2 border border-slate-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <button
             onClick={handleAddItem}
@@ -227,7 +227,7 @@ export default function ChecklistBuilder({ template = null, onSave, onCancel }) 
             + Add Item
           </button>
         </div>
-        <p className="mt-2 text-xs text-gray-500">
+        <p className="mt-2 text-xs text-slate-400">
           Press Enter to quickly add items
         </p>
       </div>
@@ -236,16 +236,16 @@ export default function ChecklistBuilder({ template = null, onSave, onCancel }) 
       <div className="p-6">
         {formData.fields.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-gray-500 mb-2">No checklist items yet</p>
-            <p className="text-sm text-gray-400">Add items using the input above</p>
+            <p className="text-slate-400 mb-2">No checklist items yet</p>
+            <p className="text-sm text-slate-500">Add items using the input above</p>
           </div>
         ) : (
           <div className="space-y-2">
             <div className="flex items-center justify-between mb-3">
-              <p className="text-sm font-medium text-gray-700">
+              <p className="text-sm font-medium text-slate-300">
                 {formData.fields.length} {formData.fields.length === 1 ? 'item' : 'items'}
               </p>
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-slate-400">
                 Drag to reorder
               </p>
             </div>
@@ -257,12 +257,12 @@ export default function ChecklistBuilder({ template = null, onSave, onCancel }) 
                 onDragStart={() => handleDragStart(index)}
                 onDragOver={(e) => handleDragOver(e, index)}
                 onDragEnd={handleDragEnd}
-                className={`group flex items-center gap-3 p-3 bg-white border border-gray-200 rounded-md hover:border-gray-300 cursor-move transition-all ${
+                className={`group flex items-center gap-3 p-3 bg-charcoal border border-slate-700/30 rounded-md hover:border-slate-600 cursor-move transition-all ${
                   draggedIndex === index ? 'opacity-50' : ''
                 }`}
               >
                 {/* Drag Handle */}
-                <div className="text-gray-400 group-hover:text-gray-600">
+                <div className="text-slate-500 group-hover:text-slate-300">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8h16M4 16h16" />
                   </svg>
@@ -270,7 +270,7 @@ export default function ChecklistBuilder({ template = null, onSave, onCancel }) 
 
                 {/* Checkbox Preview */}
                 <div className="flex-shrink-0">
-                  <div className="w-5 h-5 border-2 border-gray-300 rounded"></div>
+                  <div className="w-5 h-5 border-2 border-slate-700 rounded"></div>
                 </div>
 
                 {/* Item Text */}
@@ -299,7 +299,7 @@ export default function ChecklistBuilder({ template = null, onSave, onCancel }) 
                     className={`p-1 text-xs rounded ${
                       item.required
                         ? 'text-red-600 hover:bg-red-50'
-                        : 'text-gray-400 hover:bg-gray-100'
+                        : 'text-slate-500 hover:bg-midnight'
                     }`}
                     title={item.required ? 'Mark as optional' : 'Mark as required'}
                   >

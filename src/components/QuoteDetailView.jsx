@@ -26,7 +26,7 @@ const Toggle = ({ label, value, onChange }) => (
     onClick={() => onChange(!value)}
     className={`w-12 h-6 rounded-full flex items-center px-1 transition-colors ${value ? 'bg-trellio-teal' : 'bg-slate-700'}`}
   >
-    <span className={`h-4 w-4 bg-white rounded-full transition-transform ${value ? 'translate-x-6' : ''}`} />
+    <span className={`h-4 w-4 bg-charcoal rounded-full transition-transform ${value ? 'translate-x-6' : ''}`} />
     <span className="sr-only">{label}</span>
   </button>
 );
@@ -129,7 +129,7 @@ export default function QuoteDetailView({
   const totals = useMemo(() => computeTotals({ ...quote, ...financialDraft, lineItems: lineItemsDraft }), [quote, financialDraft, lineItemsDraft]);
   const requiredDeposit = financialDraft.depositRequiredAmount || (financialDraft.depositRequiredPercent ? (totals.total * (financialDraft.depositRequiredPercent / 100)) : 0);
 
-  const statusClass = STATUS_COLORS?.[quote.status] || 'bg-gray-100 text-gray-700';
+  const statusClass = STATUS_COLORS?.[quote.status] || 'bg-midnight text-slate-300';
   const canEdit = userRole === 'admin' || userRole === 'manager';
 
   const addCustomField = () => setOverviewDraft(prev => ({ ...prev, customFields: [...prev.customFields, { key: '', value: '' }] }));
@@ -472,7 +472,7 @@ export default function QuoteDetailView({
                         return (
                           <tr key={`${item.description}-${idx}`} className="border-b last:border-b-0">
                             <td className="py-3" colSpan={4}>
-                              <div className="text-gray-700">{item.description || item.name || 'Text'}</div>
+                              <div className="text-slate-300">{item.description || item.name || 'Text'}</div>
                             </td>
                           </tr>
                         );
@@ -480,7 +480,7 @@ export default function QuoteDetailView({
                       return (
                         <tr key={`${item.description}-${idx}`} className="border-b last:border-b-0">
                           <td className="py-3">
-                            <div className="font-semibold text-gray-900">{item.name || item.description}</div>
+                            <div className="font-semibold text-slate-100">{item.name || item.description}</div>
                             {item.description && <div className="text-xs text-slate-400">{item.description}</div>}
                             {item.isOptional && <div className="text-xs text-amber-600">Optional line item</div>}
                           </td>
@@ -532,7 +532,7 @@ export default function QuoteDetailView({
                     value={financialDraft.quoteDiscountValue}
                     onChange={(e) => setFinancialDraft({ ...financialDraft, quoteDiscountValue: e.target.value })}
                     placeholder="Value"
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md"
+                    className="flex-1 px-3 py-2 border border-slate-700 rounded-md"
                   />
                 </div>
                 <input
@@ -606,20 +606,20 @@ export default function QuoteDetailView({
           </div>
 
           <div className="flex flex-wrap items-center gap-2 text-sm text-slate-100">
-            <button className="px-3 py-1 rounded-full bg-gray-100 border border-slate-700/30">+ Add section</button>
-            <button className="px-3 py-1 rounded-full bg-white border border-slate-700/30">Introduction</button>
-            <button className="px-3 py-1 rounded-full bg-white border border-slate-700/30">Attachments</button>
-            <button className="px-3 py-1 rounded-full bg-white border border-slate-700/30">Images</button>
-            <button className="px-3 py-1 rounded-full bg-white border border-slate-700/30">Reviews</button>
-            <button className="px-3 py-1 rounded-full bg-white border border-slate-700/30">Client message</button>
+            <button className="px-3 py-1 rounded-full bg-midnight border border-slate-700/30">+ Add section</button>
+            <button className="px-3 py-1 rounded-full bg-charcoal border border-slate-700/30">Introduction</button>
+            <button className="px-3 py-1 rounded-full bg-charcoal border border-slate-700/30">Attachments</button>
+            <button className="px-3 py-1 rounded-full bg-charcoal border border-slate-700/30">Images</button>
+            <button className="px-3 py-1 rounded-full bg-charcoal border border-slate-700/30">Reviews</button>
+            <button className="px-3 py-1 rounded-full bg-charcoal border border-slate-700/30">Client message</button>
           </div>
         </div>
 
         <div className="space-y-6">
           <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Customize</h3>
+            <h3 className="text-lg font-semibold text-slate-100 mb-4">Customize</h3>
             <div className="border border-slate-700/30 rounded-xl p-4 space-y-3">
-              <div className="text-sm font-semibold text-gray-800">Deposit payment settings</div>
+              <div className="text-sm font-semibold text-slate-200">Deposit payment settings</div>
               <div className="flex items-center justify-between text-sm text-slate-100">
                 <span>Accept card payments</span>
                 <Toggle label="Accept card payments" value={depositDraft.acceptCard} onChange={(v) => setDepositDraft(prev => ({ ...prev, acceptCard: v }))} />
@@ -645,8 +645,8 @@ export default function QuoteDetailView({
           </div>
 
           <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Notes</h3>
-            <div className="border-2 border-dashed border-gray-200 rounded-2xl p-4 text-center text-sm text-gray-500">
+            <h3 className="text-lg font-semibold text-slate-100 mb-4">Notes</h3>
+            <div className="border-2 border-dashed border-slate-700/30 rounded-2xl p-4 text-center text-sm text-slate-400">
               <textarea
                 value={internalNotes}
                 onChange={(e) => setInternalNotes(e.target.value)}

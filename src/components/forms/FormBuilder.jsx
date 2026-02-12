@@ -147,9 +147,9 @@ export default function FormBuilder({ template = null, onSave, onCancel }) {
   const selectedField = selectedFieldIndex !== null ? formData.fields[selectedFieldIndex] : null;
 
   return (
-    <div className="h-screen flex flex-col bg-gray-50">
+    <div className="h-screen flex flex-col bg-midnight/60">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
+      <div className="bg-charcoal border-b border-slate-700/30 px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex-1">
             <input
@@ -164,7 +164,7 @@ export default function FormBuilder({ template = null, onSave, onCancel }) {
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               placeholder="Description (optional)"
-              className="text-sm text-gray-600 border-none focus:outline-none focus:ring-2 focus:ring-blue-500 rounded px-2 py-1 w-full mt-1"
+              className="text-sm text-slate-400 border-none focus:outline-none focus:ring-2 focus:ring-blue-500 rounded px-2 py-1 w-full mt-1"
             />
           </div>
 
@@ -172,7 +172,7 @@ export default function FormBuilder({ template = null, onSave, onCancel }) {
             <select
               value={formData.type}
               onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-              className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-3 py-2 border border-slate-700 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               {Object.entries(TEMPLATE_TYPE_METADATA).map(([value, { label, icon }]) => (
                 <option key={value} value={value}>
@@ -183,7 +183,7 @@ export default function FormBuilder({ template = null, onSave, onCancel }) {
 
             <button
               onClick={() => setShowPreview(!showPreview)}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+              className="px-4 py-2 text-sm font-medium text-slate-300 bg-charcoal border border-slate-700 rounded-md hover:bg-midnight/60"
             >
               {showPreview ? '📝 Edit' : '👁️ Preview'}
             </button>
@@ -199,7 +199,7 @@ export default function FormBuilder({ template = null, onSave, onCancel }) {
             {onCancel && (
               <button
                 onClick={onCancel}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                className="px-4 py-2 text-sm font-medium text-slate-300 bg-charcoal border border-slate-700 rounded-md hover:bg-midnight/60"
               >
                 Cancel
               </button>
@@ -225,21 +225,21 @@ export default function FormBuilder({ template = null, onSave, onCancel }) {
         {!showPreview ? (
           <>
             {/* Field Palette */}
-            <div className="w-64 bg-white border-r border-gray-200 overflow-y-auto">
+            <div className="w-64 bg-charcoal border-r border-slate-700/30 overflow-y-auto">
               <div className="p-4">
-                <h3 className="text-sm font-semibold text-gray-700 mb-3">Add Fields</h3>
+                <h3 className="text-sm font-semibold text-slate-300 mb-3">Add Fields</h3>
                 <div className="space-y-1">
                   {Object.entries(FIELD_TYPE_METADATA).map(([type, { label, icon, description }]) => (
                     <button
                       key={type}
                       onClick={() => handleAddField(type)}
-                      className="w-full text-left px-3 py-2 rounded-md hover:bg-gray-100 transition-colors"
+                      className="w-full text-left px-3 py-2 rounded-md hover:bg-midnight transition-colors"
                     >
                       <div className="flex items-center gap-2">
                         <span className="text-lg">{icon}</span>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-900">{label}</p>
-                          <p className="text-xs text-gray-500 truncate">{description}</p>
+                          <p className="text-sm font-medium text-slate-100">{label}</p>
+                          <p className="text-xs text-slate-400 truncate">{description}</p>
                         </div>
                       </div>
                     </button>
@@ -253,8 +253,8 @@ export default function FormBuilder({ template = null, onSave, onCancel }) {
               {formData.fields.length === 0 ? (
                 <div className="flex items-center justify-center h-full">
                   <div className="text-center">
-                    <p className="text-gray-500 mb-2">No fields yet</p>
-                    <p className="text-sm text-gray-400">Add fields from the left panel to get started</p>
+                    <p className="text-slate-400 mb-2">No fields yet</p>
+                    <p className="text-sm text-slate-500">Add fields from the left panel to get started</p>
                   </div>
                 </div>
               ) : (
@@ -267,22 +267,22 @@ export default function FormBuilder({ template = null, onSave, onCancel }) {
                       <div
                         key={field.id}
                         onClick={() => setSelectedFieldIndex(index)}
-                        className={`bg-white rounded-lg border-2 p-4 cursor-pointer transition-all ${
+                        className={`bg-charcoal rounded-lg border-2 p-4 cursor-pointer transition-all ${
                           isSelected
                             ? 'border-blue-500 shadow-md'
-                            : 'border-gray-200 hover:border-gray-300'
+                            : 'border-slate-700/30 hover:border-slate-700'
                         }`}
                       >
                         <div className="flex items-start gap-3">
                           <span className="text-2xl">{metadata?.icon}</span>
                           <div className="flex-1 min-w-0">
-                            <p className="font-medium text-gray-900">
-                              {field.label || <span className="text-gray-400 italic">Untitled Field</span>}
+                            <p className="font-medium text-slate-100">
+                              {field.label || <span className="text-slate-500 italic">Untitled Field</span>}
                               {field.required && <span className="text-red-500 ml-1">*</span>}
                             </p>
-                            <p className="text-sm text-gray-500">{metadata?.label}</p>
+                            <p className="text-sm text-slate-400">{metadata?.label}</p>
                             {field.placeholder && (
-                              <p className="text-xs text-gray-400 mt-1">{field.placeholder}</p>
+                              <p className="text-xs text-slate-500 mt-1">{field.placeholder}</p>
                             )}
                           </div>
 
@@ -294,7 +294,7 @@ export default function FormBuilder({ template = null, onSave, onCancel }) {
                                 handleMoveFieldUp(index);
                               }}
                               disabled={index === 0}
-                              className="p-1 text-gray-400 hover:text-gray-600 disabled:opacity-30"
+                              className="p-1 text-slate-500 hover:text-slate-400 disabled:opacity-30"
                               title="Move up"
                             >
                               ↑
@@ -305,7 +305,7 @@ export default function FormBuilder({ template = null, onSave, onCancel }) {
                                 handleMoveFieldDown(index);
                               }}
                               disabled={index === formData.fields.length - 1}
-                              className="p-1 text-gray-400 hover:text-gray-600 disabled:opacity-30"
+                              className="p-1 text-slate-500 hover:text-slate-400 disabled:opacity-30"
                               title="Move down"
                             >
                               ↓
@@ -315,7 +315,7 @@ export default function FormBuilder({ template = null, onSave, onCancel }) {
                                 e.stopPropagation();
                                 handleDuplicateField(index);
                               }}
-                              className="p-1 text-gray-400 hover:text-gray-600"
+                              className="p-1 text-slate-500 hover:text-slate-400"
                               title="Duplicate"
                             >
                               ⎘
@@ -341,7 +341,7 @@ export default function FormBuilder({ template = null, onSave, onCancel }) {
 
             {/* Field Editor Sidebar */}
             {selectedField && (
-              <div className="w-80 bg-white border-l border-gray-200 overflow-y-auto">
+              <div className="w-80 bg-charcoal border-l border-slate-700/30 overflow-y-auto">
                 <FormFieldEditor
                   field={selectedField}
                   onUpdate={(updates) => handleUpdateField(selectedFieldIndex, updates)}
@@ -352,12 +352,12 @@ export default function FormBuilder({ template = null, onSave, onCancel }) {
           </>
         ) : (
           /* Preview Mode */
-          <div className="flex-1 overflow-y-auto p-6 bg-gray-50">
+          <div className="flex-1 overflow-y-auto p-6 bg-midnight/60">
             <div className="max-w-3xl mx-auto">
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <div className="bg-charcoal rounded-lg shadow-sm border border-slate-700/30 p-6">
                 <h2 className="text-2xl font-bold mb-2">{formData.name || 'Untitled Form'}</h2>
                 {formData.description && (
-                  <p className="text-gray-600 mb-6">{formData.description}</p>
+                  <p className="text-slate-400 mb-6">{formData.description}</p>
                 )}
                 <FormRenderer
                   template={formData}

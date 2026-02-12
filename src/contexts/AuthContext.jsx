@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -25,6 +25,7 @@ export function AuthProvider({ children }) {
   const [userProfile, setUserProfile] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  const pendingSignUpDataRef = useRef(null);
 
   const auth = getAuth();
 
@@ -72,9 +73,18 @@ export function AuthProvider({ children }) {
             }
           }
 
+          // Merge any additional sign-up data (firstName, lastName, phone)
+          const additionalData = pendingSignUpDataRef.current || {};
+          pendingSignUpDataRef.current = null;
+
           const newUserProfile = {
             email: firebaseUser.email,
             role: userRole,
+            firstName: additionalData.firstName || '',
+            lastName: additionalData.lastName || '',
+            phone: additionalData.phone || '',
+            trialStartDate: new Date().toISOString(),
+            subscriptionStatus: 'trial',
             createdAt: new Date().toISOString(),
           };
 
@@ -95,9 +105,11 @@ export function AuthProvider({ children }) {
   const signUp = async (email, password, additionalData = {}) => {
     try {
       setError('');
+      pendingSignUpDataRef.current = additionalData;
       const result = await createUserWithEmailAndPassword(auth, email, password);
       return result;
     } catch (err) {
+      pendingSignUpDataRef.current = null;
       setError(err.message);
       throw err;
     }

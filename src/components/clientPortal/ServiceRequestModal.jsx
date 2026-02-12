@@ -70,12 +70,12 @@ export default function ServiceRequestModal({ uid, clientId, clientName, onClose
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 animate-fade-in-fast">
+      <div className="bg-charcoal rounded-xl shadow-2xl max-w-md w-full p-6 animate-fade-in-fast">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold text-gray-900">Request Service</h2>
+          <h2 className="text-xl font-bold text-slate-100">Request Service</h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 text-2xl leading-none"
+            className="text-slate-500 hover:text-slate-300 text-2xl leading-none"
             aria-label="Close"
           >
             ×
@@ -92,14 +92,14 @@ export default function ServiceRequestModal({ uid, clientId, clientName, onClose
           <div className="space-y-4">
             {/* Service Type */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-slate-300 mb-1">
                 Service Type <span className="text-red-500">*</span>
               </label>
               <select
                 value={formData.serviceType}
                 onChange={(e) => handleChange('serviceType', e.target.value)}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-slate-700 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="">Select a service type</option>
                 {serviceTypes.map(type => (
@@ -110,7 +110,7 @@ export default function ServiceRequestModal({ uid, clientId, clientName, onClose
 
             {/* Preferred Date */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-slate-300 mb-1">
                 Preferred Date (optional)
               </label>
               <input
@@ -118,16 +118,16 @@ export default function ServiceRequestModal({ uid, clientId, clientName, onClose
                 value={formData.preferredDate}
                 onChange={(e) => handleChange('preferredDate', e.target.value)}
                 min={new Date().toISOString().split('T')[0]}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-slate-700 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
               />
-              <p className="mt-1 text-xs text-gray-500">
+              <p className="mt-1 text-xs text-slate-400">
                 We'll try to accommodate your preferred date, but it's not guaranteed.
               </p>
             </div>
 
             {/* Notes */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-slate-300 mb-1">
                 Additional Notes
               </label>
               <textarea
@@ -135,7 +135,7 @@ export default function ServiceRequestModal({ uid, clientId, clientName, onClose
                 onChange={(e) => handleChange('notes', e.target.value)}
                 rows={4}
                 placeholder="Please describe what you need help with..."
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-slate-700 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
           </div>
@@ -144,7 +144,7 @@ export default function ServiceRequestModal({ uid, clientId, clientName, onClose
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 font-medium"
+              className="flex-1 px-4 py-2 border border-slate-700 text-slate-300 rounded-md hover:bg-midnight/60 font-medium"
               disabled={submitting}
             >
               Cancel
@@ -159,7 +159,7 @@ export default function ServiceRequestModal({ uid, clientId, clientName, onClose
           </div>
         </form>
 
-        <p className="mt-4 text-xs text-center text-gray-500">
+        <p className="mt-4 text-xs text-center text-slate-400">
           We'll review your request and contact you within 1-2 business days.
         </p>
       </div>

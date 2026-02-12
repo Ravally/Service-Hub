@@ -2,21 +2,7 @@
 import React, { useMemo, useState } from 'react';
 import { formatCurrency } from '../utils';
 import { inRange, lastNDays, last30ExcludingToday, monthRange, yearRange } from '../utils/dateUtils';
-
-const KpiCard = ({ title, sub, value, money, delta, positive }) => (
-  <div className="bg-charcoal rounded-xl border border-slate-700/30 shadow-sm p-4">
-    <div className="text-sm font-semibold text-slate-100">{title}</div>
-    <div className="text-xs text-slate-400 mb-2">{sub}</div>
-    <div className="text-3xl font-bold text-slate-100">{value}</div>
-    {typeof money === 'string' && <div className="text-xs text-slate-400">{money}</div>}
-    {typeof delta === 'string' && (
-      <div className={`inline-flex items-center mt-2 text-xs font-medium ${positive ? 'text-trellio-teal' : 'text-signal-coral'}`}>
-        <span className={`inline-block h-2 w-2 rounded-full mr-1 ${positive ? 'bg-trellio-teal' : 'bg-signal-coral'}`} />
-        {delta}
-      </div>
-    )}
-  </div>
-);
+import KpiCard from './common/KpiCard';
 
 export default function InvoicesList({ invoices=[], clients=[], onOpenInvoice, onNewInvoice }) {
   const clientMap = useMemo(() => Object.fromEntries((clients||[]).map(c=>[c.id,c])), [clients]);
@@ -102,11 +88,11 @@ export default function InvoicesList({ invoices=[], clients=[], onOpenInvoice, o
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-3xl font-bold text-slate-100">Invoices</h2>
+        <h2 className="text-3xl font-bold font-display text-slate-100">Invoices</h2>
         {onNewInvoice && (
           <button
             onClick={onNewInvoice}
-            className="px-4 py-2 rounded-lg bg-green-600 text-white text-sm font-semibold hover:bg-green-700"
+            className="px-4 py-2 rounded-lg bg-trellio-teal text-white text-sm font-semibold hover:bg-trellio-teal-deep transition-colors"
           >
             New Invoice
           </button>
@@ -129,23 +115,23 @@ export default function InvoicesList({ invoices=[], clients=[], onOpenInvoice, o
       <div className="mb-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="relative">
-            <button onClick={()=>setStatusOpen(o=>!o)} className="px-3 py-1.5 rounded-full bg-midnight text-slate-100 text-sm border">Status | {status==='all' ? 'All' : status}</button>
+            <button onClick={()=>setStatusOpen(o=>!o)} className="px-3 py-1.5 rounded-full bg-charcoal text-slate-100 text-sm border border-slate-700">Status | {status==='all' ? 'All' : status}</button>
             {statusOpen && (
               <div className="absolute z-20 mt-2 w-72 bg-charcoal border border-slate-700/30 rounded-md shadow p-2">
-                <input placeholder="Search status" className="w-full px-2 py-1 border border-gray-300 rounded mb-2 text-sm" />
-                <button className={`w-full text-left px-3 py-2 hover:bg-midnight ${status==='all'?'bg-midnight':''}`} onClick={()=>{ setStatus('all'); setStatusOpen(false); }}>All</button>
+                <input placeholder="Search status" className="w-full px-2 py-1 bg-midnight border border-slate-700 text-slate-100 placeholder-slate-500 focus:border-trellio-teal rounded mb-2 text-sm" />
+                <button className={`w-full text-left px-3 py-2 text-slate-100 hover:bg-slate-dark ${status==='all'?'bg-slate-dark':''}`} onClick={()=>{ setStatus('all'); setStatusOpen(false); }}>All</button>
                 {statusOptions.map(s => (
-                  <button key={s} className={`w-full text-left px-3 py-2 hover:bg-midnight ${status===s?'bg-midnight':''}`} onClick={()=>{ setStatus(s); setStatusOpen(false); }}>{s}</button>
+                  <button key={s} className={`w-full text-left px-3 py-2 text-slate-100 hover:bg-slate-dark ${status===s?'bg-slate-dark':''}`} onClick={()=>{ setStatus(s); setStatusOpen(false); }}>{s}</button>
                 ))}
               </div>
             )}
           </div>
           <div className="relative">
-            <button onClick={()=>setDueOpen(o=>!o)} className="px-3 py-1.5 rounded-full bg-midnight text-slate-100 text-sm border">Due | {dueMode==='all' ? 'All' : dueMode.replace('_',' ')}</button>
+            <button onClick={()=>setDueOpen(o=>!o)} className="px-3 py-1.5 rounded-full bg-charcoal text-slate-100 text-sm border border-slate-700">Due | {dueMode==='all' ? 'All' : dueMode.replace('_',' ')}</button>
             {dueOpen && (
               <div className="absolute z-20 mt-2 w-80 bg-charcoal border border-slate-700/30 rounded-md shadow p-3">
                 <div className="text-sm text-slate-100 mb-2">Due date</div>
-                <select value={dueMode} onChange={(e)=>setDueMode(e.target.value)} className="w-full px-2 py-2 border border-gray-300 rounded mb-3 text-sm">
+                <select value={dueMode} onChange={(e)=>setDueMode(e.target.value)} className="w-full px-2 py-2 bg-midnight border border-slate-700 text-slate-100 rounded mb-3 text-sm">
                   <option value="all">All</option>
                   <option value="this_month">This month</option>
                   <option value="last_month">Last month</option>
@@ -154,43 +140,43 @@ export default function InvoicesList({ invoices=[], clients=[], onOpenInvoice, o
                 </select>
                 {dueMode==='custom' && (
                   <div className="flex items-center gap-2 mb-3">
-                    <input type="date" value={custom.start} onChange={(e)=>setCustom(c=>({...c,start:e.target.value}))} className="px-2 py-1 border rounded text-sm w-full" />
-                    <input type="date" value={custom.end} onChange={(e)=>setCustom(c=>({...c,end:e.target.value}))} className="px-2 py-1 border rounded text-sm w-full" />
+                    <input type="date" value={custom.start} onChange={(e)=>setCustom(c=>({...c,start:e.target.value}))} className="px-2 py-1 bg-midnight border border-slate-700 text-slate-100 rounded text-sm w-full" />
+                    <input type="date" value={custom.end} onChange={(e)=>setCustom(c=>({...c,end:e.target.value}))} className="px-2 py-1 bg-midnight border border-slate-700 text-slate-100 rounded text-sm w-full" />
                   </div>
                 )}
                 <div className="text-right">
-                  <button onClick={()=>setDueOpen(false)} className="px-4 py-2 bg-green-600 text-white rounded-md font-semibold">Apply</button>
+                  <button onClick={()=>setDueOpen(false)} className="px-4 py-2 bg-trellio-teal text-white rounded-md font-semibold hover:bg-trellio-teal-deep transition-colors">Apply</button>
                 </div>
               </div>
             )}
           </div>
         </div>
-        <input value={search} onChange={(e)=>setSearch(e.target.value)} placeholder="Search invoices..." className="px-3 py-2 border border-gray-300 rounded-md text-sm w-72"/>
+        <input value={search} onChange={(e)=>setSearch(e.target.value)} placeholder="Search invoices..." className="px-3 py-2 bg-midnight border border-slate-700 text-slate-100 placeholder-slate-500 focus:border-trellio-teal focus:ring-2 focus:ring-trellio-teal/20 rounded-md text-sm w-72"/>
       </div>
 
       <div className="text-sm text-slate-100 mb-2">{(status!=='all' || dueMode!=='all' || search) ? 'Filtered invoices' : 'All invoices'} ({filtered.length} results)</div>
 
-      <div className="bg-charcoal rounded-xl shadow-lg border border-slate-700/30 overflow-hidden">
+      <div className="bg-charcoal rounded-xl shadow-lg border border-slate-700/30 overflow-hidden min-h-[calc(100vh-26rem)]">
         {filtered.length === 0 ? (
           <div className="text-center p-10 text-slate-400">No invoices found.</div>
         ) : (
           <table className="w-full">
-            <thead className="bg-midnight text-sm">
+            <thead className="bg-midnight text-sm border-b border-slate-700">
               <tr>
-                <th className="text-left font-semibold p-3 cursor-pointer select-none" onClick={()=>toggleSort('client')}>Client{sortBy==='client' && (sortDir==='asc'?' ^':' v')}</th>
-                <th className="text-left font-semibold p-3 cursor-pointer select-none" onClick={()=>toggleSort('number')}>Invoice number{sortBy==='number' && (sortDir==='asc'?' ^':' v')}</th>
-                <th className="text-left font-semibold p-3">Property</th>
-                <th className="text-left font-semibold p-3 cursor-pointer select-none" onClick={()=>toggleSort('due')}>Due date{sortBy==='due' && (sortDir==='asc'?' ^':' v')}</th>
-                <th className="text-left font-semibold p-3 cursor-pointer select-none" onClick={()=>toggleSort('status')}>Status{sortBy==='status' && (sortDir==='asc'?' ^':' v')}</th>
-                <th className="text-left font-semibold p-3 cursor-pointer select-none" onClick={()=>toggleSort('total')}>Total{sortBy==='total' && (sortDir==='asc'?' ^':' v')}</th>
-                <th className="text-left font-semibold p-3 cursor-pointer select-none" onClick={()=>toggleSort('balance')}>Balance{sortBy==='balance' && (sortDir==='asc'?' ^':' v')}</th>
+                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-trellio-teal transition-colors" onClick={()=>toggleSort('client')}>Client{sortBy==='client' && (sortDir==='asc'?' ^':' v')}</th>
+                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-trellio-teal transition-colors" onClick={()=>toggleSort('number')}>Invoice number{sortBy==='number' && (sortDir==='asc'?' ^':' v')}</th>
+                <th className="text-left font-semibold text-slate-300 p-3">Property</th>
+                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-trellio-teal transition-colors" onClick={()=>toggleSort('due')}>Due date{sortBy==='due' && (sortDir==='asc'?' ^':' v')}</th>
+                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-trellio-teal transition-colors" onClick={()=>toggleSort('status')}>Status{sortBy==='status' && (sortDir==='asc'?' ^':' v')}</th>
+                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-trellio-teal transition-colors" onClick={()=>toggleSort('total')}>Total{sortBy==='total' && (sortDir==='asc'?' ^':' v')}</th>
+                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-trellio-teal transition-colors" onClick={()=>toggleSort('balance')}>Balance{sortBy==='balance' && (sortDir==='asc'?' ^':' v')}</th>
               </tr>
             </thead>
             <tbody className="text-sm">
               {filtered.map(inv => (
-                <tr key={inv.id} className="border-t hover:bg-midnight" onClick={()=>onOpenInvoice && onOpenInvoice(inv)}>
-                  <td className="p-3"><button className="font-semibold text-blue-700 hover:underline">{inv._clientName}</button></td>
-                  <td className="p-3"><button onClick={()=>onOpenInvoice && onOpenInvoice(inv)} className="font-semibold text-blue-700 hover:underline">{inv.invoiceNumber || `#${(inv.id||'').slice(0,6)}`}</button></td>
+                <tr key={inv.id} className="border-t border-slate-700/30 hover:bg-slate-dark/50 transition-colors" onClick={()=>onOpenInvoice && onOpenInvoice(inv)}>
+                  <td className="p-3"><button className="font-semibold text-trellio-teal hover:underline">{inv._clientName}</button></td>
+                  <td className="p-3"><button onClick={()=>onOpenInvoice && onOpenInvoice(inv)} className="font-semibold text-trellio-teal hover:underline">{inv.invoiceNumber || `#${(inv.id||'').slice(0,6)}`}</button></td>
                   <td className="p-3"><div className="truncate max-w-xs">{inv._address || '-'}</div></td>
                   <td className="p-3">{inv.dueDate ? new Date(inv.dueDate).toLocaleDateString() : '-'}</td>
                   <td className="p-3">{inv.status}</td>
@@ -200,6 +186,11 @@ export default function InvoicesList({ invoices=[], clients=[], onOpenInvoice, o
               ))}
             </tbody>
           </table>
+        )}
+        {filtered.length > 0 && filtered.length < 5 && (
+          <div className="bg-midnight/50 border border-slate-700/20 rounded-lg p-4 m-4 text-sm text-slate-500">
+            Tip: Batch invoice completed jobs from the Jobs page.
+          </div>
         )}
       </div>
     </div>

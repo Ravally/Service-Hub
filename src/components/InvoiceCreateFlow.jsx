@@ -171,24 +171,24 @@ export default function InvoiceCreateFlow({
             <InvoiceIcon className="h-5 w-5" />
           </span>
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">New Invoice</h2>
-            <p className="text-sm text-gray-500">Select the jobs you want to invoice or create an ad-hoc invoice.</p>
+            <h2 className="text-2xl font-bold text-slate-100">New Invoice</h2>
+            <p className="text-sm text-slate-400">Select the jobs you want to invoice or create an ad-hoc invoice.</p>
           </div>
         </div>
-        <button onClick={onCancel} className="text-sm font-semibold text-gray-600 hover:text-gray-800">Cancel</button>
+        <button onClick={onCancel} className="text-sm font-semibold text-slate-400 hover:text-slate-100">Cancel</button>
       </div>
 
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 space-y-6">
+      <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-6 space-y-6">
         <div className="flex flex-wrap items-center gap-3">
           <button
             onClick={() => setMode('job')}
-            className={`px-4 py-2 rounded-full text-sm font-semibold border ${mode === 'job' ? 'bg-green-600 text-white border-green-600' : 'bg-white text-gray-700 border-gray-200'}`}
+            className={`px-4 py-2 rounded-full text-sm font-semibold border ${mode === 'job' ? 'bg-green-600 text-white border-green-600' : 'bg-charcoal text-slate-300 border-slate-700/30'}`}
           >
             From jobs
           </button>
           <button
             onClick={() => setMode('ad_hoc')}
-            className={`px-4 py-2 rounded-full text-sm font-semibold border ${mode === 'ad_hoc' ? 'bg-green-600 text-white border-green-600' : 'bg-white text-gray-700 border-gray-200'}`}
+            className={`px-4 py-2 rounded-full text-sm font-semibold border ${mode === 'ad_hoc' ? 'bg-green-600 text-white border-green-600' : 'bg-charcoal text-slate-300 border-slate-700/30'}`}
           >
             Ad-hoc invoice
           </button>
@@ -196,11 +196,11 @@ export default function InvoiceCreateFlow({
 
         <div className="grid grid-cols-1 md:grid-cols-[1.2fr_1fr] gap-6">
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Client</label>
+            <label className="block text-sm font-semibold text-slate-300 mb-2">Client</label>
             <select
               value={clientId}
               onChange={(e) => { setClientId(e.target.value); setSelectedJobIds([]); }}
-              className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm"
+              className="w-full px-3 py-2 border border-slate-700/30 rounded-xl text-sm"
             >
               <option value="">Select a client</option>
               {clients.map((c) => (
@@ -209,8 +209,8 @@ export default function InvoiceCreateFlow({
             </select>
           </div>
           {client && (
-            <div className="text-sm text-gray-600">
-              <div className="font-semibold text-gray-800">{client.name}</div>
+            <div className="text-sm text-slate-400">
+              <div className="font-semibold text-slate-200">{client.name}</div>
               <div>{client.address || 'No billing address on file.'}</div>
               <div>{client.email || 'No email on file.'}</div>
             </div>
@@ -219,9 +219,9 @@ export default function InvoiceCreateFlow({
 
         {mode === 'job' && (
           <div className="space-y-4">
-            <div className="text-sm font-semibold text-gray-700">Select the jobs you want to invoice:</div>
+            <div className="text-sm font-semibold text-slate-300">Select the jobs you want to invoice:</div>
             {clientJobs.length === 0 ? (
-              <div className="text-sm text-gray-500">No jobs for this client yet.</div>
+              <div className="text-sm text-slate-400">No jobs for this client yet.</div>
             ) : (
               <div className="space-y-3">
                 {clientJobs.map((job) => {
@@ -231,7 +231,7 @@ export default function InvoiceCreateFlow({
                   const hasInvoice = invoicesByJob.has(job.id);
                   const requiresInvoicing = job.status === 'Completed' && !hasInvoice;
                   return (
-                    <div key={job.id} className="border border-gray-200 rounded-xl p-4">
+                    <div key={job.id} className="border border-slate-700/30 rounded-xl p-4">
                       <label className="flex items-start gap-3">
                         <input
                           type="checkbox"
@@ -241,14 +241,14 @@ export default function InvoiceCreateFlow({
                         />
                         <div className="flex-1">
                           <div className="flex items-center justify-between">
-                            <div className="font-semibold text-gray-900">{job.jobNumber || job.title || 'Job'}</div>
-                            <div className="text-sm font-semibold text-gray-900">{formatCurrency(jobTotal, companySettings?.currencyCode)}</div>
+                            <div className="font-semibold text-slate-100">{job.jobNumber || job.title || 'Job'}</div>
+                            <div className="text-sm font-semibold text-slate-100">{formatCurrency(jobTotal, companySettings?.currencyCode)}</div>
                           </div>
-                          <div className="text-sm text-gray-500">{job.title || 'Service'}{job.start ? ` - ${formatDate(job.start)}` : ''}</div>
-                          <div className="mt-2 flex items-center gap-3 text-xs text-gray-500">
+                          <div className="text-sm text-slate-400">{job.title || 'Service'}{job.start ? ` - ${formatDate(job.start)}` : ''}</div>
+                          <div className="mt-2 flex items-center gap-3 text-xs text-slate-400">
                             <span>{completedVisits} completed visits</span>
                             {requiresInvoicing && <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">Requires invoicing</span>}
-                            {hasInvoice && <span className="px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">Invoiced</span>}
+                            {hasInvoice && <span className="px-2 py-0.5 rounded-full bg-midnight text-slate-400">Invoiced</span>}
                           </div>
                         </div>
                       </label>
@@ -261,11 +261,11 @@ export default function InvoiceCreateFlow({
         )}
 
         <div className="flex items-center justify-end gap-3">
-          <button onClick={onCancel} className="px-4 py-2 rounded-md border border-gray-300 text-sm font-semibold text-gray-700">Cancel</button>
+          <button onClick={onCancel} className="px-4 py-2 rounded-md border border-slate-700 text-sm font-semibold text-slate-300">Cancel</button>
           <button
             onClick={handleNext}
             disabled={!clientId || (mode === 'job' && selectedJobIds.length === 0)}
-            className="px-4 py-2 rounded-md bg-green-700 text-white text-sm font-semibold disabled:bg-gray-300"
+            className="px-4 py-2 rounded-md bg-green-700 text-white text-sm font-semibold disabled:bg-slate-600"
           >
             Next Step
           </button>

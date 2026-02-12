@@ -91,7 +91,7 @@ const PublicQuoteApproval = ({ quote, client, company, onApprove, onDecline, mes
             <input value={name} onChange={(e)=>setName(e.target.value)} placeholder="Type your full name" className="w-full px-3 py-2 border border-slate-700 rounded-md shadow-sm"/>
           </div>
           <div className="flex gap-2 justify-end">
-            <button onClick={() => onDecline && onDecline(name)} className="px-4 py-2 text-sm font-semibold text-slate-100 bg-gray-100 rounded-lg hover:bg-gray-200">Decline</button>
+            <button onClick={() => onDecline && onDecline(name)} className="px-4 py-2 text-sm font-semibold text-slate-100 bg-midnight rounded-lg hover:bg-slate-700">Decline</button>
             <button onClick={() => onApprove && onApprove(name)} className="px-4 py-2 text-sm font-semibold text-white bg-trellio-teal rounded-lg hover:bg-green-700">Approve</button>
           </div>
         </div>

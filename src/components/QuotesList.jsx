@@ -4,9 +4,8 @@ import { STATUS_COLORS } from '../constants/statusConstants';
 import { formatCurrency } from '../utils';
 import { periodRange, getPreviousRange, rangeLabel } from '../utils/dateUtils';
 
-const Pill = ({ className = '', children }) => (
-  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${className}`}>{children}</span>
-);
+import KpiCard from './common/KpiCard';
+import Pill from './common/Pill';
 
 const Menu = ({ open, onClose, children }) => (
   open ? (
@@ -20,28 +19,14 @@ const Menu = ({ open, onClose, children }) => (
 
 // Local status color overrides for backward compatibility
 const LOCAL_STATUS_COLORS = {
-  'Awaiting Response': 'bg-yellow-100 text-yellow-800',
-  'Changes Requested': 'bg-amber-100 text-amber-800',
-  Converted: 'bg-blue-100 text-blue-800',
+  'Awaiting Response': 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/30',
+  'Changes Requested': 'bg-amber-500/10 text-amber-400 border border-amber-500/30',
+  Converted: 'bg-blue-500/10 text-blue-400 border border-blue-500/30',
 };
 
 // Merge centralized colors with local overrides
 const MERGED_STATUS_COLORS = { ...STATUS_COLORS, ...LOCAL_STATUS_COLORS };
 
-const KpiCard = ({ title, sub, value, money, delta, positive }) => (
-  <div className="bg-charcoal rounded-xl border border-slate-700/30 shadow-sm p-4">
-    <div className="text-sm font-semibold text-gray-800">{title}</div>
-    <div className="text-xs text-slate-400 mb-2">{sub}</div>
-    <div className="text-3xl font-bold text-slate-100">{value}</div>
-    {typeof money === 'string' && <div className="text-xs text-slate-400">{money}</div>}
-    {typeof delta === 'string' && (
-      <div className={`inline-flex items-center mt-2 text-xs font-medium ${positive ? 'text-green-700' : 'text-red-700'}`}>
-        <span className={`inline-block h-2 w-2 rounded-full mr-1 ${positive ? 'bg-green-400' : 'bg-red-400'}`} />
-        {delta}
-      </div>
-    )}
-  </div>
-);
 
 function toDisplayStatus(q) {
   if (q.archived || q.status === 'Archived') return 'Archived';
@@ -280,19 +265,19 @@ export default function QuotesList({
     <div>
       {/* Header */}
       <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-3xl font-bold text-slate-100">Quotes</h2>
-        <button onClick={onNewQuoteClick} className="px-4 py-2 rounded-md bg-green-600 text-white font-semibold hover:bg-green-700">New Quote</button>
+        <h2 className="text-3xl font-bold font-display text-slate-100">Quotes</h2>
+        <button onClick={onNewQuoteClick} className="px-4 py-2 rounded-md bg-trellio-teal text-white font-semibold hover:bg-trellio-teal-deep transition-colors">New Quote</button>
       </div>
 
       {/* KPI cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <div className="bg-charcoal rounded-xl border border-slate-700/30 shadow-sm p-4">
-          <div className="text-sm font-semibold text-gray-800 mb-2">Overview</div>
-          <div className="space-y-2 text-sm">
+          <div className="text-sm font-semibold text-slate-100 mb-2">Overview</div>
+          <div className="space-y-2 text-sm text-slate-100">
             {statuses.slice(0,4).map(s => (
               <div key={s} className="flex items-center justify-between">
-                <div className="flex items-center gap-2"><span className={`h-2 w-2 rounded-full ${s==='Draft'?'bg-midnight0': s==='Awaiting Response'?'bg-yellow-500': s==='Changes Requested'?'bg-amber-600': s==='Approved'?'bg-green-600':'bg-gray-400'}`}></span>{s}</div>
-                <div className="text-gray-800 font-semibold">{kpis.counts[s]||0}</div>
+                <div className="flex items-center gap-2"><span className={`h-2 w-2 rounded-full ${s==='Draft'?'bg-harvest-amber': s==='Awaiting Response'?'bg-yellow-500': s==='Changes Requested'?'bg-amber-600': s==='Approved'?'bg-trellio-teal':'bg-slate-500'}`}></span>{s}</div>
+                <div className="text-slate-100 font-semibold">{kpis.counts[s]||0}</div>
               </div>
             ))}
           </div>
@@ -306,21 +291,21 @@ export default function QuotesList({
       <div className="mb-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="relative">
-            <button onClick={()=>setStatusOpen(o=>!o)} className="px-3 py-1.5 rounded-full bg-midnight text-gray-800 text-sm border">Status | {statusLabel}</button>
+            <button onClick={()=>setStatusOpen(o=>!o)} className="px-3 py-1.5 rounded-full bg-charcoal text-slate-100 text-sm border border-slate-700 hover:bg-slate-dark transition-colors">Status | {statusLabel}</button>
             {statusOpen && (
               <div className="absolute z-20 mt-2 w-64 bg-charcoal border border-slate-700/30 rounded-md shadow p-2">
                 <input
                   value={statusSearch}
                   onChange={(e)=>setStatusSearch(e.target.value)}
                   placeholder="Search status"
-                  className="w-full px-2 py-1 border border-gray-300 rounded mb-2 text-sm"
+                  className="w-full px-2 py-1 bg-midnight border border-slate-700 text-slate-100 placeholder-slate-500 rounded mb-2 text-sm focus:border-trellio-teal focus:ring-2 focus:ring-trellio-teal/20"
                 />
                 <button
                   type="button"
-                  className={`w-full text-left px-3 py-2 hover:bg-midnight ${statusFilter.length===0 ? 'bg-midnight' : ''}`}
+                  className={`w-full text-left px-3 py-2 text-slate-100 hover:bg-slate-dark ${statusFilter.length===0 ? 'bg-slate-dark' : ''}`}
                   onClick={()=>{ setStatusFilter([]); }}
                 >
-                  <span className="inline-block mr-2" style={{width:12}}>{statusFilter.length===0 ? 'x' : ''}</span>
+                  <span className="inline-block mr-2" style={{width:12}}>{statusFilter.length===0 ? '✓' : ''}</span>
                   All
                 </button>
                 {statuses.filter(s => s.toLowerCase().includes(statusSearch.trim().toLowerCase())).map(s => {
@@ -329,10 +314,10 @@ export default function QuotesList({
                     <button
                       key={s}
                       type="button"
-                      className={`w-full text-left px-3 py-2 hover:bg-midnight ${active ? 'bg-midnight' : ''}`}
+                      className={`w-full text-left px-3 py-2 text-slate-100 hover:bg-slate-dark ${active ? 'bg-slate-dark' : ''}`}
                       onClick={()=> setStatusFilter(prev => active ? prev.filter(x=>x!==s) : [...prev, s])}
                     >
-                      <span className="inline-block mr-2" style={{width:12}}>{active ? 'x' : ''}</span>
+                      <span className="inline-block mr-2" style={{width:12}}>{active ? '✓' : ''}</span>
                       {s} <span className="text-slate-400">({kpis.counts[s]||0})</span>
                     </button>
                   );
@@ -341,7 +326,7 @@ export default function QuotesList({
             )}
           </div>
           {/* Simplified popovers: small inline controls for now */}
-          <select value={period} onChange={(e)=>setPeriod(e.target.value)} className="px-3 py-1.5 rounded-full bg-midnight text-gray-800 text-sm border">
+          <select value={period} onChange={(e)=>setPeriod(e.target.value)} className="px-3 py-1.5 rounded-full bg-charcoal text-slate-100 text-sm border border-slate-700 focus:border-trellio-teal focus:ring-2 focus:ring-trellio-teal/20">
             <option value="all">All</option>
             <option value="last_week">Last week</option>
             <option value="last_30">Last 30 days</option>
@@ -352,54 +337,54 @@ export default function QuotesList({
           </select>
           {period==='custom' && (
             <span className="text-xs text-slate-400">
-              <input type="date" className="border px-2 py-1 rounded mr-1" value={custom.start} onChange={(e)=>setCustom(c=>({...c,start:e.target.value}))}/>
-              <input type="date" className="border px-2 py-1 rounded" value={custom.end} onChange={(e)=>setCustom(c=>({...c,end:e.target.value}))}/>
+              <input type="date" className="bg-midnight border border-slate-700 text-slate-100 px-2 py-1 rounded mr-1 focus:border-trellio-teal focus:ring-2 focus:ring-trellio-teal/20" value={custom.start} onChange={(e)=>setCustom(c=>({...c,start:e.target.value}))}/>
+              <input type="date" className="bg-midnight border border-slate-700 text-slate-100 px-2 py-1 rounded focus:border-trellio-teal focus:ring-2 focus:ring-trellio-teal/20" value={custom.end} onChange={(e)=>setCustom(c=>({...c,end:e.target.value}))}/>
             </span>
           )}
-          <select value={sales} onChange={(e)=>setSales(e.target.value)} className="px-3 py-1.5 rounded-full bg-midnight text-gray-800 text-sm border">
+          <select value={sales} onChange={(e)=>setSales(e.target.value)} className="px-3 py-1.5 rounded-full bg-charcoal text-slate-100 text-sm border border-slate-700 focus:border-trellio-teal focus:ring-2 focus:ring-trellio-teal/20">
             <option value="">Salesperson | All</option>
             {salesOptions.map(s => <option key={s} value={s}>{s}</option>)}
           </select>
         </div>
-        <input value={search} onChange={(e)=>setSearch(e.target.value)} placeholder="Search quotes..." className="px-3 py-2 border border-gray-300 rounded-md text-sm w-72"/>
+        <input value={search} onChange={(e)=>setSearch(e.target.value)} placeholder="Search quotes..." className="px-3 py-2 bg-midnight border border-slate-700 text-slate-100 placeholder-slate-500 rounded-md text-sm w-72 focus:border-trellio-teal focus:ring-2 focus:ring-trellio-teal/20"/>
       </div>
 
       <div className="text-sm text-slate-100 mb-2">{(statusFilter.length || sales || (period !== 'all') || search) ? 'Filtered quotes' : 'All quotes'} ({filtered.length} results)</div>
 
       {selected.size > 0 && (
         <div className="mb-2 flex items-center gap-3 text-sm">
-          <span className="text-green-700 font-semibold">{selected.size} selected</span>
-          <button className="text-blue-700" onClick={clearSel}>Deselect All</button>
-          <button title="Bulk Archive" className="px-2 py-1 rounded-md border bg-midnight" onClick={bulkArchive}>Bulk Archive</button>
-          <button title="Bulk Delete" className="px-2 py-1 rounded-md border bg-midnight text-red-600" onClick={bulkDelete}>Bulk Delete</button>
+          <span className="text-trellio-teal font-semibold">{selected.size} selected</span>
+          <button className="text-trellio-teal hover:underline" onClick={clearSel}>Deselect All</button>
+          <button title="Bulk Archive" className="px-2 py-1 rounded-md border border-slate-700 bg-charcoal text-slate-100 hover:bg-slate-dark transition-colors" onClick={bulkArchive}>Bulk Archive</button>
+          <button title="Bulk Delete" className="px-2 py-1 rounded-md border border-signal-coral bg-charcoal text-signal-coral hover:bg-signal-coral hover:text-white transition-colors" onClick={bulkDelete}>Bulk Delete</button>
         </div>
       )}
 
       {/* Table */}
-      <div className="bg-charcoal rounded-xl shadow-lg border border-slate-700/30 overflow-visible">
+      <div className="bg-charcoal rounded-xl shadow-lg border border-slate-700/30 overflow-visible min-h-[calc(100vh-26rem)]">
         {filtered.length === 0 ? (
           <div className="text-center p-10 text-slate-400">No quotes.</div>
         ) : (
           <table className="w-full">
-            <thead className="bg-midnight text-sm">
+            <thead className="bg-midnight text-sm border-b border-slate-700">
               <tr>
                 <th className="p-3 w-10 text-center align-middle"><input className="h-4 w-4 align-middle" type="checkbox" checked={allChecked} onChange={toggleAll} /></th>
-                <th className="text-left font-semibold p-3 cursor-pointer select-none" onClick={()=>toggleSort('client')}>Client{sortBy==='client' && (sortDir==='asc'?' ^':' v')}</th>
-                <th className="text-left font-semibold p-3 cursor-pointer select-none" onClick={()=>toggleSort('quoteNumber')}>Quote number{sortBy==='quoteNumber' && (sortDir==='asc'?' ^':' v')}</th>
-                <th className="text-left font-semibold p-3 cursor-pointer select-none" onClick={()=>toggleSort('property')}>Property{sortBy==='property' && (sortDir==='asc'?' ^':' v')}</th>
-                <th className="text-left font-semibold p-3 cursor-pointer select-none" onClick={()=>toggleSort('createdAt')}>Created{sortBy==='createdAt' && (sortDir==='asc'?' ^':' v')}</th>
-                <th className="text-left font-semibold p-3 cursor-pointer select-none" onClick={()=>toggleSort('status')}>Status{sortBy==='status' && (sortDir==='asc'?' ^':' v')}</th>
-                <th className="text-left font-semibold p-3 cursor-pointer select-none" onClick={()=>toggleSort('total')}>Total{sortBy==='total' && (sortDir==='asc'?' ^':' v')}</th>
+                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-trellio-teal transition-colors" onClick={()=>toggleSort('client')}>Client{sortBy==='client' && (sortDir==='asc'?' ▲':' ▼')}</th>
+                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-trellio-teal transition-colors" onClick={()=>toggleSort('quoteNumber')}>Quote number{sortBy==='quoteNumber' && (sortDir==='asc'?' ▲':' ▼')}</th>
+                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-trellio-teal transition-colors" onClick={()=>toggleSort('property')}>Property{sortBy==='property' && (sortDir==='asc'?' ▲':' ▼')}</th>
+                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-trellio-teal transition-colors" onClick={()=>toggleSort('createdAt')}>Created{sortBy==='createdAt' && (sortDir==='asc'?' ▲':' ▼')}</th>
+                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-trellio-teal transition-colors" onClick={()=>toggleSort('status')}>Status{sortBy==='status' && (sortDir==='asc'?' ▲':' ▼')}</th>
+                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-trellio-teal transition-colors" onClick={()=>toggleSort('total')}>Total{sortBy==='total' && (sortDir==='asc'?' ▲':' ▼')}</th>
                 <th className="p-3 w-12"></th>
               </tr>
             </thead>
             <tbody className="text-sm">
               {filtered.map(q => (
-                <tr key={q.id} className="border-t hover:bg-midnight">
+                <tr key={q.id} className="border-t border-slate-700/30 hover:bg-slate-dark/50 transition-colors">
                   <td className="p-3 w-10 text-center align-middle"><input className="h-4 w-4 align-middle" type="checkbox" checked={selected.has(q.id)} onChange={()=>toggleOne(q.id)} /></td>
-                  <td className="p-3"><button onClick={()=>onOpenQuote && onOpenQuote(q)} className="font-semibold text-blue-700 hover:underline">{q._clientName}</button></td>
+                  <td className="p-3"><button onClick={()=>onOpenQuote && onOpenQuote(q)} className="font-semibold text-trellio-teal hover:underline">{q._clientName}</button></td>
                   <td className="p-3">
-                    <button onClick={()=>onOpenQuote && onOpenQuote(q)} className="font-semibold text-blue-700 hover:underline">
+                    <button onClick={()=>onOpenQuote && onOpenQuote(q)} className="font-semibold text-trellio-teal hover:underline">
                       {q.quoteNumber || `#${(q.id||'').slice(0,6)}`}
                     </button>
                     {q.title ? <div className="text-xs text-slate-400">{q.title}</div> : null}
@@ -418,6 +403,11 @@ export default function QuotesList({
             </tbody>
           </table>
         )}
+        {filtered.length > 0 && filtered.length < 5 && (
+          <div className="bg-midnight/50 border border-slate-700/20 rounded-lg p-4 m-4 text-sm text-slate-500">
+            Tip: Create quote templates in Settings to speed up quoting.
+          </div>
+        )}
       </div>
     </div>
   );
@@ -427,11 +417,11 @@ function RowActions({ q, onConvert, onArchive, onDelete }) {
   const [open, setOpen] = useState(false);
   return (
     <div className="relative" onClick={(e)=>e.stopPropagation()}>
-      <button className="h-8 w-8 inline-flex items-center justify-center rounded-md border bg-midnight" onClick={()=>setOpen(o=>!o)}>...</button>
+      <button className="h-8 w-8 inline-flex items-center justify-center rounded-md border border-slate-700 bg-charcoal text-slate-300 hover:bg-slate-dark transition-colors" onClick={()=>setOpen(o=>!o)}>...</button>
       <Menu open={open}>
-        <button className="w-full text-left px-4 py-2 hover:bg-midnight" onClick={()=>{ setOpen(false); onConvert && onConvert(q); }}>Convert to Job</button>
-        <button className="w-full text-left px-4 py-2 hover:bg-midnight" onClick={()=>{ setOpen(false); onArchive && onArchive(q.id); }}>Archive Quote</button>
-        <button className="w-full text-left px-4 py-2 hover:bg-midnight text-red-600" onClick={()=>{ setOpen(false); onDelete && onDelete(q.id); }}>Delete</button>
+        <button className="w-full text-left px-4 py-2 text-slate-100 hover:bg-slate-dark" onClick={()=>{ setOpen(false); onConvert && onConvert(q); }}>Convert to Job</button>
+        <button className="w-full text-left px-4 py-2 text-slate-100 hover:bg-slate-dark" onClick={()=>{ setOpen(false); onArchive && onArchive(q.id); }}>Archive Quote</button>
+        <button className="w-full text-left px-4 py-2 text-signal-coral hover:bg-slate-dark" onClick={()=>{ setOpen(false); onDelete && onDelete(q.id); }}>Delete</button>
       </Menu>
     </div>
   );

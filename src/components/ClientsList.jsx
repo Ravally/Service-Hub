@@ -2,34 +2,14 @@
 import React, { useMemo, useState } from 'react';
 import { STATUS_COLORS } from '../constants/statusConstants';
 import { inRange } from '../utils/dateUtils';
-
-const Chip = ({ children, onClick, active = false, className = '' }) => (
-  <button
-    onClick={onClick}
-    className={`px-3 py-1 rounded-full text-sm border ${active ? 'bg-trellio-teal text-midnight border-trellio-teal' : 'bg-charcoal text-slate-100 border-slate-700/30'} ${className}`}
-  >
-    {children}
-  </button>
-);
+import KpiCard from './common/KpiCard';
+import Chip from './common/Chip';
+import Pill from './common/Pill';
 
 const StatusPill = ({ label }) => {
-  const cls = STATUS_COLORS[label] || 'bg-gray-100 text-slate-100';
-  return <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${cls}`}>{label}</span>;
+  const cls = STATUS_COLORS[label] || 'bg-slate-700/30 text-slate-100';
+  return <Pill className={cls}>{label}</Pill>;
 };
-
-const KpiCard = ({ title, sub, value, deltaText, deltaPositive = true }) => (
-  <div className="bg-charcoal rounded-xl border border-slate-700/30 shadow-sm p-4">
-    <div className="text-sm text-slate-400">{title}</div>
-    <div className="text-xs text-slate-500 mb-2">{sub}</div>
-    <div className="text-3xl font-bold text-slate-100">{value}</div>
-    {typeof deltaText === 'string' && (
-      <div className={`inline-flex items-center mt-2 text-xs font-medium ${deltaPositive ? 'text-trellio-teal' : 'text-signal-coral'}`}>
-        <span className={`inline-block h-2 w-2 rounded-full mr-1 ${deltaPositive ? 'bg-trellio-teal' : 'bg-signal-coral'}`} />
-        {deltaText}
-      </div>
-    )}
-  </div>
-);
 
 // Helper formatters
 const withinDays = (date, days) => {
@@ -196,10 +176,10 @@ export default function ClientsList({
     <div>
       {/* Header */}
       <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-3xl font-bold text-slate-100">Clients</h2>
+        <h2 className="text-3xl font-bold font-display text-slate-100">Clients</h2>
         <div className="flex items-center gap-2">
-          <button onClick={onNewClientClick} className="px-4 py-2 rounded-md bg-green-600 text-white font-semibold hover:bg-green-700">New Client</button>
-          <button className="px-3 py-2 rounded-md bg-gray-100 text-slate-100 border border-slate-700/30">More Actions</button>
+          <button onClick={onNewClientClick} className="px-4 py-2 rounded-md bg-trellio-teal text-white font-semibold hover:bg-trellio-teal-deep transition-colors">New Client</button>
+          <button className="px-3 py-2 rounded-md bg-charcoal text-slate-300 border border-slate-700 hover:bg-slate-dark transition-colors">More Actions</button>
         </div>
       </div>
 
@@ -221,7 +201,7 @@ export default function ClientsList({
                   value={tagSearch}
                   onChange={(e)=>setTagSearch(e.target.value)}
                   placeholder="Search tags"
-                  className="w-full px-2 py-1 border border-gray-300 rounded mb-2 text-sm"
+                  className="w-full px-2 py-1 bg-midnight border border-slate-700 text-slate-100 placeholder-slate-500 rounded mb-2 text-sm focus:border-trellio-teal focus:ring-2 focus:ring-trellio-teal/20"
                 />
                 <div className="flex items-center justify-between px-2 py-1 text-xs text-slate-400">
                   <span>Select tags</span>
@@ -239,7 +219,7 @@ export default function ClientsList({
                       type="button"
                       key={t}
                       onClick={() => setSelectedTags(prev => prev.includes(t) ? prev.filter(x=>x!==t) : [...prev, t])}
-                      className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-50 ${selectedTags.includes(t) ? 'bg-gray-50' : ''}`}
+                      className={`w-full text-left px-3 py-2 text-sm text-slate-100 hover:bg-slate-dark ${selectedTags.includes(t) ? 'bg-slate-dark' : ''}`}
                     >
                       <span className="inline-block mr-2 align-middle" style={{width:12}}>{selectedTags.includes(t) ? '✓' : ''}</span>
                       {t} <span className="text-slate-400">({tagCounts.get(t) || 0})</span>
@@ -254,7 +234,7 @@ export default function ClientsList({
             <Chip onClick={() => { setStatusPopover((s) => !s); setTagPopover(false); }}>Status | {statusMode === 'all' ? 'All' : statusMode === 'la' ? 'Leads and Active' : statusMode === 'lead' ? 'Leads' : statusMode === 'active' ? 'Active' : 'Archived'}</Chip>
             {statusPopover && (
               <div className="absolute z-10 mt-2 w-64 bg-charcoal border border-slate-700/30 rounded-md shadow p-2">
-                <input placeholder="Search status" className="w-full px-2 py-1 border border-gray-300 rounded mb-2 text-sm" />
+                <input placeholder="Search status" className="w-full px-2 py-1 bg-midnight border border-slate-700 text-slate-100 placeholder-slate-500 rounded mb-2 text-sm focus:border-trellio-teal focus:ring-2 focus:ring-trellio-teal/20" />
                 {[
                   { key: 'all', label: 'All' },
                   { key: 'la', label: 'Leads and Active' },
@@ -262,7 +242,7 @@ export default function ClientsList({
                   { key: 'active', label: 'Active' },
                   { key: 'archived', label: 'Archived' },
                 ].map(opt => (
-                  <button key={opt.key} type="button" onClick={() => { setStatusMode(opt.key); setStatusPopover(false); }} className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-50 ${statusMode === opt.key ? 'bg-gray-50' : ''}`}>
+                  <button key={opt.key} type="button" onClick={() => { setStatusMode(opt.key); setStatusPopover(false); }} className={`w-full text-left px-3 py-2 text-sm text-slate-100 hover:bg-slate-dark ${statusMode === opt.key ? 'bg-slate-dark' : ''}`}>
                     <span className="inline-block mr-2 align-middle" style={{width:12}}>{statusMode === opt.key ? '✓' : ''}</span>
                     {opt.label}
                   </button>
@@ -271,7 +251,7 @@ export default function ClientsList({
             )}
           </div>
           {(selectedTags.length > 0 || statusMode !== 'all') && (
-            <Chip onClick={() => { setSelectedTags([]); setStatusMode('all'); }} className="bg-gray-100 border-slate-700/30">Clear</Chip>
+            <Chip onClick={() => { setSelectedTags([]); setStatusMode('all'); }} className="bg-midnight border-slate-700/30">Clear</Chip>
           )}
         </div>
         <div className="relative">
@@ -279,7 +259,7 @@ export default function ClientsList({
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search filtered clients..."
-            className="px-3 py-2 border border-gray-300 rounded-md text-sm w-64"
+            className="px-3 py-2 bg-midnight border border-slate-700 text-slate-100 placeholder-slate-500 rounded-md text-sm w-64 focus:border-trellio-teal focus:ring-2 focus:ring-trellio-teal/20"
           />
         </div>
       </div>
@@ -287,29 +267,29 @@ export default function ClientsList({
       <div className="text-sm text-slate-400 mb-3">All clients ({filtered.length} results)</div>
 
       {/* Table */}
-      <div className="bg-charcoal rounded-xl shadow-lg border border-slate-700/30 overflow-hidden">
+      <div className="bg-charcoal rounded-xl shadow-lg border border-slate-700/30 overflow-hidden min-h-[calc(100vh-26rem)]">
         {filtered.length === 0 ? (
           <div className="text-center p-10 text-slate-400">No matching clients.</div>
         ) : (
           <table className="w-full">
-            <thead className="bg-gray-50 text-sm">
+            <thead className="bg-midnight text-sm border-b border-slate-700">
               <tr>
-                <th className="text-left font-semibold p-3 cursor-pointer select-none" onClick={() => toggleSort('name')}>
+                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-trellio-teal transition-colors" onClick={() => toggleSort('name')}>
                   <span className="inline-flex items-center gap-1">Name{sortBy==='name' && (sortDir==='asc' ? ' ▲' : ' ▼')}</span>
                 </th>
-                <th className="text-left font-semibold p-3">Address</th>
-                <th className="text-left font-semibold p-3">Tags</th>
-                <th className="text-left font-semibold p-3">Status</th>
-                <th className="text-left font-semibold p-3 cursor-pointer select-none" onClick={() => toggleSort('last')}>
+                <th className="text-left font-semibold text-slate-300 p-3">Address</th>
+                <th className="text-left font-semibold text-slate-300 p-3">Tags</th>
+                <th className="text-left font-semibold text-slate-300 p-3">Status</th>
+                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-trellio-teal transition-colors" onClick={() => toggleSort('last')}>
                   <span className="inline-flex items-center gap-1">Last{sortBy==='last' && (sortDir==='asc' ? ' ▲' : ' ▼')}</span>
                 </th>
               </tr>
             </thead>
             <tbody className="text-sm">
               {filtered.map((c) => (
-                <tr key={c.id} className="border-t hover:bg-gray-50">
+                <tr key={c.id} className="border-t border-slate-700/30 hover:bg-slate-dark/50 transition-colors">
                   <td className="p-3">
-                    <button className="font-semibold text-blue-700 hover:underline" onClick={() => onSelectClient && onSelectClient(c)}>{c.name}</button>
+                    <button className="font-semibold text-trellio-teal hover:underline" onClick={() => onSelectClient && onSelectClient(c)}>{c.name}</button>
                     {c.company && <div className="text-xs text-slate-400">{c.company}</div>}
                   </td>
                   <td className="p-3 text-slate-100">
@@ -320,7 +300,7 @@ export default function ClientsList({
                   <td className="p-3">
                     <div className="flex flex-wrap gap-1">
                       {(c.tags || []).slice(0,1).map((t, i) => (
-                        <span key={`${t}-${i}`} className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-slate-100">{t}</span>
+                        <span key={`${t}-${i}`} className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-slate-dark text-slate-100 border border-slate-700/30">{t}</span>
                       ))}
                       {(c.tags || []).length > 1 && (
                         <span className="text-xs text-slate-400">+{(c.tags || []).length - 1}</span>
@@ -333,6 +313,11 @@ export default function ClientsList({
               ))}
             </tbody>
           </table>
+        )}
+        {filtered.length > 0 && filtered.length < 5 && (
+          <div className="bg-midnight/50 border border-slate-700/20 rounded-lg p-4 m-4 text-sm text-slate-500">
+            Tip: Import clients from a CSV to get started quickly.
+          </div>
         )}
       </div>
     </div>

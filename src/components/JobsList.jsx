@@ -1,38 +1,21 @@
 // src/components/JobsList.jsx
 import React, { useMemo, useState } from 'react';
-
-const KpiCard = ({ title, sub, value, money, delta, positive }) => (
-  <div className="bg-charcoal rounded-xl border border-slate-700/30 shadow-sm p-4">
-    <div className="text-sm font-semibold text-slate-100">{title}</div>
-    <div className="text-xs text-slate-400 mb-2">{sub}</div>
-    <div className="text-3xl font-bold text-slate-100">{value}</div>
-    {typeof money === 'string' && <div className="text-xs text-slate-400">{money}</div>}
-    {typeof delta === 'string' && (
-      <div className={`inline-flex items-center mt-2 text-xs font-medium ${positive ? 'text-trellio-teal' : 'text-signal-coral'}`}>
-        <span className={`inline-block h-2 w-2 rounded-full mr-1 ${positive ? 'bg-trellio-teal' : 'bg-signal-coral'}`} />
-        {delta}
-      </div>
-    )}
-  </div>
-);
-
-const Pill = ({ className = '', children }) => (
-  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${className}`}>{children}</span>
-);
+import KpiCard from './common/KpiCard';
+import Pill from './common/Pill';
 
 const STATUS_PILL = {
-  Active: 'bg-indigo-100 text-indigo-800',
-  Upcoming: 'bg-blue-100 text-blue-800',
-  Today: 'bg-emerald-100 text-emerald-800',
-  Late: 'bg-red-100 text-red-800',
-  Unscheduled: 'bg-gray-100 text-slate-100',
-  'Action Required': 'bg-yellow-100 text-yellow-800',
-  'Requires Invoicing': 'bg-amber-100 text-amber-800',
-  'Ending within 30 days': 'bg-orange-100 text-orange-800',
-  Completed: 'bg-green-100 text-green-800',
-  'In Progress': 'bg-yellow-100 text-yellow-800',
-  Scheduled: 'bg-indigo-100 text-indigo-800',
-  Archived: 'bg-gray-100 text-slate-400',
+  Active: 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/30',
+  Upcoming: 'bg-blue-500/10 text-blue-400 border border-blue-500/30',
+  Today: 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30',
+  Late: 'bg-red-500/10 text-red-400 border border-red-500/30',
+  Unscheduled: 'bg-slate-700/30 text-slate-300 border border-slate-700',
+  'Action Required': 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/30',
+  'Requires Invoicing': 'bg-amber-500/10 text-amber-400 border border-amber-500/30',
+  'Ending within 30 days': 'bg-orange-500/10 text-orange-400 border border-orange-500/30',
+  Completed: 'bg-trellio-teal/10 text-trellio-teal border border-trellio-teal/30',
+  'In Progress': 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/30',
+  Scheduled: 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/30',
+  Archived: 'bg-slate-700/30 text-slate-400 border border-slate-700',
 };
 
 function currency(n) {
@@ -169,14 +152,14 @@ export default function JobsList({
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-3xl font-bold text-slate-100">Jobs</h2>
+        <h2 className="text-3xl font-bold font-display text-slate-100">Jobs</h2>
         <div className="flex items-center gap-2">
-          <button onClick={onNewJobClick} className="px-4 py-2 rounded-md bg-green-600 text-white font-semibold hover:bg-green-700">New Job</button>
+          <button onClick={onNewJobClick} className="px-4 py-2 rounded-md bg-trellio-teal text-white font-semibold hover:bg-trellio-teal-deep transition-colors">New Job</button>
           <div className="relative">
-            <button onClick={()=>setJobTypeOpen(o=>!o)} className="px-3 py-2 rounded-md border bg-gray-100 text-slate-100">More Actions</button>
+            <button onClick={()=>setJobTypeOpen(o=>!o)} className="px-3 py-2 rounded-md bg-charcoal text-slate-300 border border-slate-700 hover:bg-slate-dark transition-colors">More Actions</button>
             {jobTypeOpen && (
               <div className="absolute right-0 mt-2 w-48 bg-charcoal border border-slate-700/30 rounded-md shadow z-20">
-                <button className="w-full text-left px-3 py-2 text-sm hover:bg-midnight" onClick={()=>{ setJobTypeOpen(false); onManageJobForms && onManageJobForms(); }}>Manage Job Forms</button>
+                <button className="w-full text-left px-3 py-2 text-sm text-slate-100 hover:bg-slate-dark" onClick={()=>{ setJobTypeOpen(false); onManageJobForms && onManageJobForms(); }}>Manage Job Forms</button>
               </div>
             )}
           </div>
@@ -189,7 +172,7 @@ export default function JobsList({
           <div className="space-y-2 text-sm">
             {['Ending within 30 days','Late','Action Required','Requires Invoicing','Unscheduled'].map(s => (
               <div key={s} className="flex items-center justify-between">
-                <div className="flex items-center gap-2"><span className={`h-2 w-2 rounded-full ${s==='Late'?'bg-red-500': s==='Requires Invoicing'?'bg-amber-500': s==='Action Required'?'bg-yellow-500': s==='Unscheduled'?'bg-midnight0':'bg-orange-500'}`}></span>{s}</div>
+                <div className="flex items-center gap-2"><span className={`h-2 w-2 rounded-full ${s==='Late'?'bg-red-500': s==='Requires Invoicing'?'bg-amber-500': s==='Action Required'?'bg-yellow-500': s==='Unscheduled'?'bg-slate-700':'bg-orange-500'}`}></span>{s}</div>
                 <div className="text-slate-100 font-semibold">{kpis.counts[s]||0}</div>
               </div>
             ))}
@@ -202,16 +185,16 @@ export default function JobsList({
       <div className="mb-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="relative">
-            <button onClick={()=>setStatusOpen(o=>!o)} className="px-3 py-1.5 rounded-full bg-gray-100 text-slate-100 text-sm border">Status | {status==='all'? 'All' : status}</button>
+            <button onClick={()=>setStatusOpen(o=>!o)} className="px-3 py-1.5 rounded-full bg-charcoal text-slate-100 text-sm border border-slate-700">Status | {status==='all'? 'All' : status}</button>
             {statusOpen && (
               <div className="absolute z-20 mt-2 w-64 bg-charcoal border border-slate-700/30 rounded-md shadow p-2">
-                <input placeholder="Search status" className="w-full px-2 py-1 border border-gray-300 rounded mb-2 text-sm" />
-                <button className={`w-full text-left px-3 py-2 hover:bg-midnight ${status==='all'?'bg-midnight':''}`} onClick={()=>{ setStatus('all'); setStatusOpen(false); }}>
+                <input placeholder="Search status" className="w-full px-2 py-1 bg-midnight border border-slate-700 text-slate-100 placeholder-slate-500 rounded mb-2 text-sm focus:border-trellio-teal" />
+                <button className={`w-full text-left px-3 py-2 text-slate-100 hover:bg-slate-dark ${status==='all'?'bg-slate-dark':''}`} onClick={()=>{ setStatus('all'); setStatusOpen(false); }}>
                   <span className="inline-block mr-2" style={{width:12}}>{status==='all'?'x':''}</span>
                   All
                 </button>
                 {statusOptions.map(s => (
-                  <button key={s} className={`w-full text-left px-3 py-2 hover:bg-midnight ${status===s?'bg-midnight':''}`} onClick={()=>{ setStatus(s); setStatusOpen(false); }}>
+                  <button key={s} className={`w-full text-left px-3 py-2 text-slate-100 hover:bg-slate-dark ${status===s?'bg-slate-dark':''}`} onClick={()=>{ setStatus(s); setStatusOpen(false); }}>
                     <span className="inline-block mr-2" style={{width:12}}>{status===s?'x':''}</span>
                     {s} <span className="text-slate-400">({kpis.counts[s]||0})</span>
                   </button>
@@ -220,34 +203,34 @@ export default function JobsList({
             )}
           </div>
           <div className="relative">
-            <button className="px-3 py-1.5 rounded-full bg-gray-100 text-slate-100 text-sm border">Job Type | {jobType==='all'? 'All' : jobType}</button>
+            <button className="px-3 py-1.5 rounded-full bg-charcoal text-slate-100 text-sm border border-slate-700">Job Type | {jobType==='all'? 'All' : jobType}</button>
           </div>
         </div>
-        <input value={search} onChange={(e)=>setSearch(e.target.value)} placeholder="Search jobs..." className="px-3 py-2 border border-gray-300 rounded-md text-sm w-72"/>
+        <input value={search} onChange={(e)=>setSearch(e.target.value)} placeholder="Search jobs..." className="px-3 py-2 bg-midnight border border-slate-700 text-slate-100 placeholder-slate-500 rounded-md text-sm w-72 focus:border-trellio-teal focus:ring-2 focus:ring-trellio-teal/20"/>
       </div>
 
       <div className="text-sm text-slate-100 mb-2">{(status!=='all' || jobType!=='all' || search) ? 'Filtered jobs' : 'All jobs'} ({filtered.length} results)</div>
 
-      <div className="bg-charcoal rounded-xl shadow-lg border border-slate-700/30 overflow-hidden">
+      <div className="bg-charcoal rounded-xl shadow-lg border border-slate-700/30 overflow-hidden min-h-[calc(100vh-26rem)]">
         {filtered.length === 0 ? (
           <div className="text-center p-10 text-slate-400">No jobs found.</div>
         ) : (
           <table className="w-full">
-            <thead className="bg-midnight text-sm">
+            <thead className="bg-midnight text-sm border-b border-slate-700">
               <tr>
-                <th className="text-left font-semibold p-3 cursor-pointer select-none" onClick={()=>toggleSort('client')}>Client{sortBy==='client' && (sortDir==='asc'?' ^':' v')}</th>
-                <th className="text-left font-semibold p-3 cursor-pointer select-none" onClick={()=>toggleSort('job')}>Job number{sortBy==='job' && (sortDir==='asc'?' ^':' v')}</th>
-                <th className="text-left font-semibold p-3 cursor-pointer select-none" onClick={()=>toggleSort('property')}>Property{sortBy==='property' && (sortDir==='asc'?' ^':' v')}</th>
-                <th className="text-left font-semibold p-3 cursor-pointer select-none" onClick={()=>toggleSort('schedule')}>Schedule{sortBy==='schedule' && (sortDir==='asc'?' ^':' v')}</th>
-                <th className="text-left font-semibold p-3 cursor-pointer select-none" onClick={()=>toggleSort('status')}>Status{sortBy==='status' && (sortDir==='asc'?' ^':' v')}</th>
-                <th className="text-left font-semibold p-3 cursor-pointer select-none" onClick={()=>toggleSort('total')}>Total{sortBy==='total' && (sortDir==='asc'?' ^':' v')}</th>
+                <th className="text-left font-semibold p-3 text-slate-300 cursor-pointer select-none hover:text-trellio-teal transition-colors" onClick={()=>toggleSort('client')}>Client{sortBy==='client' && (sortDir==='asc'?' ^':' v')}</th>
+                <th className="text-left font-semibold p-3 text-slate-300 cursor-pointer select-none hover:text-trellio-teal transition-colors" onClick={()=>toggleSort('job')}>Job number{sortBy==='job' && (sortDir==='asc'?' ^':' v')}</th>
+                <th className="text-left font-semibold p-3 text-slate-300 cursor-pointer select-none hover:text-trellio-teal transition-colors" onClick={()=>toggleSort('property')}>Property{sortBy==='property' && (sortDir==='asc'?' ^':' v')}</th>
+                <th className="text-left font-semibold p-3 text-slate-300 cursor-pointer select-none hover:text-trellio-teal transition-colors" onClick={()=>toggleSort('schedule')}>Schedule{sortBy==='schedule' && (sortDir==='asc'?' ^':' v')}</th>
+                <th className="text-left font-semibold p-3 text-slate-300 cursor-pointer select-none hover:text-trellio-teal transition-colors" onClick={()=>toggleSort('status')}>Status{sortBy==='status' && (sortDir==='asc'?' ^':' v')}</th>
+                <th className="text-left font-semibold p-3 text-slate-300 cursor-pointer select-none hover:text-trellio-teal transition-colors" onClick={()=>toggleSort('total')}>Total{sortBy==='total' && (sortDir==='asc'?' ^':' v')}</th>
               </tr>
             </thead>
             <tbody className="text-sm">
               {filtered.map(j => (
-                <tr key={j.id} className="border-t hover:bg-midnight">
-                  <td className="p-3"><button onClick={()=>onOpenJob && onOpenJob(j)} className="font-semibold text-blue-700 hover:underline">{j._clientName}</button></td>
-                  <td className="p-3"><button onClick={()=>onOpenJob && onOpenJob(j)} className="font-semibold text-blue-700 hover:underline">{j.jobNumber || ('#'+(j.id||'').slice(0,8))}</button></td>
+                <tr key={j.id} className="border-t border-slate-700/30 hover:bg-slate-dark/50 transition-colors">
+                  <td className="p-3"><button onClick={()=>onOpenJob && onOpenJob(j)} className="font-semibold text-trellio-teal hover:underline">{j._clientName}</button></td>
+                  <td className="p-3"><button onClick={()=>onOpenJob && onOpenJob(j)} className="font-semibold text-trellio-teal hover:underline">{j.jobNumber || ('#'+(j.id||'').slice(0,8))}</button></td>
                   <td className="p-3"><div className="truncate max-w-xs">{j._address || '--'}</div></td>
                   <td className="p-3">{j.start ? new Date(j.start).toLocaleDateString() : '--'}</td>
                   <td className="p-3"><Pill className={STATUS_PILL[j._status] || STATUS_PILL['Active']}>{j._status}</Pill></td>
@@ -256,6 +239,11 @@ export default function JobsList({
               ))}
             </tbody>
           </table>
+        )}
+        {filtered.length > 0 && filtered.length < 5 && (
+          <div className="bg-midnight/50 border border-slate-700/20 rounded-lg p-4 m-4 text-sm text-slate-500">
+            Tip: Convert approved quotes to jobs with one click.
+          </div>
         )}
       </div>
     </div>

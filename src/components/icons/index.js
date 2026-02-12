@@ -20,3 +20,8 @@ export { default as ChevronRightIcon } from './ChevronRightIcon';
 export { default as EditIcon } from './EditIcon';
 export { default as SettingsIcon } from './SettingsIcon';
 export { default as PrinterIcon } from './PrinterIcon';
+export { default as PaletteIcon } from './PaletteIcon';
+export { default as ClockIcon } from './ClockIcon';
+export { default as LinkIcon } from './LinkIcon';
+export { default as CreditCardIcon } from './CreditCardIcon';
+export { default as GlobeIcon } from './GlobeIcon';

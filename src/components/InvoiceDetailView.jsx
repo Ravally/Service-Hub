@@ -5,6 +5,9 @@ import { formatCurrency, formatDate, toDateInput, toIsoDate } from '../utils';
 import { rewriteText } from '../utils';
 import { computeDueDate, computeTotals } from '../utils';
 import { STATUS_COLORS } from '../constants';
+import InvoiceLineItemsCard from './invoices/InvoiceLineItemsCard';
+import InvoiceTotalsCard from './invoices/InvoiceTotalsCard';
+import { InvoiceDetailsCard, ClientViewCard, PaymentSettingsCard, InternalNotesCard } from './invoices/InvoiceSidebarCards';
 
 const buildLineItem = (opts = {}) => ({
   type: 'line_item',
@@ -188,13 +191,6 @@ export default function InvoiceDetailView({
     }
   };
 
-  const handleAttachmentUpload = (event) => {
-    const file = event.target.files?.[0];
-    if (!file || !onUploadAttachment) return;
-    onUploadAttachment(draft, file);
-    event.target.value = '';
-  };
-
   return (
     <div className="space-y-6 animate-fade-in">
         <div className="flex flex-wrap items-center justify-between gap-3">
@@ -286,9 +282,9 @@ export default function InvoiceDetailView({
           <div className="mt-4 flex flex-wrap items-center gap-3 text-xs text-slate-400">
             {progressSteps.map((step, idx) => (
               <div key={step.label} className="flex items-center gap-2">
-                <span className={`h-2.5 w-2.5 rounded-full ${step.done ? 'bg-trellio-teal' : 'bg-gray-300'}`} />
+                <span className={`h-2.5 w-2.5 rounded-full ${step.done ? 'bg-trellio-teal' : 'bg-slate-500'}`} />
                 <span className={step.done ? 'text-trellio-teal font-semibold' : 'text-slate-400'}>{step.label}</span>
-                {idx < progressSteps.length - 1 && <span className="h-px w-6 bg-gray-200" />}
+                {idx < progressSteps.length - 1 && <span className="h-px w-6 bg-slate-700" />}
               </div>
             ))}
           </div>
@@ -388,130 +384,7 @@ export default function InvoiceDetailView({
             </div>
           </div>
 
-          <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-2xl font-bold text-slate-100">Product / Service</h3>
-              <button
-                type="button"
-                onClick={() => addLineItem()}
-                className="px-4 py-2 rounded-full bg-green-700 text-white text-sm font-semibold"
-                disabled={!canEdit}
-              >
-                Add Line Item
-              </button>
-            </div>
-
-            <div className="space-y-4">
-              {(draft.lineItems || []).map((item, idx) => {
-                const itemType = item?.type || 'line_item';
-                if (itemType === 'text') {
-                  return (
-                    <div key={`text-${idx}`} className="border border-slate-700/30 rounded-xl p-3 space-y-2">
-                      <textarea
-                        value={item.description || ''}
-                        onChange={(e) => updateLineItem(idx, 'description', e.target.value)}
-                        placeholder="Text block"
-                        className="w-full px-3 py-2 border border-slate-700 rounded-md text-sm"
-                        rows={3}
-                        disabled={!canEdit}
-                      />
-                      {canEdit && (
-                        <div className="text-right">
-                          <button onClick={() => removeLineItem(idx)} className="text-xs font-semibold text-signal-coral">Remove</button>
-                        </div>
-                      )}
-                    </div>
-                  );
-                }
-                const lineTotal = (Number(item.qty || 0) * Number(item.price || 0));
-                return (
-                  <div key={`item-${idx}`} className="border border-slate-700/30 rounded-2xl p-4 space-y-3">
-                    <div className="grid grid-cols-1 lg:grid-cols-[1.8fr_0.4fr_0.6fr_0.6fr_auto] gap-3 items-start">
-                      <div className="space-y-2">
-                        <input
-                          value={item.name || ''}
-                          onChange={(e) => updateLineItem(idx, 'name', e.target.value)}
-                          className="w-full px-3 py-2 border border-slate-700/30 rounded-xl text-sm"
-                          placeholder="Name"
-                          disabled={!canEdit}
-                        />
-                        <textarea
-                          value={item.description || ''}
-                          onChange={(e) => updateLineItem(idx, 'description', e.target.value)}
-                          className="w-full px-3 py-2 border border-slate-700/30 rounded-xl text-sm"
-                          rows={3}
-                          placeholder="Description"
-                          disabled={!canEdit}
-                        />
-                      </div>
-                      <input
-                        type="number"
-                        min="0"
-                        value={item.qty || 0}
-                        onChange={(e) => updateLineItem(idx, 'qty', e.target.value)}
-                        className="px-3 py-2 border border-slate-700/30 rounded-xl text-sm text-right"
-                        disabled={!canEdit}
-                      />
-                      <div className="flex items-center gap-2">
-                        <span className="text-slate-400">$</span>
-                        <input
-                          type="number"
-                          min="0"
-                          value={item.price || 0}
-                          onChange={(e) => updateLineItem(idx, 'price', e.target.value)}
-                          className="w-full px-3 py-2 border border-slate-700/30 rounded-xl text-sm text-right"
-                          disabled={!canEdit}
-                        />
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-slate-400">$</span>
-                        <input
-                          value={lineTotal.toFixed(2)}
-                          className="w-full px-3 py-2 border border-slate-700/30 rounded-xl text-sm text-right bg-midnight"
-                          disabled
-                        />
-                      </div>
-                      {canEdit && (
-                        <button onClick={() => removeLineItem(idx)} className="px-3 py-2 border border-red-200 rounded-lg text-signal-coral text-sm font-semibold">
-                          Delete
-                        </button>
-                      )}
-                    </div>
-                    <div className="flex flex-wrap items-center justify-between text-sm text-slate-400">
-                      {item.serviceDate ? (
-                        <div className="flex items-center gap-2">
-                          <input
-                            type="date"
-                            value={toDateInput(item.serviceDate)}
-                            onChange={(e) => updateLineItem(idx, 'serviceDate', toIsoDate(e.target.value))}
-                            className="px-2 py-1 border border-slate-700/30 rounded-md text-sm"
-                            disabled={!canEdit}
-                          />
-                          {canEdit && (
-                            <button onClick={() => updateLineItem(idx, 'serviceDate', '')} className="text-xs text-slate-400 underline">
-                              Clear
-                            </button>
-                          )}
-                        </div>
-                      ) : (
-                        <button
-                          onClick={() => updateLineItem(idx, 'serviceDate', new Date().toISOString())}
-                          className="text-trellio-teal underline text-sm"
-                          disabled={!canEdit}
-                        >
-                          Set Service Date
-                        </button>
-                      )}
-                      {item.isOptional && <span className="text-xs text-amber-700">Optional</span>}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-            {draft.lineItems?.length >= 100 && (
-              <div className="text-xs text-slate-400 mt-3">Limit 100 line items</div>
-            )}
-          </div>
+          <InvoiceLineItemsCard draft={draft} canEdit={canEdit} updateLineItem={updateLineItem} addLineItem={addLineItem} removeLineItem={removeLineItem} />
 
           <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-6">
             <h3 className="text-lg font-semibold text-slate-100 mb-3">Client message</h3>
@@ -569,269 +442,11 @@ export default function InvoiceDetailView({
         </div>
 
         <div className="space-y-6">
-          <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-5">
-            <h3 className="text-lg font-semibold text-slate-100 mb-4">Invoice details</h3>
-            <div className="space-y-3 text-sm">
-              <div className="flex items-center justify-between">
-                <span>Issued date</span>
-                <input
-                  type="date"
-                  value={toDateInput(draft.issueDate || draft.createdAt)}
-                  onChange={(e) => handleIssueDateChange(e.target.value)}
-                  className="px-2 py-1 border border-slate-700/30 rounded-md text-sm"
-                  disabled={!canEdit}
-                />
-              </div>
-              <div className="flex items-center justify-between">
-                <span>Payment due</span>
-                <select
-                  value={draft.dueTerm || 'Due Today'}
-                  onChange={(e) => handleDueTermChange(e.target.value)}
-                  className="px-2 py-1 border border-slate-700/30 rounded-md text-sm"
-                  disabled={!canEdit}
-                >
-                  <option>Due Today</option>
-                  <option>Due on receipt</option>
-                  <option>Net 7</option>
-                  <option>Net 9</option>
-                  <option>Net 14</option>
-                  <option>Net 15</option>
-                  <option>Net 30</option>
-                  <option>Net 60</option>
-                </select>
-              </div>
-              <div className="flex items-center justify-between">
-                <span>Ask client for review</span>
-                <select
-                  value={draft.askForReview ? 'Yes' : 'No'}
-                  onChange={(e) => updateDraft({ askForReview: e.target.value === 'Yes' })}
-                  className="px-2 py-1 border border-slate-700/30 rounded-md text-sm"
-                  disabled={!canEdit}
-                >
-                  <option value="Yes">Yes</option>
-                  <option value="No">No</option>
-                </select>
-              </div>
-              <button
-                type="button"
-                onClick={addCustomField}
-                className="px-3 py-2 rounded-md border border-green-200 text-trellio-teal text-sm font-semibold"
-                disabled={!canEdit}
-              >
-                Add Custom Field
-              </button>
-              {customFields.map((field, idx) => (
-                <div key={`${field.key}-${idx}`} className="grid grid-cols-[1fr_1fr_auto] gap-2">
-                  <input
-                    value={field.key}
-                    onChange={(e) => updateCustomField(idx, 'key', e.target.value)}
-                    placeholder="Field"
-                    className="px-2 py-1 border border-slate-700/30 rounded-md text-sm"
-                    disabled={!canEdit}
-                  />
-                  <input
-                    value={field.value}
-                    onChange={(e) => updateCustomField(idx, 'value', e.target.value)}
-                    placeholder="Value"
-                    className="px-2 py-1 border border-slate-700/30 rounded-md text-sm"
-                    disabled={!canEdit}
-                  />
-                  {canEdit && (
-                    <button onClick={() => removeCustomField(idx)} className="text-xs font-semibold text-signal-coral">Remove</button>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-5">
-            <h3 className="text-lg font-semibold text-slate-100 mb-4">Totals</h3>
-            <div className="space-y-4 text-sm">
-              <div className="flex items-center justify-between">
-                <span>Subtotal</span>
-                <span className="font-semibold">{formatCurrency(totals.subtotalBeforeDiscount, currencyCode)}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span>Discount</span>
-                <button
-                  type="button"
-                  onClick={() => setShowDiscount((v) => !v)}
-                  className="text-trellio-teal font-semibold underline"
-                  disabled={!canEdit}
-                >
-                  {showDiscount ? 'Hide Discount' : 'Add Discount'}
-                </button>
-              </div>
-              {showDiscount && (
-                <div className="flex gap-2">
-                  <select
-                    value={draft.quoteDiscountType || 'amount'}
-                    onChange={(e) => updateDraft({ quoteDiscountType: e.target.value })}
-                    className="px-2 py-2 border border-slate-700/30 rounded-xl text-sm"
-                    disabled={!canEdit}
-                  >
-                    <option value="amount">Amount</option>
-                    <option value="percent">Percent</option>
-                  </select>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={draft.quoteDiscountValue ?? 0}
-                    onChange={(e) => updateDraft({ quoteDiscountValue: e.target.value })}
-                    className="flex-1 px-2 py-2 border border-slate-700/30 rounded-xl text-sm"
-                    disabled={!canEdit}
-                  />
-                </div>
-              )}
-              <div className="flex items-center justify-between">
-                <span>Tax</span>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={draft.taxRate ?? 0}
-                    onChange={(e) => updateDraft({ taxRate: e.target.value })}
-                    className="w-20 px-2 py-1 border border-slate-700/30 rounded-md text-sm text-right"
-                    disabled={!canEdit}
-                  />
-                  <span>%</span>
-                  <span className="font-semibold">{formatCurrency(totals.taxAmount, currencyCode)}</span>
-                </div>
-              </div>
-              <div className="flex items-center justify-between text-lg font-semibold border-t pt-3">
-                <span>Total</span>
-                <span>{formatCurrency(totals.total, currencyCode)}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span>Deposit applied</span>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={draft.depositApplied || ''}
-                  onChange={(e) => updateDraft({ depositApplied: e.target.value })}
-                  className="w-28 px-2 py-1 border border-slate-700/30 rounded-md text-sm text-right"
-                  disabled={!canEdit}
-                />
-              </div>
-              <div className="flex items-center justify-between font-semibold">
-                <span>Balance due</span>
-                <span>{formatCurrency(balanceDue, currencyCode)}</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-5">
-            <div className="flex items-center gap-3">
-              <span className="text-lg font-semibold text-slate-100">Client view</span>
-              <button
-                type="button"
-                onClick={() => setShowClientView((v) => !v)}
-                className="text-sm font-semibold text-trellio-teal underline"
-              >
-                {showClientView ? 'Cancel' : 'Change'}
-              </button>
-            </div>
-            {showClientView && (
-              <div className="mt-3 text-sm text-slate-100 space-y-3">
-                <div>
-                  Adjust what your client will see on this invoice. To change the default for all future invoices, visit the{' '}
-                  <span className="text-trellio-teal underline">PDF Style</span>.
-                </div>
-                <div className="flex flex-wrap gap-4">
-                  {[
-                    ['showQuantities', 'Quantities'],
-                    ['showUnitCosts', 'Unit costs'],
-                    ['showLineItemTotals', 'Line item totals'],
-                    ['showTotals', 'Totals'],
-                    ['showAccountBalance', 'Account balance'],
-                    ['showLateStamp', 'Late stamp'],
-                  ].map(([key, label]) => (
-                    <label key={key} className="flex items-center gap-2 text-sm">
-                      <input
-                        type="checkbox"
-                        checked={draft.clientViewSettings?.[key] !== false}
-                        onChange={(e) => updateDraft({ clientViewSettings: { ...draft.clientViewSettings, [key]: e.target.checked } })}
-                        className="h-4 w-4 accent-green-600"
-                        disabled={!canEdit}
-                      />
-                      {label}
-                    </label>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-5">
-            <h3 className="text-lg font-semibold text-slate-100 mb-3">Invoice Payment Settings</h3>
-            <div className="text-sm text-slate-400 mb-3">
-              Disabling payment options on this invoice will not change your default payment preferences.
-            </div>
-            <div className="space-y-2 text-sm text-slate-100">
-              <label className="flex items-center justify-between gap-3">
-                <span>Accept card payments</span>
-                <input
-                  type="checkbox"
-                  checked={draft.paymentSettings?.acceptCard ?? true}
-                  onChange={(e) => updateDraft({ paymentSettings: { ...draft.paymentSettings, acceptCard: e.target.checked } })}
-                  disabled={!canEdit}
-                />
-              </label>
-              <label className="flex items-center justify-between gap-3">
-                <span>Accept bank payments (ACH)</span>
-                <input
-                  type="checkbox"
-                  checked={draft.paymentSettings?.acceptBank ?? false}
-                  onChange={(e) => updateDraft({ paymentSettings: { ...draft.paymentSettings, acceptBank: e.target.checked } })}
-                  disabled={!canEdit}
-                />
-              </label>
-              <label className="flex items-center justify-between gap-3">
-                <span>Allow partial payments</span>
-                <input
-                  type="checkbox"
-                  checked={draft.paymentSettings?.allowPartialPayments ?? true}
-                  onChange={(e) => updateDraft({ paymentSettings: { ...draft.paymentSettings, allowPartialPayments: e.target.checked } })}
-                  disabled={!canEdit}
-                />
-              </label>
-            </div>
-          </div>
-
-          <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-5 space-y-4">
-            <h3 className="text-lg font-semibold text-slate-100">Internal notes & attachments</h3>
-            <textarea
-              value={draft.internalNotes || ''}
-              onChange={(e) => updateDraft({ internalNotes: e.target.value })}
-              className="w-full px-3 py-2 border border-slate-700 rounded-md text-sm"
-              rows={4}
-              placeholder="Note details"
-              disabled={!canEdit}
-            />
-            <div className="border-2 border-dashed border-slate-700/30 rounded-2xl p-4 text-center text-sm text-slate-400">
-              <div className="flex items-center justify-center gap-2">
-                <span>Drag your files here or</span>
-                <label className="text-trellio-teal font-semibold cursor-pointer">
-                  Select a File
-                  <input type="file" className="hidden" onChange={handleAttachmentUpload} disabled={!canEdit} />
-                </label>
-              </div>
-            </div>
-            {(draft.attachments || []).length > 0 && (
-              <ul className="space-y-2 text-sm">
-                {(draft.attachments || []).map((file, idx) => (
-                  <li key={`${file.url}-${idx}`} className="flex items-center justify-between border border-slate-700/30 rounded-md px-3 py-2">
-                    <a href={file.url} target="_blank" rel="noreferrer" className="text-blue-700 hover:underline truncate">{file.name}</a>
-                    {canEdit && (
-                      <button onClick={() => onRemoveAttachment && onRemoveAttachment(draft, file.url)} className="text-xs text-signal-coral font-semibold">
-                        Remove
-                      </button>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+          <InvoiceDetailsCard draft={draft} canEdit={canEdit} customFields={customFields} handleIssueDateChange={handleIssueDateChange} handleDueTermChange={handleDueTermChange} addCustomField={addCustomField} updateCustomField={updateCustomField} removeCustomField={removeCustomField} updateDraft={updateDraft} />
+          <InvoiceTotalsCard draft={draft} totals={totals} balanceDue={balanceDue} currencyCode={currencyCode} canEdit={canEdit} showDiscount={showDiscount} setShowDiscount={setShowDiscount} updateDraft={updateDraft} />
+          <ClientViewCard draft={draft} canEdit={canEdit} showClientView={showClientView} setShowClientView={setShowClientView} updateDraft={updateDraft} />
+          <PaymentSettingsCard draft={draft} canEdit={canEdit} updateDraft={updateDraft} />
+          <InternalNotesCard draft={draft} canEdit={canEdit} updateDraft={updateDraft} onUploadAttachment={onUploadAttachment} onRemoveAttachment={onRemoveAttachment} />
 
           {canEdit && (
             <div className="flex items-center justify-end gap-2">

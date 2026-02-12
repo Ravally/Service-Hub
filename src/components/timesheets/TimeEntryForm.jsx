@@ -152,22 +152,22 @@ export default function TimeEntryForm({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">
+    <div className="bg-charcoal rounded-lg shadow-md p-6">
+      <h3 className="text-lg font-semibold text-slate-100 mb-4">
         {entry ? 'Edit Time Entry' : 'Add Time Entry'}
-        {job && <span className="text-sm text-gray-500 ml-2">for {job.title}</span>}
+        {job && <span className="text-sm text-slate-400 ml-2">for {job.title}</span>}
       </h3>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Staff Member */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-slate-300 mb-1">
             Staff Member <span className="text-red-500">*</span>
           </label>
           <select
             value={formData.staffId}
             onChange={(e) => handleChange('staffId', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-slate-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           >
             <option value="">Select staff member</option>
@@ -184,28 +184,28 @@ export default function TimeEntryForm({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Start Time */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-slate-300 mb-1">
               Start Time <span className="text-red-500">*</span>
             </label>
             <input
               type="datetime-local"
               value={formData.start}
               onChange={(e) => handleChange('start', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-slate-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
 
           {/* End Time */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-slate-300 mb-1">
               End Time
             </label>
             <input
               type="datetime-local"
               value={formData.end}
               onChange={(e) => handleChange('end', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-slate-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
         </div>
@@ -214,7 +214,7 @@ export default function TimeEntryForm({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Hours */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-slate-300 mb-1">
               Hours
             </label>
             <input
@@ -223,28 +223,28 @@ export default function TimeEntryForm({
               min="0"
               value={formData.hours}
               onChange={(e) => handleChange('hours', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-slate-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="0.00"
             />
             {autoCalculate && formData.start && formData.end && (
-              <p className="text-xs text-gray-500 mt-1">Auto-calculated</p>
+              <p className="text-xs text-slate-400 mt-1">Auto-calculated</p>
             )}
           </div>
 
           {/* Hourly Rate */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-slate-300 mb-1">
               Hourly Rate
             </label>
             <div className="relative">
-              <span className="absolute left-3 top-2 text-gray-500">$</span>
+              <span className="absolute left-3 top-2 text-slate-400">$</span>
               <input
                 type="number"
                 step="0.01"
                 min="0"
                 value={formData.rate}
                 onChange={(e) => handleChange('rate', e.target.value)}
-                className="w-full pl-7 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full pl-7 pr-3 py-2 border border-slate-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="0.00"
               />
             </div>
@@ -252,23 +252,23 @@ export default function TimeEntryForm({
 
           {/* Total Cost */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-slate-300 mb-1">
               Total Cost
             </label>
             <div className="relative">
-              <span className="absolute left-3 top-2 text-gray-500">$</span>
+              <span className="absolute left-3 top-2 text-slate-400">$</span>
               <input
                 type="number"
                 step="0.01"
                 min="0"
                 value={formData.cost}
                 onChange={(e) => handleChange('cost', e.target.value)}
-                className="w-full pl-7 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full pl-7 pr-3 py-2 border border-slate-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="0.00"
               />
             </div>
             {autoCalculate && formData.hours && formData.rate && (
-              <p className="text-xs text-gray-500 mt-1">Auto-calculated</p>
+              <p className="text-xs text-slate-400 mt-1">Auto-calculated</p>
             )}
           </div>
         </div>
@@ -280,33 +280,33 @@ export default function TimeEntryForm({
             id="billable"
             checked={formData.billable}
             onChange={(e) => handleChange('billable', e.target.checked)}
-            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-slate-700 rounded"
           />
-          <label htmlFor="billable" className="ml-2 block text-sm text-gray-700">
+          <label htmlFor="billable" className="ml-2 block text-sm text-slate-300">
             Billable time
           </label>
         </div>
 
         {/* Notes */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-slate-300 mb-1">
             Notes
           </label>
           <textarea
             value={formData.note}
             onChange={(e) => handleChange('note', e.target.value)}
             rows={3}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-slate-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Add notes about this time entry..."
           />
         </div>
 
         {/* Action Buttons */}
-        <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
+        <div className="flex justify-end gap-3 pt-4 border-t border-slate-700/30">
           <button
             type="button"
             onClick={onCancel}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            className="px-4 py-2 text-sm font-medium text-slate-300 bg-charcoal border border-slate-700 rounded-md hover:bg-midnight/60 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           >
             Cancel
           </button>

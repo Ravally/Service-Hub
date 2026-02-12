@@ -268,7 +268,7 @@ const PublicClientPortal = ({ uid, clientId, company }) => {
           <div className="lg:col-span-2 bg-charcoal rounded-xl shadow border border-slate-700/30 p-4">
             <h2 className="text-lg font-semibold mb-3">Your Quotes</h2>
             {quotes.length === 0 ? <p className="text-sm text-slate-400">No quotes yet.</p> : (
-              <ul className="divide-y divide-gray-100">
+              <ul className="divide-y divide-slate-700/30">
                 {quotes.map(q => (
                   <li key={q.id} className="py-3">
                     <div className="flex justify-between items-center">
@@ -303,7 +303,7 @@ const PublicClientPortal = ({ uid, clientId, company }) => {
                 className={`px-3 py-1 text-sm rounded-md font-medium ${
                   jobsTab === 'upcoming'
                     ? 'bg-blue-600 text-white'
-                    : 'bg-midnight text-slate-100 hover:bg-gray-200'
+                    : 'bg-midnight text-slate-100 hover:bg-slate-700'
                 }`}
               >
                 Upcoming ({upcomingJobs.length})
@@ -313,7 +313,7 @@ const PublicClientPortal = ({ uid, clientId, company }) => {
                 className={`px-3 py-1 text-sm rounded-md font-medium ${
                   jobsTab === 'past'
                     ? 'bg-blue-600 text-white'
-                    : 'bg-midnight text-slate-100 hover:bg-gray-200'
+                    : 'bg-midnight text-slate-100 hover:bg-slate-700'
                 }`}
               >
                 Past ({pastJobs.length})
@@ -325,7 +325,7 @@ const PublicClientPortal = ({ uid, clientId, company }) => {
             upcomingJobs.length === 0 ? (
               <p className="text-sm text-slate-400">No upcoming jobs scheduled.</p>
             ) : (
-              <ul className="divide-y divide-gray-100">
+              <ul className="divide-y divide-slate-700/30">
                 {upcomingJobs.map(j => (
                   <li key={j.id} className="py-3">
                     <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
@@ -343,7 +343,7 @@ const PublicClientPortal = ({ uid, clientId, company }) => {
             pastJobs.length === 0 ? (
               <p className="text-sm text-slate-400">No past jobs.</p>
             ) : (
-              <ul className="divide-y divide-gray-100">
+              <ul className="divide-y divide-slate-700/30">
                 {pastJobs.map(j => (
                   <li key={j.id} className="py-3">
                     <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
@@ -364,7 +364,7 @@ const PublicClientPortal = ({ uid, clientId, company }) => {
         <div className="mt-6 bg-charcoal rounded-xl shadow border border-slate-700/30 p-4">
           <h2 className="text-lg font-semibold mb-3">Your Invoices</h2>
           {invoices.filter(i => !i.isCreditNote).length === 0 ? <p className="text-sm text-slate-400">No invoices yet.</p> : (
-            <ul className="divide-y divide-gray-100">
+            <ul className="divide-y divide-slate-700/30">
               {invoices.filter(i => !i.isCreditNote).map(i => {
                 const credits = creditsByInvoice.get(i.id) || 0;
                 const net = Math.max(0, (i.total || 0) - credits);
@@ -395,7 +395,7 @@ const PublicClientPortal = ({ uid, clientId, company }) => {
                         </div>
                         <button
                           onClick={() => handleDownloadInvoice(i)}
-                          className="px-3 py-1 text-sm bg-midnight text-slate-100 rounded-md hover:bg-gray-200 whitespace-nowrap"
+                          className="px-3 py-1 text-sm bg-midnight text-slate-100 rounded-md hover:bg-slate-700 whitespace-nowrap"
                           title="Download PDF"
                         >
                           📄 PDF
@@ -423,7 +423,7 @@ const PublicClientPortal = ({ uid, clientId, company }) => {
                     <th className="text-right p-2 font-medium text-slate-100">Amount</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
+                <tbody className="divide-y divide-slate-700/30">
                   {paymentHistory.map((payment, idx) => (
                     <tr key={idx}>
                       <td className="p-2 text-slate-100">{formatDate(payment.createdAt)}</td>
@@ -448,7 +448,7 @@ const PublicClientPortal = ({ uid, clientId, company }) => {
               {completedJobs.slice(0, 10).map(job => {
                 const relatedInvoice = invoices.find(inv => inv.jobId === job.id);
                 return (
-                  <li key={job.id} className="flex flex-col sm:flex-row sm:justify-between pb-3 border-b border-gray-100 last:border-0">
+                  <li key={job.id} className="flex flex-col sm:flex-row sm:justify-between pb-3 border-b border-slate-700/30 last:border-0">
                     <div>
                       <p className="font-medium text-slate-100">{job.title}</p>
                       <p className="text-xs text-slate-400">Completed: {formatDate(job.completedAt || job.start)}</p>
@@ -482,7 +482,7 @@ const PublicClientPortal = ({ uid, clientId, company }) => {
           />
         )}
 
-        <div className="text-center text-xs text-gray-400 mt-8">Powered by Service Hub</div>
+        <div className="text-center text-xs text-slate-500 mt-8">Powered by Service Hub</div>
       </div>
     </div>
   );

@@ -1,0 +1,1397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trellio — Brand Concept</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* TRELLIO BRAND PALETTE */
+    --trellio-primary: #0EA5A0;
+    --trellio-primary-deep: #087F7A;
+    --trellio-primary-light: #B2F0ED;
+    --trellio-primary-glow: #0EA5A033;
+    --trellio-accent: #F7845E;
+    --trellio-accent-warm: #FFAA5C;
+    --trellio-accent-light: #FFDCC8;
+    --trellio-midnight: #0C1220;
+    --trellio-charcoal: #1A2332;
+    --trellio-slate: #2D3B4E;
+    --trellio-muted: #6B7F96;
+    --trellio-silver: #A3B4C8;
+    --trellio-cream: #FFF9F5;
+    --trellio-white: #FFFFFF;
+    --trellio-sage: #C8E6C9;
+    --trellio-lavender: #E8DEF8;
+
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-body: 'DM Sans', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html {
+    scroll-behavior: smooth;
+    background: var(--trellio-midnight);
+  }
+
+  body {
+    font-family: var(--font-body);
+    color: var(--trellio-white);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ============================================
+     HERO SECTION
+     ============================================ */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    background: var(--trellio-midnight);
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background:
+      radial-gradient(ellipse at 30% 20%, rgba(14, 165, 160, 0.12) 0%, transparent 50%),
+      radial-gradient(ellipse at 70% 80%, rgba(247, 132, 94, 0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(14, 165, 160, 0.04) 0%, transparent 70%);
+    animation: heroGlow 12s ease-in-out infinite alternate;
+  }
+
+  @keyframes heroGlow {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(-3%, 2%) scale(1.05); }
+  }
+
+  /* Trellis lattice pattern */
+  .hero-lattice {
+    position: absolute;
+    inset: 0;
+    opacity: 0.035;
+    background-image:
+      linear-gradient(30deg, var(--trellio-primary) 1px, transparent 1px),
+      linear-gradient(-30deg, var(--trellio-primary) 1px, transparent 1px);
+    background-size: 60px 104px;
+    animation: latticeDrift 30s linear infinite;
+  }
+
+  @keyframes latticeDrift {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-104px); }
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 2rem;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--trellio-primary);
+    background: rgba(14, 165, 160, 0.08);
+    border: 1px solid rgba(14, 165, 160, 0.2);
+    padding: 10px 20px;
+    border-radius: 100px;
+    margin-bottom: 3rem;
+    animation: fadeUp 1s ease-out 0.2s both;
+  }
+
+  .hero-badge::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: var(--trellio-primary);
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  .hero-logo-mark {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 2.5rem;
+    animation: fadeUp 1s ease-out 0.4s both;
+  }
+
+  .hero-logo-mark svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 0 40px rgba(14, 165, 160, 0.3));
+  }
+
+  .hero-title {
+    font-family: var(--font-body);
+    font-size: clamp(3.5rem, 8vw, 7rem);
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 0.95;
+    margin-bottom: 1.5rem;
+    animation: fadeUp 1s ease-out 0.5s both;
+  }
+
+  .hero-title span {
+    background: linear-gradient(135deg, var(--trellio-white) 0%, var(--trellio-primary-light) 50%, var(--trellio-primary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-subtitle {
+    font-size: clamp(1rem, 2vw, 1.35rem);
+    color: var(--trellio-silver);
+    max-width: 500px;
+    margin: 0 auto 3rem;
+    line-height: 1.6;
+    font-weight: 300;
+    animation: fadeUp 1s ease-out 0.7s both;
+  }
+
+  .hero-tagline {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(1rem, 1.5vw, 1.15rem);
+    color: var(--trellio-accent);
+    animation: fadeUp 1s ease-out 0.9s both;
+    opacity: 0.9;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ============================================
+     SECTIONS SHARED
+     ============================================ */
+  section {
+    padding: clamp(4rem, 10vw, 8rem) clamp(1.5rem, 5vw, 4rem);
+  }
+
+  .section-label {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--trellio-primary);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-label::before {
+    content: '';
+    width: 24px;
+    height: 1px;
+    background: var(--trellio-primary);
+  }
+
+  .section-title {
+    font-family: var(--font-body);
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+    margin-bottom: 1rem;
+  }
+
+  .section-desc {
+    font-size: 1.05rem;
+    color: var(--trellio-silver);
+    max-width: 600px;
+    line-height: 1.7;
+    font-weight: 300;
+  }
+
+  /* ============================================
+     COLOR PALETTE
+     ============================================ */
+  .palette-section {
+    background: var(--trellio-charcoal);
+    position: relative;
+  }
+
+  .palette-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(14, 165, 160, 0.3), transparent);
+  }
+
+  .palette-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1px;
+    margin-top: 3rem;
+    background: rgba(255,255,255,0.05);
+    border-radius: 20px;
+    overflow: hidden;
+  }
+
+  .color-card {
+    padding: 0;
+    background: var(--trellio-charcoal);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    cursor: pointer;
+    position: relative;
+  }
+
+  .color-card:hover {
+    transform: scale(1.02);
+    z-index: 2;
+  }
+
+  .color-swatch {
+    height: 140px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .color-swatch::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 60%, rgba(0,0,0,0.15) 100%);
+  }
+
+  .color-info {
+    padding: 1.2rem 1.4rem;
+  }
+
+  .color-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+  }
+
+  .color-hex {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--trellio-muted);
+    letter-spacing: 0.05em;
+  }
+
+  .color-role {
+    font-size: 0.7rem;
+    color: var(--trellio-silver);
+    margin-top: 6px;
+    font-style: italic;
+  }
+
+  /* ============================================
+     TYPOGRAPHY
+     ============================================ */
+  .type-section {
+    background: var(--trellio-midnight);
+  }
+
+  .type-showcase {
+    margin-top: 3rem;
+    display: grid;
+    gap: 3rem;
+  }
+
+  .type-specimen {
+    padding: 3rem;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.06);
+    background: linear-gradient(135deg, rgba(14,165,160,0.03) 0%, rgba(247,132,94,0.02) 100%);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .type-specimen::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 100%;
+    background: linear-gradient(180deg, var(--trellio-primary), var(--trellio-accent));
+    border-radius: 3px;
+  }
+
+  .type-family-label {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--trellio-primary);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .type-role {
+    color: var(--trellio-muted);
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+  }
+
+  .type-display-sample {
+    font-family: var(--font-body);
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(135deg, var(--trellio-white) 30%, var(--trellio-silver));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .type-serif-sample {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 400;
+    font-style: italic;
+    line-height: 1.3;
+    margin-bottom: 1.5rem;
+    color: var(--trellio-accent);
+    opacity: 0.9;
+  }
+
+  .type-body-sample {
+    font-family: var(--font-body);
+    font-size: 1.05rem;
+    line-height: 1.75;
+    color: var(--trellio-silver);
+    font-weight: 300;
+    max-width: 620px;
+  }
+
+  .type-mono-sample {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    line-height: 1.8;
+    color: var(--trellio-primary-light);
+    background: rgba(14, 165, 160, 0.06);
+    padding: 1.5rem 2rem;
+    border-radius: 10px;
+    border: 1px solid rgba(14, 165, 160, 0.1);
+  }
+
+  .type-weights {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    margin-top: 1rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .type-weight {
+    font-family: var(--font-body);
+    font-size: 1.5rem;
+    color: var(--trellio-silver);
+    line-height: 1.2;
+  }
+
+  .type-weight span {
+    display: block;
+    font-size: 0.6rem;
+    font-family: var(--font-mono);
+    color: var(--trellio-muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  /* ============================================
+     LOGO SYSTEM
+     ============================================ */
+  .logo-section {
+    background: var(--trellio-charcoal);
+    position: relative;
+  }
+
+  .logo-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(14, 165, 160, 0.3), transparent);
+  }
+
+  .logo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 3rem;
+  }
+
+  .logo-card {
+    border-radius: 20px;
+    padding: 3rem 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 220px;
+    position: relative;
+    transition: all 0.4s ease;
+  }
+
+  .logo-card:hover {
+    transform: translateY(-4px);
+  }
+
+  .logo-card.dark {
+    background: var(--trellio-midnight);
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .logo-card.light {
+    background: var(--trellio-cream);
+  }
+
+  .logo-card.primary {
+    background: var(--trellio-primary);
+  }
+
+  .logo-card.accent {
+    background: linear-gradient(135deg, var(--trellio-primary-deep), var(--trellio-primary));
+  }
+
+  .logo-card-label {
+    position: absolute;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--font-mono);
+    font-size: 0.55rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    opacity: 0.5;
+  }
+
+  .logo-card.light .logo-card-label { color: var(--trellio-slate); }
+  .logo-card.dark .logo-card-label { color: var(--trellio-silver); }
+  .logo-card.primary .logo-card-label,
+  .logo-card.accent .logo-card-label { color: rgba(255,255,255,0.6); }
+
+  .logo-wordmark {
+    font-family: var(--font-body);
+    font-size: 2.5rem;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo-wordmark .mark {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+  }
+
+  .logo-card.dark .logo-wordmark { color: var(--trellio-white); }
+  .logo-card.light .logo-wordmark { color: var(--trellio-midnight); }
+  .logo-card.primary .logo-wordmark,
+  .logo-card.accent .logo-wordmark { color: var(--trellio-white); }
+
+  /* ============================================
+     BRAND ELEMENTS
+     ============================================ */
+  .elements-section {
+    background: var(--trellio-midnight);
+  }
+
+  .elements-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 3rem;
+  }
+
+  .element-card {
+    background: var(--trellio-charcoal);
+    border-radius: 20px;
+    padding: 2.5rem;
+    border: 1px solid rgba(255,255,255,0.04);
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .element-card:hover {
+    border-color: rgba(14, 165, 160, 0.2);
+    transform: translateY(-2px);
+  }
+
+  .element-card h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+  }
+
+  .element-card p {
+    font-size: 0.9rem;
+    color: var(--trellio-silver);
+    line-height: 1.65;
+    font-weight: 300;
+  }
+
+  .element-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    font-size: 1.3rem;
+  }
+
+  .element-icon.teal {
+    background: rgba(14, 165, 160, 0.12);
+    color: var(--trellio-primary);
+  }
+
+  .element-icon.coral {
+    background: rgba(247, 132, 94, 0.12);
+    color: var(--trellio-accent);
+  }
+
+  .element-icon.gold {
+    background: rgba(255, 170, 92, 0.12);
+    color: var(--trellio-accent-warm);
+  }
+
+  .element-icon.sage {
+    background: rgba(200, 230, 201, 0.12);
+    color: var(--trellio-sage);
+  }
+
+  /* ============================================
+     CTA / MOCKUP SECTION
+     ============================================ */
+  .cta-section {
+    background: linear-gradient(180deg, var(--trellio-charcoal) 0%, var(--trellio-midnight) 100%);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-section::before {
+    content: '';
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(14, 165, 160, 0.08) 0%, transparent 70%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .cta-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2.5rem;
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 2;
+  }
+
+  .btn {
+    padding: 14px 32px;
+    border-radius: 12px;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.95rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-primary {
+    background: var(--trellio-primary);
+    color: white;
+    box-shadow: 0 4px 20px rgba(14, 165, 160, 0.3), inset 0 1px 0 rgba(255,255,255,0.15);
+  }
+
+  .btn-primary:hover {
+    background: var(--trellio-primary-deep);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(14, 165, 160, 0.4);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--trellio-white);
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+
+  .btn-ghost:hover {
+    background: rgba(255,255,255,0.05);
+    border-color: rgba(255,255,255,0.25);
+    transform: translateY(-2px);
+  }
+
+  /* ============================================
+     GRADIENT BAR
+     ============================================ */
+  .gradient-bar {
+    height: 4px;
+    background: linear-gradient(90deg, var(--trellio-primary), var(--trellio-accent-warm), var(--trellio-accent), var(--trellio-primary-deep));
+    background-size: 300% 100%;
+    animation: gradientFlow 8s ease infinite;
+  }
+
+  @keyframes gradientFlow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* ============================================
+     UI PREVIEW
+     ============================================ */
+  .ui-preview {
+    margin-top: 3rem;
+    background: var(--trellio-charcoal);
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.06);
+    overflow: hidden;
+  }
+
+  .ui-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 20px;
+    background: rgba(0,0,0,0.2);
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .ui-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+  }
+
+  .ui-dot:nth-child(1) { background: #FF5F57; }
+  .ui-dot:nth-child(2) { background: #FFBD2E; }
+  .ui-dot:nth-child(3) { background: #28CA41; }
+
+  .ui-url-bar {
+    flex: 1;
+    background: rgba(255,255,255,0.04);
+    border-radius: 6px;
+    padding: 5px 14px;
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--trellio-muted);
+    margin-left: 12px;
+  }
+
+  .ui-body {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    min-height: 400px;
+  }
+
+  .ui-sidebar {
+    background: rgba(0,0,0,0.15);
+    padding: 1.5rem;
+    border-right: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .ui-sidebar-logo {
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--trellio-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 2rem;
+  }
+
+  .ui-sidebar-logo .mini-mark {
+    width: 22px;
+    height: 22px;
+  }
+
+  .ui-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    color: var(--trellio-muted);
+    margin-bottom: 2px;
+    transition: all 0.2s;
+  }
+
+  .ui-nav-item.active {
+    background: rgba(14, 165, 160, 0.1);
+    color: var(--trellio-primary);
+  }
+
+  .ui-nav-icon {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.06);
+  }
+
+  .ui-nav-item.active .ui-nav-icon {
+    background: rgba(14, 165, 160, 0.2);
+  }
+
+  .ui-main {
+    padding: 2rem;
+  }
+
+  .ui-main-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+  }
+
+  .ui-main-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+  }
+
+  .ui-btn-sm {
+    background: var(--trellio-primary);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    font-family: var(--font-body);
+  }
+
+  .ui-stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .ui-stat-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 12px;
+    padding: 1.2rem;
+  }
+
+  .ui-stat-label {
+    font-size: 0.65rem;
+    color: var(--trellio-muted);
+    font-family: var(--font-mono);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .ui-stat-value {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-top: 4px;
+  }
+
+  .ui-stat-value.teal { color: var(--trellio-primary); }
+  .ui-stat-value.coral { color: var(--trellio-accent); }
+  .ui-stat-value.gold { color: var(--trellio-accent-warm); }
+
+  .ui-stat-delta {
+    font-size: 0.7rem;
+    color: var(--trellio-primary);
+    margin-top: 4px;
+  }
+
+  .ui-schedule-row {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
+
+  .ui-schedule-block {
+    flex: 1;
+    background: rgba(14, 165, 160, 0.06);
+    border-left: 3px solid var(--trellio-primary);
+    border-radius: 0 8px 8px 0;
+    padding: 12px;
+  }
+
+  .ui-schedule-block:nth-child(2) {
+    background: rgba(247, 132, 94, 0.06);
+    border-color: var(--trellio-accent);
+  }
+
+  .ui-schedule-block:nth-child(3) {
+    background: rgba(255, 170, 92, 0.06);
+    border-color: var(--trellio-accent-warm);
+  }
+
+  .ui-sched-time {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    color: var(--trellio-muted);
+    margin-bottom: 4px;
+  }
+
+  .ui-sched-title {
+    font-size: 0.78rem;
+    font-weight: 600;
+  }
+
+  .ui-sched-crew {
+    font-size: 0.65rem;
+    color: var(--trellio-silver);
+    margin-top: 3px;
+  }
+
+  /* ============================================
+     VOICE SECTION
+     ============================================ */
+  .voice-section {
+    background: var(--trellio-charcoal);
+    position: relative;
+  }
+
+  .voice-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(247, 132, 94, 0.3), transparent);
+  }
+
+  .voice-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-top: 3rem;
+  }
+
+  .voice-card {
+    padding: 2rem;
+    border-radius: 16px;
+    background: var(--trellio-midnight);
+    border: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .voice-do {
+    color: var(--trellio-primary);
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .voice-dont {
+    color: var(--trellio-accent);
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .voice-example {
+    font-size: 1.05rem;
+    line-height: 1.6;
+    font-style: italic;
+    color: var(--trellio-silver);
+  }
+
+  /* ============================================
+     FOOTER
+     ============================================ */
+  .footer {
+    text-align: center;
+    padding: 3rem 2rem;
+    font-size: 0.75rem;
+    color: var(--trellio-muted);
+    font-family: var(--font-mono);
+    letter-spacing: 0.1em;
+    background: var(--trellio-midnight);
+  }
+
+  /* ============================================
+     RESPONSIVE
+     ============================================ */
+  @media (max-width: 768px) {
+    .ui-body { grid-template-columns: 1fr; }
+    .ui-sidebar { display: none; }
+    .ui-stats-row { grid-template-columns: 1fr; }
+    .ui-schedule-row { flex-direction: column; }
+    .logo-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ANIMATED GRADIENT BAR -->
+<div class="gradient-bar"></div>
+
+<!-- ============================================
+     HERO
+     ============================================ -->
+<section class="hero">
+  <div class="hero-lattice"></div>
+  <div class="hero-content">
+    <div class="hero-badge">Brand Concept 2026</div>
+
+    <div class="hero-logo-mark">
+      <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Trellis icon mark -->
+        <rect x="4" y="4" width="72" height="72" rx="18" fill="url(#mark-bg)" />
+        <!-- Lattice structure -->
+        <path d="M25 58V30L40 18L55 30V58" stroke="url(#mark-gradient)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M25 42H55" stroke="url(#mark-gradient)" stroke-width="2.5" stroke-linecap="round" opacity="0.8"/>
+        <path d="M25 52H55" stroke="url(#mark-gradient)" stroke-width="2.5" stroke-linecap="round" opacity="0.5"/>
+        <!-- Growth dots -->
+        <circle cx="40" cy="18" r="3.5" fill="#0EA5A0"/>
+        <circle cx="25" cy="30" r="2.5" fill="#F7845E" opacity="0.8"/>
+        <circle cx="55" cy="30" r="2.5" fill="#FFAA5C" opacity="0.8"/>
+        <defs>
+          <linearGradient id="mark-bg" x1="4" y1="4" x2="76" y2="76" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#0F1A2B"/>
+            <stop offset="1" stop-color="#152030"/>
+          </linearGradient>
+          <linearGradient id="mark-gradient" x1="25" y1="18" x2="55" y2="58" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#0EA5A0"/>
+            <stop offset="1" stop-color="#B2F0ED"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+
+    <h1 class="hero-title"><span>trellio</span></h1>
+    <p class="hero-subtitle">The service hub that helps your crew grow upward. Built bold. Designed for the field.</p>
+    <p class="hero-tagline">"Structure your growth."</p>
+  </div>
+</section>
+
+<!-- ============================================
+     COLOR PALETTE
+     ============================================ -->
+<section class="palette-section">
+  <div class="section-label">01 — Color Palette</div>
+  <h2 class="section-title">A palette rooted in<br/>nature × technology</h2>
+  <p class="section-desc">Teal anchors the brand in growth and trust. Coral energizes. Amber rewards. Together they feel bold, warm, and distinctly not "another green SaaS."</p>
+
+  <div class="palette-grid">
+    <div class="color-card">
+      <div class="color-swatch" style="background: linear-gradient(135deg, #0EA5A0, #087F7A);"></div>
+      <div class="color-info">
+        <div class="color-name">Trellio Teal</div>
+        <div class="color-hex">#0EA5A0</div>
+        <div class="color-role">Primary — CTAs, identity, trust</div>
+      </div>
+    </div>
+    <div class="color-card">
+      <div class="color-swatch" style="background: linear-gradient(135deg, #087F7A, #065D59);"></div>
+      <div class="color-info">
+        <div class="color-name">Deep Teal</div>
+        <div class="color-hex">#087F7A</div>
+        <div class="color-role">Hover states, depth</div>
+      </div>
+    </div>
+    <div class="color-card">
+      <div class="color-swatch" style="background: linear-gradient(135deg, #F7845E, #E56840);"></div>
+      <div class="color-info">
+        <div class="color-name">Signal Coral</div>
+        <div class="color-hex">#F7845E</div>
+        <div class="color-role">Accent — energy, urgency, action</div>
+      </div>
+    </div>
+    <div class="color-card">
+      <div class="color-swatch" style="background: linear-gradient(135deg, #FFAA5C, #FF9633);"></div>
+      <div class="color-info">
+        <div class="color-name">Harvest Amber</div>
+        <div class="color-hex">#FFAA5C</div>
+        <div class="color-role">Rewards, warmth, highlights</div>
+      </div>
+    </div>
+    <div class="color-card">
+      <div class="color-swatch" style="background: #0C1220;"></div>
+      <div class="color-info">
+        <div class="color-name">Midnight</div>
+        <div class="color-hex">#0C1220</div>
+        <div class="color-role">Backgrounds, depth</div>
+      </div>
+    </div>
+    <div class="color-card">
+      <div class="color-swatch" style="background: #1A2332;"></div>
+      <div class="color-info">
+        <div class="color-name">Charcoal</div>
+        <div class="color-hex">#1A2332</div>
+        <div class="color-role">Cards, surfaces</div>
+      </div>
+    </div>
+    <div class="color-card">
+      <div class="color-swatch" style="background: linear-gradient(135deg, #B2F0ED, #85E0DB);"></div>
+      <div class="color-info">
+        <div class="color-name">Frost Mint</div>
+        <div class="color-hex">#B2F0ED</div>
+        <div class="color-role">Success, highlights, light mode</div>
+      </div>
+    </div>
+    <div class="color-card">
+      <div class="color-swatch" style="background: #FFF9F5;"></div>
+      <div class="color-info">
+        <div class="color-name" style="color: #1A2332;">Warm Cream</div>
+        <div class="color-hex" style="color: #6B7F96;">#FFF9F5</div>
+        <div class="color-role" style="color: #6B7F96;">Light backgrounds</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================
+     TYPOGRAPHY
+     ============================================ -->
+<section class="type-section">
+  <div class="section-label">02 — Typography</div>
+  <h2 class="section-title">Type that works as hard<br/>as your crew</h2>
+  <p class="section-desc">DM Sans for bold clarity. Playfair Display for editorial warmth. JetBrains Mono for data precision. Three fonts, infinite range.</p>
+
+  <div class="type-showcase">
+    <div class="type-specimen">
+      <div class="type-family-label">
+        DM Sans
+        <span class="type-role">Primary — Headlines & Body</span>
+      </div>
+      <div class="type-display-sample">Schedule smarter.<br/>Grow faster.</div>
+      <div class="type-body-sample">Trellio gives your crew the structure to thrive. From scheduling and dispatching to invoicing and payments — everything flows through one beautiful hub designed for the realities of fieldwork.</div>
+      <div class="type-weights">
+        <div class="type-weight" style="font-weight:300">Light <span>300</span></div>
+        <div class="type-weight" style="font-weight:400">Regular <span>400</span></div>
+        <div class="type-weight" style="font-weight:500">Medium <span>500</span></div>
+        <div class="type-weight" style="font-weight:600">Semibold <span>600</span></div>
+        <div class="type-weight" style="font-weight:700">Bold <span>700</span></div>
+      </div>
+    </div>
+
+    <div class="type-specimen">
+      <div class="type-family-label">
+        Playfair Display
+        <span class="type-role">Accent — Editorial & Taglines</span>
+      </div>
+      <div class="type-serif-sample">"Structure your growth."</div>
+      <div class="type-body-sample">Used sparingly for taglines, pull quotes, and hero moments. The italic serif adds soul and warmth — a human counterpoint to the tech-forward primary type.</div>
+    </div>
+
+    <div class="type-specimen">
+      <div class="type-family-label">
+        JetBrains Mono
+        <span class="type-role">Data — Labels, Metrics & Code</span>
+      </div>
+      <div class="type-mono-sample">
+        JOBS COMPLETED: 2,847 &nbsp;|&nbsp; REVENUE: $184,200 &nbsp;|&nbsp; CREW EFFICIENCY: 94.2%<br/>
+        Next job: 1247 Maple Drive — HVAC Install — ETA 14 min
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================
+     LOGO SYSTEM
+     ============================================ -->
+<section class="logo-section">
+  <div class="section-label">03 — Logo System</div>
+  <h2 class="section-title">One mark.<br/>Every context.</h2>
+  <p class="section-desc">The Trellio logo combines a geometric lattice icon with a bold wordmark. The icon represents the trellis — a growth framework. The nodes represent your crew, connected and climbing.</p>
+
+  <div class="logo-grid">
+    <div class="logo-card dark">
+      <div class="logo-wordmark">
+        <svg class="mark" viewBox="0 0 36 36" fill="none">
+          <path d="M6 28V14L18 6L30 14V28" stroke="#0EA5A0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M6 20H30" stroke="#0EA5A0" stroke-width="1.8" stroke-linecap="round" opacity="0.7"/>
+          <circle cx="18" cy="6" r="2.5" fill="#0EA5A0"/>
+          <circle cx="6" cy="14" r="1.8" fill="#F7845E" opacity="0.8"/>
+          <circle cx="30" cy="14" r="1.8" fill="#FFAA5C" opacity="0.8"/>
+        </svg>
+        trellio
+      </div>
+      <span class="logo-card-label">Dark Background</span>
+    </div>
+
+    <div class="logo-card light">
+      <div class="logo-wordmark" style="color: #0C1220;">
+        <svg class="mark" viewBox="0 0 36 36" fill="none">
+          <path d="M6 28V14L18 6L30 14V28" stroke="#0EA5A0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M6 20H30" stroke="#0EA5A0" stroke-width="1.8" stroke-linecap="round" opacity="0.7"/>
+          <circle cx="18" cy="6" r="2.5" fill="#0EA5A0"/>
+          <circle cx="6" cy="14" r="1.8" fill="#F7845E" opacity="0.8"/>
+          <circle cx="30" cy="14" r="1.8" fill="#FFAA5C" opacity="0.8"/>
+        </svg>
+        trellio
+      </div>
+      <span class="logo-card-label">Light Background</span>
+    </div>
+
+    <div class="logo-card primary">
+      <div class="logo-wordmark">
+        <svg class="mark" viewBox="0 0 36 36" fill="none">
+          <path d="M6 28V14L18 6L30 14V28" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M6 20H30" stroke="white" stroke-width="1.8" stroke-linecap="round" opacity="0.6"/>
+          <circle cx="18" cy="6" r="2.5" fill="white"/>
+          <circle cx="6" cy="14" r="1.8" fill="white" opacity="0.6"/>
+          <circle cx="30" cy="14" r="1.8" fill="white" opacity="0.6"/>
+        </svg>
+        trellio
+      </div>
+      <span class="logo-card-label">On Primary</span>
+    </div>
+
+    <div class="logo-card accent">
+      <div class="logo-wordmark">
+        <svg class="mark" viewBox="0 0 36 36" fill="none">
+          <path d="M6 28V14L18 6L30 14V28" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M6 20H30" stroke="white" stroke-width="1.8" stroke-linecap="round" opacity="0.6"/>
+          <circle cx="18" cy="6" r="2.5" fill="white"/>
+          <circle cx="6" cy="14" r="1.8" fill="white" opacity="0.6"/>
+          <circle cx="30" cy="14" r="1.8" fill="white" opacity="0.6"/>
+        </svg>
+        trellio
+      </div>
+      <span class="logo-card-label">Gradient</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================
+     UI PREVIEW
+     ============================================ -->
+<section class="elements-section">
+  <div class="section-label">04 — Product Preview</div>
+  <h2 class="section-title">What Trellio feels like<br/>in the real world</h2>
+  <p class="section-desc">A glimpse at how the brand system translates into a living product — from dashboard to schedule.</p>
+
+  <div class="ui-preview">
+    <div class="ui-toolbar">
+      <div class="ui-dot"></div>
+      <div class="ui-dot"></div>
+      <div class="ui-dot"></div>
+      <div class="ui-url-bar">app.trellio.app/dashboard</div>
+    </div>
+    <div class="ui-body">
+      <div class="ui-sidebar">
+        <div class="ui-sidebar-logo">
+          <svg class="mini-mark" viewBox="0 0 36 36" fill="none">
+            <path d="M6 28V14L18 6L30 14V28" stroke="#0EA5A0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M6 20H30" stroke="#0EA5A0" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+            <circle cx="18" cy="6" r="2.5" fill="#0EA5A0"/>
+          </svg>
+          Trellio
+        </div>
+        <div class="ui-nav-item active">
+          <div class="ui-nav-icon"></div>
+          Dashboard
+        </div>
+        <div class="ui-nav-item">
+          <div class="ui-nav-icon"></div>
+          Schedule
+        </div>
+        <div class="ui-nav-item">
+          <div class="ui-nav-icon"></div>
+          Clients
+        </div>
+        <div class="ui-nav-item">
+          <div class="ui-nav-icon"></div>
+          Invoices
+        </div>
+        <div class="ui-nav-item">
+          <div class="ui-nav-icon"></div>
+          Crew
+        </div>
+        <div class="ui-nav-item">
+          <div class="ui-nav-icon"></div>
+          Reports
+        </div>
+      </div>
+      <div class="ui-main">
+        <div class="ui-main-header">
+          <div class="ui-main-title">Good morning, Alex</div>
+          <button class="ui-btn-sm">+ New Job</button>
+        </div>
+        <div class="ui-stats-row">
+          <div class="ui-stat-card">
+            <div class="ui-stat-label">Today's Revenue</div>
+            <div class="ui-stat-value teal">$4,280</div>
+            <div class="ui-stat-delta">↑ 18% vs last week</div>
+          </div>
+          <div class="ui-stat-card">
+            <div class="ui-stat-label">Active Jobs</div>
+            <div class="ui-stat-value coral">12</div>
+            <div class="ui-stat-delta">3 awaiting dispatch</div>
+          </div>
+          <div class="ui-stat-card">
+            <div class="ui-stat-label">Crew Online</div>
+            <div class="ui-stat-value gold">8 / 10</div>
+            <div class="ui-stat-delta">2 on break</div>
+          </div>
+        </div>
+        <div style="font-size:0.75rem; color: var(--trellio-muted); font-family: var(--font-mono); letter-spacing:0.1em; text-transform: uppercase; margin-bottom: 0.75rem;">Today's Schedule</div>
+        <div class="ui-schedule-row">
+          <div class="ui-schedule-block">
+            <div class="ui-sched-time">8:00 AM</div>
+            <div class="ui-sched-title">HVAC Install</div>
+            <div class="ui-sched-crew">Team A — Marcus, Jin</div>
+          </div>
+          <div class="ui-schedule-block">
+            <div class="ui-sched-time">10:30 AM</div>
+            <div class="ui-sched-title">Plumbing Repair</div>
+            <div class="ui-sched-crew">Team B — Sofia</div>
+          </div>
+          <div class="ui-schedule-block">
+            <div class="ui-sched-time">1:00 PM</div>
+            <div class="ui-sched-title">Lawn Care</div>
+            <div class="ui-sched-crew">Team C — Derek, Mia</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================
+     BRAND VOICE
+     ============================================ -->
+<section class="voice-section">
+  <div class="section-label">05 — Brand Voice</div>
+  <h2 class="section-title">How Trellio speaks</h2>
+  <p class="section-desc">Bold, practical, human. We talk like a sharp business partner — never like a software manual.</p>
+
+  <div class="voice-grid">
+    <div class="voice-card">
+      <div class="voice-do">✦ We say</div>
+      <div class="voice-example">"Your crew just crushed it — 12 jobs done, $4,280 earned today."</div>
+    </div>
+    <div class="voice-card">
+      <div class="voice-dont">✕ We don't say</div>
+      <div class="voice-example">"Your workflow metrics have been optimized for enhanced operational throughput."</div>
+    </div>
+    <div class="voice-card">
+      <div class="voice-do">✦ We say</div>
+      <div class="voice-example">"Get paid before you leave the driveway."</div>
+    </div>
+    <div class="voice-card">
+      <div class="voice-dont">✕ We don't say</div>
+      <div class="voice-example">"Leverage our integrated payment processing solution."</div>
+    </div>
+    <div class="voice-card">
+      <div class="voice-do">✦ We say</div>
+      <div class="voice-example">"Structure your growth."</div>
+    </div>
+    <div class="voice-card">
+      <div class="voice-dont">✕ We don't say</div>
+      <div class="voice-example">"Empower your scalable business transformation journey."</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================
+     BRAND PRINCIPLES
+     ============================================ -->
+<section class="elements-section">
+  <div class="section-label">06 — Brand Principles</div>
+  <h2 class="section-title">What Trellio<br/>stands for</h2>
+  <p class="section-desc">Four principles that guide every design decision, feature priority, and customer interaction.</p>
+
+  <div class="elements-grid">
+    <div class="element-card">
+      <div class="element-icon teal">△</div>
+      <h3>Crew First</h3>
+      <p>Everything we build starts with the people in the field. If it doesn't make their day easier, it doesn't ship.</p>
+    </div>
+    <div class="element-card">
+      <div class="element-icon coral">◇</div>
+      <h3>Beautifully Obvious</h3>
+      <p>Premium design, zero learning curve. The interface should feel intuitive in gloves, in sunlight, in a moving truck.</p>
+    </div>
+    <div class="element-card">
+      <div class="element-icon gold">○</div>
+      <h3>Growth Architecture</h3>
+      <p>Like a trellis for a vine — we provide the structure, you provide the ambition. Our platform scales as you climb.</p>
+    </div>
+    <div class="element-card">
+      <div class="element-icon sage">□</div>
+      <h3>Earned Trust</h3>
+      <p>No gimmicks. No dark patterns. We earn loyalty by making every invoice, schedule, and payment rock-solid.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================
+     CTA
+     ============================================ -->
+<section class="cta-section">
+  <div class="section-label" style="justify-content:center;">The Foundation</div>
+  <h2 class="section-title" style="text-align:center; max-width:600px; margin: 0 auto 1rem;">Ready to build<br/>on this?</h2>
+  <p class="section-desc" style="text-align:center; margin: 0 auto;">This is the brand concept for Trellio. Every color, font, and word is designed to set you apart from Jobber and own the space.</p>
+  <div class="cta-buttons">
+    <a class="btn btn-primary" href="#">Let's Build →</a>
+    <a class="btn btn-ghost" href="#">Refine Further</a>
+  </div>
+</section>
+
+<!-- GRADIENT BAR -->
+<div class="gradient-bar"></div>
+
+<footer class="footer">
+  TRELLIO BRAND CONCEPT — 2026 — CONFIDENTIAL
+</footer>
+
+</body>
+</html>

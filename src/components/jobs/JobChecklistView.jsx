@@ -83,9 +83,9 @@ export default function JobChecklistView({ job, onUpdateJob }) {
 
   if (checklist.length === 0) {
     return (
-      <div className="text-center py-12 bg-gray-50 rounded-lg">
-        <p className="text-gray-500 mb-2">No checklist for this job</p>
-        <p className="text-sm text-gray-400">
+      <div className="text-center py-12 bg-midnight/60 rounded-lg">
+        <p className="text-slate-400 mb-2">No checklist for this job</p>
+        <p className="text-sm text-slate-500">
           You can attach a checklist template or create checklist items manually
         </p>
       </div>
@@ -95,11 +95,11 @@ export default function JobChecklistView({ job, onUpdateJob }) {
   return (
     <div className="space-y-4">
       {/* Progress Header */}
-      <div className="bg-white rounded-lg border border-gray-200 p-4">
+      <div className="bg-charcoal rounded-lg border border-slate-700/30 p-4">
         <div className="flex items-center justify-between mb-3">
           <div>
-            <h3 className="text-lg font-semibold text-gray-900">Checklist Progress</h3>
-            <p className="text-sm text-gray-600">
+            <h3 className="text-lg font-semibold text-slate-100">Checklist Progress</h3>
+            <p className="text-sm text-slate-400">
               {completionStats.completed} of {completionStats.total} items completed
             </p>
           </div>
@@ -114,7 +114,7 @@ export default function JobChecklistView({ job, onUpdateJob }) {
         </div>
 
         {/* Progress Bar */}
-        <div className="relative w-full h-3 bg-gray-200 rounded-full overflow-hidden">
+        <div className="relative w-full h-3 bg-slate-700 rounded-full overflow-hidden">
           <div
             className="absolute top-0 left-0 h-full bg-green-500 transition-all duration-300"
             style={{ width: `${completionStats.percentage}%` }}
@@ -122,7 +122,7 @@ export default function JobChecklistView({ job, onUpdateJob }) {
         </div>
 
         <div className="flex items-center justify-between mt-2 text-sm">
-          <span className="text-gray-600">{completionStats.percentage}% complete</span>
+          <span className="text-slate-400">{completionStats.percentage}% complete</span>
           {completionStats.required > 0 && (
             <span className="text-red-600 font-medium">
               {completionStats.required} required {completionStats.required === 1 ? 'item' : 'items'} remaining
@@ -141,12 +141,12 @@ export default function JobChecklistView({ job, onUpdateJob }) {
           return (
             <div
               key={item.id || index}
-              className={`bg-white rounded-lg border-2 transition-all ${
+              className={`bg-charcoal rounded-lg border-2 transition-all ${
                 item.completed
                   ? 'border-green-200 bg-green-50'
                   : item.required
                   ? 'border-red-200'
-                  : 'border-gray-200'
+                  : 'border-slate-700/30'
               }`}
             >
               <div className="p-4">
@@ -159,7 +159,7 @@ export default function JobChecklistView({ job, onUpdateJob }) {
                         ? 'bg-green-500 border-green-500'
                         : item.required
                         ? 'border-red-400 hover:border-red-500'
-                        : 'border-gray-300 hover:border-gray-400'
+                        : 'border-slate-700 hover:border-slate-500'
                     }`}
                   >
                     {item.completed && (
@@ -174,7 +174,7 @@ export default function JobChecklistView({ job, onUpdateJob }) {
                     <div className="flex items-start justify-between gap-2">
                       <p
                         className={`text-sm font-medium ${
-                          item.completed ? 'text-gray-500 line-through' : 'text-gray-900'
+                          item.completed ? 'text-slate-400 line-through' : 'text-slate-100'
                         }`}
                       >
                         {item.text}
@@ -187,7 +187,7 @@ export default function JobChecklistView({ job, onUpdateJob }) {
                       {(hasNotes || hasPhotos || item.completedAt) && (
                         <button
                           onClick={() => toggleExpanded(item.id)}
-                          className="text-gray-400 hover:text-gray-600"
+                          className="text-slate-500 hover:text-slate-300"
                         >
                           {isExpanded ? '▼' : '▶'}
                         </button>
@@ -196,7 +196,7 @@ export default function JobChecklistView({ job, onUpdateJob }) {
 
                     {/* Completion Info */}
                     {item.completedAt && (
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-xs text-slate-400 mt-1">
                         Completed {formatDateTime(item.completedAt)}
                       </p>
                     )}
@@ -206,7 +206,7 @@ export default function JobChecklistView({ job, onUpdateJob }) {
                       <div className="mt-3 space-y-3">
                         {/* Notes */}
                         <div>
-                          <label className="block text-xs font-medium text-gray-700 mb-1">
+                          <label className="block text-xs font-medium text-slate-300 mb-1">
                             Notes
                           </label>
                           <textarea
@@ -214,19 +214,19 @@ export default function JobChecklistView({ job, onUpdateJob }) {
                             onChange={(e) => handleUpdateNotes(item.id, e.target.value)}
                             placeholder="Add notes about this item..."
                             rows={2}
-                            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-3 py-2 text-sm border border-slate-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                           />
                         </div>
 
                         {/* Photos (placeholder) */}
                         {hasPhotos && (
                           <div>
-                            <p className="text-xs font-medium text-gray-700 mb-1">Photos</p>
+                            <p className="text-xs font-medium text-slate-300 mb-1">Photos</p>
                             <div className="flex gap-2">
                               {item.photos.map((photo, photoIndex) => (
                                 <div
                                   key={photoIndex}
-                                  className="w-16 h-16 bg-gray-100 rounded-md flex items-center justify-center"
+                                  className="w-16 h-16 bg-midnight rounded-md flex items-center justify-center"
                                 >
                                   <span className="text-2xl">📷</span>
                                 </div>

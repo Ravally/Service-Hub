@@ -86,34 +86,34 @@ const JobsBoard = ({ jobs = [], clients = [], staff = [], onOpenJob, onStatusCha
   return (
     <div>
       <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <h2 className="text-2xl font-semibold text-gray-800">Jobs</h2>
+        <h2 className="text-2xl font-semibold text-slate-200">Jobs</h2>
         <div className="flex flex-wrap gap-2 items-center">
-          <input value={search} onChange={(e)=>setSearch(e.target.value)} placeholder="Search jobs..." className="px-3 py-2 border border-gray-300 rounded-md text-sm"/>
-          <select value={clientId} onChange={(e)=>setClientId(e.target.value)} className="px-2 py-2 border border-gray-300 rounded-md text-sm">
+          <input value={search} onChange={(e)=>setSearch(e.target.value)} placeholder="Search jobs..." className="px-3 py-2 border border-slate-700 rounded-md text-sm"/>
+          <select value={clientId} onChange={(e)=>setClientId(e.target.value)} className="px-2 py-2 border border-slate-700 rounded-md text-sm">
             <option value="">All Clients</option>
             {clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
           </select>
-          <select value={assignee} onChange={(e)=>setAssignee(e.target.value)} className="px-2 py-2 border border-gray-300 rounded-md text-sm">
+          <select value={assignee} onChange={(e)=>setAssignee(e.target.value)} className="px-2 py-2 border border-slate-700 rounded-md text-sm">
             <option value="">All Assignees</option>
             <option value="unassigned">Unassigned</option>
             {staff.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
           </select>
-          <select value={range} onChange={(e)=>setRange(e.target.value)} className="px-2 py-2 border border-gray-300 rounded-md text-sm">
+          <select value={range} onChange={(e)=>setRange(e.target.value)} className="px-2 py-2 border border-slate-700 rounded-md text-sm">
             <option value="all">All Dates</option>
             <option value="today">Today</option>
             <option value="week">This Week</option>
             <option value="month">This Month</option>
           </select>
           {(search || statusFilter.length>0 || assignee || clientId || range!=='all') && (
-            <button onClick={clearFilters} className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">Clear</button>
+            <button onClick={clearFilters} className="px-2 py-1 rounded-full text-xs font-medium bg-midnight text-slate-300">Clear</button>
           )}
           <div className="flex items-center gap-2">
-            <select value={selectedPreset} onChange={(e)=>applyPreset(e.target.value)} className="px-2 py-2 border border-gray-300 rounded-md text-sm">
+            <select value={selectedPreset} onChange={(e)=>applyPreset(e.target.value)} className="px-2 py-2 border border-slate-700 rounded-md text-sm">
               <option value="">Presets</option>
               {Object.keys(presets).map(name => <option key={name} value={name}>{name}</option>)}
             </select>
             <button onClick={savePreset} className="px-2 py-1 rounded-md text-xs font-medium bg-indigo-600 text-white">Save Preset</button>
-            <button onClick={deletePreset} disabled={!selectedPreset} className={`px-2 py-1 rounded-md text-xs font-medium ${selectedPreset ? 'bg-gray-100 text-gray-700' : 'bg-gray-50 text-gray-300 cursor-not-allowed'}`}>Delete</button>
+            <button onClick={deletePreset} disabled={!selectedPreset} className={`px-2 py-1 rounded-md text-xs font-medium ${selectedPreset ? 'bg-midnight text-slate-300' : 'bg-midnight/60 text-slate-600 cursor-not-allowed'}`}>Delete</button>
           </div>
         </div>
       </div>
@@ -122,29 +122,29 @@ const JobsBoard = ({ jobs = [], clients = [], staff = [], onOpenJob, onStatusCha
         {statuses.map(s => {
           const active = statusFilter.includes(s);
           return (
-            <button key={s} onClick={() => setStatusFilter(prev => active ? prev.filter(x=>x!==s) : [...prev, s])} className={`px-2 py-1 rounded-full text-xs font-medium border ${active ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-300'}`}>{s}</button>
+            <button key={s} onClick={() => setStatusFilter(prev => active ? prev.filter(x=>x!==s) : [...prev, s])} className={`px-2 py-1 rounded-full text-xs font-medium border ${active ? 'bg-blue-600 text-white border-blue-600' : 'bg-charcoal text-slate-300 border-slate-700'}`}>{s}</button>
           );
         })}
       </div>
 
-      <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+      <div className="bg-charcoal rounded-xl shadow-lg border border-slate-700/30 overflow-hidden">
         {filtered.length === 0 ? (
-          <div className="text-center p-10 text-gray-500">No matching jobs.</div>
+          <div className="text-center p-10 text-slate-400">No matching jobs.</div>
         ) : (
-          <ul className="divide-y divide-gray-200">
+          <ul className="divide-y divide-slate-700/30">
             {filtered.map(job => (
-              <li key={job.id} className="p-4 sm:p-6 hover:bg-gray-50">
+              <li key={job.id} className="p-4 sm:p-6 hover:bg-midnight/60">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                   <div className="cursor-pointer" onClick={() => onOpenJob && onOpenJob(job)}>
                     <p className="font-semibold text-blue-700">{job.title}</p>
-                    <p className="text-sm text-gray-600">{clientMap[job.clientId]?.name || 'Unknown Client'}</p>
-                    <p className="text-xs text-gray-500 mt-1">{job.start ? new Date(job.start).toLocaleString() : 'Unscheduled'}</p>
+                    <p className="text-sm text-slate-400">{clientMap[job.clientId]?.name || 'Unknown Client'}</p>
+                    <p className="text-xs text-slate-400 mt-1">{job.start ? new Date(job.start).toLocaleString() : 'Unscheduled'}</p>
                   </div>
                   <div className="mt-3 sm:mt-0 flex items-center gap-3">
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      job.status === 'Scheduled' ? 'bg-indigo-100 text-indigo-800' : job.status === 'In Progress' ? 'bg-yellow-100 text-yellow-800' : job.status === 'Completed' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                      job.status === 'Scheduled' ? 'bg-indigo-100 text-indigo-800' : job.status === 'In Progress' ? 'bg-yellow-100 text-yellow-800' : job.status === 'Completed' ? 'bg-green-100 text-green-800' : 'bg-midnight text-slate-200'
                     }`}>{job.status}</span>
-                    <select value={job.status} onChange={(e) => onStatusChange && onStatusChange(job, e.target.value)} disabled={!(userRole === 'admin' || userRole === 'manager')} className={`p-1 border rounded-md shadow-sm text-xs ${ (userRole === 'admin' || userRole === 'manager') ? 'border-gray-300' : 'border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed' }`}>
+                    <select value={job.status} onChange={(e) => onStatusChange && onStatusChange(job, e.target.value)} disabled={!(userRole === 'admin' || userRole === 'manager')} className={`p-1 border rounded-md shadow-sm text-xs ${ (userRole === 'admin' || userRole === 'manager') ? 'border-slate-700' : 'border-slate-700/30 bg-midnight/60 text-slate-500 cursor-not-allowed' }`}>
                       <option disabled>Change status...</option>
                       {['Unscheduled','Scheduled','In Progress','Completed'].map(s => <option key={s} value={s}>{s}</option>)}
                     </select>

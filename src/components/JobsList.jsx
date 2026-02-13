@@ -1,6 +1,8 @@
 // src/components/JobsList.jsx
 import React, { useMemo, useState } from 'react';
+import { useBulkSelection } from '../hooks/ui';
 import KpiCard from './common/KpiCard';
+import BulkActionBar from './common/BulkActionBar';
 import Pill from './common/Pill';
 
 const STATUS_PILL = {
@@ -12,7 +14,7 @@ const STATUS_PILL = {
   'Action Required': 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/30',
   'Requires Invoicing': 'bg-amber-500/10 text-amber-400 border border-amber-500/30',
   'Ending within 30 days': 'bg-orange-500/10 text-orange-400 border border-orange-500/30',
-  Completed: 'bg-trellio-teal/10 text-trellio-teal border border-trellio-teal/30',
+  Completed: 'bg-scaffld-teal/10 text-scaffld-teal border border-scaffld-teal/30',
   'In Progress': 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/30',
   Scheduled: 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/30',
   Archived: 'bg-slate-700/30 text-slate-400 border border-slate-700',
@@ -79,6 +81,9 @@ export default function JobsList({
   onOpenJob,
   onNewJobClick,
   onManageJobForms,
+  onBulkUpdateJobStatus,
+  onBulkArchiveJobs,
+  onBulkDeleteJobs,
 }) {
   const clientById = useMemo(() => Object.fromEntries((clients||[]).map(c=>[c.id, c])), [clients]);
   const quoteMap = useMemo(() => Object.fromEntries((quotes||[]).map(q=>[q.id, q])), [quotes]);
@@ -145,6 +150,18 @@ export default function JobsList({
 
   const toggleSort = (key) => { if (sortBy === key) setSortDir(d => d==='asc'?'desc':'asc'); else { setSortBy(key); setSortDir('asc'); } };
 
+  const { selected, allChecked, toggleAll, toggleOne, clearSelection } = useBulkSelection(filtered);
+  const validStatuses = ['Unscheduled', 'Scheduled', 'In Progress', 'Completed'];
+  const bulkActions = [
+    { label: 'Change Status', onClick: () => {
+      const s = window.prompt(`Enter new status (${validStatuses.join(', ')}):`);
+      if (s?.trim() && validStatuses.includes(s.trim())) { onBulkUpdateJobStatus?.(Array.from(selected), s.trim()); clearSelection(); }
+      else if (s) { alert(`Invalid status. Choose from: ${validStatuses.join(', ')}`); }
+    }},
+    { label: 'Archive', onClick: () => { onBulkArchiveJobs?.(Array.from(selected)); clearSelection(); } },
+    { label: 'Delete', onClick: () => { onBulkDeleteJobs?.(Array.from(selected)); clearSelection(); }, variant: 'danger' },
+  ];
+
   const statusOptions = [
     'Ending within 30 days', 'Late', 'Requires Invoicing', 'Action Required', 'Unscheduled', 'Today', 'Upcoming', 'Active', 'Archived'
   ];
@@ -154,7 +171,7 @@ export default function JobsList({
       <div className="mb-6 flex items-center justify-between">
         <h2 className="text-3xl font-bold font-display text-slate-100">Jobs</h2>
         <div className="flex items-center gap-2">
-          <button onClick={onNewJobClick} className="px-4 py-2 rounded-md bg-trellio-teal text-white font-semibold hover:bg-trellio-teal-deep transition-colors">New Job</button>
+          <button onClick={onNewJobClick} className="px-4 py-2 rounded-md bg-scaffld-teal text-white font-semibold hover:bg-scaffld-teal-deep transition-colors">New Job</button>
           <div className="relative">
             <button onClick={()=>setJobTypeOpen(o=>!o)} className="px-3 py-2 rounded-md bg-charcoal text-slate-300 border border-slate-700 hover:bg-slate-dark transition-colors">More Actions</button>
             {jobTypeOpen && (
@@ -188,7 +205,7 @@ export default function JobsList({
             <button onClick={()=>setStatusOpen(o=>!o)} className="px-3 py-1.5 rounded-full bg-charcoal text-slate-100 text-sm border border-slate-700">Status | {status==='all'? 'All' : status}</button>
             {statusOpen && (
               <div className="absolute z-20 mt-2 w-64 bg-charcoal border border-slate-700/30 rounded-md shadow p-2">
-                <input placeholder="Search status" className="w-full px-2 py-1 bg-midnight border border-slate-700 text-slate-100 placeholder-slate-500 rounded mb-2 text-sm focus:border-trellio-teal" />
+                <input placeholder="Search status" className="w-full px-2 py-1 bg-midnight border border-slate-700 text-slate-100 placeholder-slate-500 rounded mb-2 text-sm focus:border-scaffld-teal" />
                 <button className={`w-full text-left px-3 py-2 text-slate-100 hover:bg-slate-dark ${status==='all'?'bg-slate-dark':''}`} onClick={()=>{ setStatus('all'); setStatusOpen(false); }}>
                   <span className="inline-block mr-2" style={{width:12}}>{status==='all'?'x':''}</span>
                   All
@@ -206,10 +223,12 @@ export default function JobsList({
             <button className="px-3 py-1.5 rounded-full bg-charcoal text-slate-100 text-sm border border-slate-700">Job Type | {jobType==='all'? 'All' : jobType}</button>
           </div>
         </div>
-        <input value={search} onChange={(e)=>setSearch(e.target.value)} placeholder="Search jobs..." className="px-3 py-2 bg-midnight border border-slate-700 text-slate-100 placeholder-slate-500 rounded-md text-sm w-72 focus:border-trellio-teal focus:ring-2 focus:ring-trellio-teal/20"/>
+        <input value={search} onChange={(e)=>setSearch(e.target.value)} placeholder="Search jobs..." className="px-3 py-2 bg-midnight border border-slate-700 text-slate-100 placeholder-slate-500 rounded-md text-sm w-72 focus:border-scaffld-teal focus:ring-2 focus:ring-scaffld-teal/20"/>
       </div>
 
       <div className="text-sm text-slate-100 mb-2">{(status!=='all' || jobType!=='all' || search) ? 'Filtered jobs' : 'All jobs'} ({filtered.length} results)</div>
+
+      <BulkActionBar selectedCount={selected.size} onDeselectAll={clearSelection} actions={bulkActions} />
 
       <div className="bg-charcoal rounded-xl shadow-lg border border-slate-700/30 overflow-hidden min-h-[calc(100vh-26rem)]">
         {filtered.length === 0 ? (
@@ -218,19 +237,21 @@ export default function JobsList({
           <table className="w-full">
             <thead className="bg-midnight text-sm border-b border-slate-700">
               <tr>
-                <th className="text-left font-semibold p-3 text-slate-300 cursor-pointer select-none hover:text-trellio-teal transition-colors" onClick={()=>toggleSort('client')}>Client{sortBy==='client' && (sortDir==='asc'?' ^':' v')}</th>
-                <th className="text-left font-semibold p-3 text-slate-300 cursor-pointer select-none hover:text-trellio-teal transition-colors" onClick={()=>toggleSort('job')}>Job number{sortBy==='job' && (sortDir==='asc'?' ^':' v')}</th>
-                <th className="text-left font-semibold p-3 text-slate-300 cursor-pointer select-none hover:text-trellio-teal transition-colors" onClick={()=>toggleSort('property')}>Property{sortBy==='property' && (sortDir==='asc'?' ^':' v')}</th>
-                <th className="text-left font-semibold p-3 text-slate-300 cursor-pointer select-none hover:text-trellio-teal transition-colors" onClick={()=>toggleSort('schedule')}>Schedule{sortBy==='schedule' && (sortDir==='asc'?' ^':' v')}</th>
-                <th className="text-left font-semibold p-3 text-slate-300 cursor-pointer select-none hover:text-trellio-teal transition-colors" onClick={()=>toggleSort('status')}>Status{sortBy==='status' && (sortDir==='asc'?' ^':' v')}</th>
-                <th className="text-left font-semibold p-3 text-slate-300 cursor-pointer select-none hover:text-trellio-teal transition-colors" onClick={()=>toggleSort('total')}>Total{sortBy==='total' && (sortDir==='asc'?' ^':' v')}</th>
+                <th className="p-3 w-10"><input type="checkbox" checked={allChecked} onChange={toggleAll} className="accent-scaffld-teal" /></th>
+                <th className="text-left font-semibold p-3 text-slate-300 cursor-pointer select-none hover:text-scaffld-teal transition-colors" onClick={()=>toggleSort('client')}>Client{sortBy==='client' && (sortDir==='asc'?' ^':' v')}</th>
+                <th className="text-left font-semibold p-3 text-slate-300 cursor-pointer select-none hover:text-scaffld-teal transition-colors" onClick={()=>toggleSort('job')}>Job number{sortBy==='job' && (sortDir==='asc'?' ^':' v')}</th>
+                <th className="text-left font-semibold p-3 text-slate-300 cursor-pointer select-none hover:text-scaffld-teal transition-colors" onClick={()=>toggleSort('property')}>Property{sortBy==='property' && (sortDir==='asc'?' ^':' v')}</th>
+                <th className="text-left font-semibold p-3 text-slate-300 cursor-pointer select-none hover:text-scaffld-teal transition-colors" onClick={()=>toggleSort('schedule')}>Schedule{sortBy==='schedule' && (sortDir==='asc'?' ^':' v')}</th>
+                <th className="text-left font-semibold p-3 text-slate-300 cursor-pointer select-none hover:text-scaffld-teal transition-colors" onClick={()=>toggleSort('status')}>Status{sortBy==='status' && (sortDir==='asc'?' ^':' v')}</th>
+                <th className="text-left font-semibold p-3 text-slate-300 cursor-pointer select-none hover:text-scaffld-teal transition-colors" onClick={()=>toggleSort('total')}>Total{sortBy==='total' && (sortDir==='asc'?' ^':' v')}</th>
               </tr>
             </thead>
             <tbody className="text-sm">
               {filtered.map(j => (
                 <tr key={j.id} className="border-t border-slate-700/30 hover:bg-slate-dark/50 transition-colors">
-                  <td className="p-3"><button onClick={()=>onOpenJob && onOpenJob(j)} className="font-semibold text-trellio-teal hover:underline">{j._clientName}</button></td>
-                  <td className="p-3"><button onClick={()=>onOpenJob && onOpenJob(j)} className="font-semibold text-trellio-teal hover:underline">{j.jobNumber || ('#'+(j.id||'').slice(0,8))}</button></td>
+                  <td className="p-3" onClick={(e) => e.stopPropagation()}><input type="checkbox" checked={selected.has(j.id)} onChange={() => toggleOne(j.id)} className="accent-scaffld-teal" /></td>
+                  <td className="p-3"><button onClick={()=>onOpenJob && onOpenJob(j)} className="font-semibold text-scaffld-teal hover:underline">{j._clientName}</button></td>
+                  <td className="p-3"><button onClick={()=>onOpenJob && onOpenJob(j)} className="font-semibold text-scaffld-teal hover:underline">{j.jobNumber || ('#'+(j.id||'').slice(0,8))}</button></td>
                   <td className="p-3"><div className="truncate max-w-xs">{j._address || '--'}</div></td>
                   <td className="p-3">{j.start ? new Date(j.start).toLocaleDateString() : '--'}</td>
                   <td className="p-3"><Pill className={STATUS_PILL[j._status] || STATUS_PILL['Active']}>{j._status}</Pill></td>

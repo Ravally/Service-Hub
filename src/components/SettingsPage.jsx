@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   BriefcaseIcon, InvoiceIcon, FileTextIcon, UsersIcon, UserPlusIcon,
-  BellIcon, PaletteIcon, ClockIcon, LinkIcon, CreditCardIcon, GlobeIcon,
+  BellIcon, PaletteIcon, ClockIcon, LinkIcon, CreditCardIcon, GlobeIcon, StarIcon, EditIcon,
 } from './icons';
 import CompanyBrandingTab from './settings/CompanyBrandingTab';
 import InvoiceQuoteSettingsTab from './settings/InvoiceQuoteSettingsTab';
@@ -10,6 +10,10 @@ import StaffTemplatesTab from './settings/StaffTemplatesTab';
 import SchedulingNotificationsTab from './settings/SchedulingNotificationsTab';
 import IntegrationsPortalTab from './settings/IntegrationsPortalTab';
 import BillingAccountTab from './settings/BillingAccountTab';
+import BookingSettingsTab from './settings/BookingSettingsTab';
+import ReviewSettingsTab from './settings/ReviewSettingsTab';
+import CustomFieldsTab from './settings/CustomFieldsTab';
+import { hasPermission } from '../utils';
 
 export default function SettingsPage({
   companySettings, invoiceSettings, emailTemplates,
@@ -19,9 +23,11 @@ export default function SettingsPage({
   userProfile, userId,
   handleSaveSettings, handleSaveInvoiceSettings, handleSaveEmailTemplates,
   handleAddTemplate, handleDeleteTemplate, handleLogout,
+  handleInviteUser,
   appState,
+  onConnectAccounting, onDisconnectAccounting, onSyncNow,
 }) {
-  const isAdmin = userProfile?.role === 'admin';
+  const isAdmin = hasPermission(userProfile?.role, 'settings.all');
   const [activeTab, setActiveTab] = useState(isAdmin ? 'company' : 'account');
 
   const cs = (updates) => appState.setCompanySettings({ ...companySettings, ...updates });
@@ -37,9 +43,12 @@ export default function SettingsPage({
       { key: 'quotes', label: 'Quotes', icon: FileTextIcon },
       { key: 'email', label: 'Email Templates', icon: FileTextIcon },
       { key: 'templates', label: 'Item Templates', icon: FileTextIcon },
+      { key: 'customFields', label: 'Custom Fields', icon: EditIcon },
       { key: 'divider-ops', divider: true, sectionLabel: 'Operations' },
       { key: 'staff', label: 'Staff', icon: UsersIcon },
       { key: 'scheduling', label: 'Scheduling', icon: ClockIcon },
+      { key: 'booking', label: 'Online Booking', icon: GlobeIcon },
+      { key: 'reviews', label: 'Reviews', icon: StarIcon },
       { key: 'notifications', label: 'Notifications', icon: BellIcon },
       { key: 'divider-connect', divider: true, sectionLabel: 'Connections' },
       { key: 'integrations', label: 'Integrations', icon: LinkIcon },
@@ -61,13 +70,22 @@ export default function SettingsPage({
       return <EmailTemplatesTab emailTemplates={emailTemplates} setEmailTemplates={appState.setEmailTemplates} handleSaveEmailTemplates={handleSaveEmailTemplates} />;
     }
     if ((activeTab === 'staff' || activeTab === 'templates') && isAdmin) {
-      return <StaffTemplatesTab tab={activeTab} userId={userId} staff={staff} quoteTemplates={quoteTemplates} newStaff={newStaff} setNewStaff={setNewStaff} newTemplate={newTemplate} setNewTemplate={setNewTemplate} handleAddTemplate={handleAddTemplate} handleDeleteTemplate={handleDeleteTemplate} />;
+      return <StaffTemplatesTab tab={activeTab} userId={userId} staff={staff} quoteTemplates={quoteTemplates} newStaff={newStaff} setNewStaff={setNewStaff} newTemplate={newTemplate} setNewTemplate={setNewTemplate} handleAddTemplate={handleAddTemplate} handleDeleteTemplate={handleDeleteTemplate} newInvite={appState.newInvite} setNewInvite={appState.setNewInvite} handleInviteUser={handleInviteUser} userEmail={userProfile?.email} />;
+    }
+    if (activeTab === 'customFields' && isAdmin) {
+      return <CustomFieldsTab userId={userId} />;
     }
     if ((activeTab === 'scheduling' || activeTab === 'notifications') && isAdmin) {
       return <SchedulingNotificationsTab tab={activeTab} companySettings={companySettings} cs={cs} csn={csn} handleSaveSettings={handleSaveSettings} />;
     }
+    if (activeTab === 'booking' && isAdmin) {
+      return <BookingSettingsTab companySettings={companySettings} cs={cs} csn={csn} handleSaveSettings={handleSaveSettings} userId={userId} />;
+    }
+    if (activeTab === 'reviews' && isAdmin) {
+      return <ReviewSettingsTab companySettings={companySettings} cs={cs} csn={csn} handleSaveSettings={handleSaveSettings} />;
+    }
     if ((activeTab === 'integrations' || activeTab === 'portal') && isAdmin) {
-      return <IntegrationsPortalTab tab={activeTab} companySettings={companySettings} cs={cs} csn={csn} handleSaveSettings={handleSaveSettings} />;
+      return <IntegrationsPortalTab tab={activeTab} companySettings={companySettings} cs={cs} csn={csn} handleSaveSettings={handleSaveSettings} onConnectAccounting={onConnectAccounting} onDisconnectAccounting={onDisconnectAccounting} onSyncNow={onSyncNow} />;
     }
     if (activeTab === 'billing' && isAdmin) {
       return <BillingAccountTab tab="billing" userProfile={userProfile} handleLogout={handleLogout} />;
@@ -105,7 +123,7 @@ export default function SettingsPage({
                   key={tab.key}
                   onClick={() => setActiveTab(tab.key)}
                   className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    isActive ? 'bg-trellio-teal/10 text-trellio-teal' : 'text-slate-300 hover:bg-midnight hover:text-slate-100'
+                    isActive ? 'bg-scaffld-teal/10 text-scaffld-teal' : 'text-slate-300 hover:bg-midnight hover:text-slate-100'
                   }`}
                 >
                   <Icon className="h-4 w-4" />

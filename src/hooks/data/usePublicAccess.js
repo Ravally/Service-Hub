@@ -39,6 +39,8 @@ async function logPortalAccess(uid, clientId, action, metadata = {}) {
 export function usePublicAccess(appState) {
   const {
     setPublicQuoteContext, setPublicError, setPublicPortalContext,
+    setPublicBookingContext, setPublicReviewContext,
+    setPublicUnsubscribeContext,
   } = appState;
 
   // Detect public quote approval token
@@ -80,7 +82,9 @@ export function usePublicAccess(appState) {
         }
         const cSnap = quote.clientId ? await getDoc(doc(db, `users/${uid}/clients`, quote.clientId)) : null;
         const client = cSnap && cSnap.exists() ? { id: cSnap.id, ...cSnap.data() } : null;
-        setPublicQuoteContext({ uid, token, quote, client });
+        const settingsSnap = await getDoc(doc(db, `users/${uid}/settings/companyDetails`));
+        const company = settingsSnap.exists() ? settingsSnap.data() : {};
+        setPublicQuoteContext({ uid, token, quote, client, company });
       } catch (err) {
         console.error('Public approval error:', err);
         setPublicError('Unable to load approval link.');
@@ -125,6 +129,104 @@ export function usePublicAccess(appState) {
       } catch (err) {
         console.error('Portal load error:', err);
         setPublicError('Unable to load portal.');
+      }
+    })();
+  }, []);
+
+  // Detect public booking token
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('bookingToken');
+    if (!token) return;
+    const parts = token.split('.');
+    if (parts.length < 2 || parts[1] !== 'booking') {
+      setPublicError('Invalid booking link.');
+      return;
+    }
+    const uid = parts[0];
+    (async () => {
+      try {
+        const auth = getAuth();
+        if (!auth.currentUser) {
+          try { await signInAnonymously(auth); } catch (e) { /* ignore */ }
+        }
+        const settingsSnap = await getDoc(doc(db, `users/${uid}/settings/companyDetails`));
+        const companySettings = settingsSnap.exists() ? settingsSnap.data() : {};
+
+        if (!companySettings.onlineBooking?.enabled) {
+          setPublicError('Online booking is not currently available.');
+          return;
+        }
+
+        await logPortalAccess(uid, '', 'view_booking', {});
+        setPublicBookingContext({ uid, companySettings });
+      } catch (err) {
+        console.error('Booking load error:', err);
+        setPublicError('Unable to load booking page.');
+      }
+    })();
+  }, []);
+
+  // Detect public review token
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('reviewToken');
+    if (!token) return;
+    const parts = token.split('.');
+    if (parts.length < 3) { setPublicError('Invalid review link.'); return; }
+    const uid = parts[0];
+    const jobId = parts[1];
+    (async () => {
+      try {
+        const auth = getAuth();
+        if (!auth.currentUser) {
+          try { await signInAnonymously(auth); } catch (e) { /* ignore */ }
+        }
+        const jobSnap = await getDoc(doc(db, `users/${uid}/jobs`, jobId));
+        if (!jobSnap.exists()) { setPublicError('Job not found.'); return; }
+        const job = { id: jobSnap.id, ...jobSnap.data() };
+
+        if (job.reviewToken !== token) {
+          setPublicError('Invalid review link.');
+          return;
+        }
+
+        if (isTokenExpired(job.reviewTokenCreatedAt)) {
+          setPublicError('This review link has expired. Please contact the business for a new link.');
+          return;
+        }
+
+        const settingsSnap = await getDoc(doc(db, `users/${uid}/settings/companyDetails`));
+        const company = settingsSnap.exists() ? settingsSnap.data() : {};
+
+        await logPortalAccess(uid, job.clientId || '', 'view_review', { jobId });
+        setPublicReviewContext({ uid, job, company });
+      } catch (err) {
+        console.error('Review load error:', err);
+        setPublicError('Unable to load review page.');
+      }
+    })();
+  }, []);
+
+  // Detect unsubscribe token
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('unsubscribe');
+    if (!token) return;
+    const parts = token.split('.');
+    if (parts.length < 2) { setPublicError('Invalid unsubscribe link.'); return; }
+    const uid = parts[0];
+    const clientId = parts[1];
+    (async () => {
+      try {
+        const auth = getAuth();
+        if (!auth.currentUser) {
+          try { await signInAnonymously(auth); } catch (e) { /* ignore */ }
+        }
+        setPublicUnsubscribeContext({ uid, clientId });
+      } catch (err) {
+        console.error('Unsubscribe load error:', err);
+        setPublicError('Unable to process unsubscribe.');
       }
     })();
   }, []);

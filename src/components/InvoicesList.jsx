@@ -2,9 +2,11 @@
 import React, { useMemo, useState } from 'react';
 import { formatCurrency } from '../utils';
 import { inRange, lastNDays, last30ExcludingToday, monthRange, yearRange } from '../utils/dateUtils';
+import { useBulkSelection } from '../hooks/ui';
 import KpiCard from './common/KpiCard';
+import BulkActionBar from './common/BulkActionBar';
 
-export default function InvoicesList({ invoices=[], clients=[], onOpenInvoice, onNewInvoice }) {
+export default function InvoicesList({ invoices=[], clients=[], onOpenInvoice, onNewInvoice, onBulkMarkPaid, onBulkArchiveInvoices, onBulkDeleteInvoices }) {
   const clientMap = useMemo(() => Object.fromEntries((clients||[]).map(c=>[c.id,c])), [clients]);
   const enhanced = useMemo(() => (invoices||[]).map(inv => {
     const paidSoFar = Array.isArray(inv.payments) ? inv.payments.reduce((s, p) => s + Number(p.amount || 0), 0) : 0;
@@ -81,6 +83,13 @@ export default function InvoicesList({ invoices=[], clients=[], onOpenInvoice, o
 
   const toggleSort = (k) => { if (sortBy===k) setSortDir(d=>d==='asc'?'desc':'asc'); else { setSortBy(k); setSortDir('asc'); } };
 
+  const { selected, allChecked, toggleAll, toggleOne, clearSelection } = useBulkSelection(filtered);
+  const bulkActions = [
+    { label: 'Mark as Paid', onClick: () => { onBulkMarkPaid?.(Array.from(selected)); clearSelection(); } },
+    { label: 'Archive', onClick: () => { onBulkArchiveInvoices?.(Array.from(selected)); clearSelection(); } },
+    { label: 'Delete', onClick: () => { onBulkDeleteInvoices?.(Array.from(selected)); clearSelection(); }, variant: 'danger' },
+  ];
+
   const statusOptions = [
     'Awaiting Payment: Past Due', 'Awaiting Payment: Not Yet Due', 'Awaiting Payment: All', 'Draft', 'Paid'
   ];
@@ -92,7 +101,7 @@ export default function InvoicesList({ invoices=[], clients=[], onOpenInvoice, o
         {onNewInvoice && (
           <button
             onClick={onNewInvoice}
-            className="px-4 py-2 rounded-lg bg-trellio-teal text-white text-sm font-semibold hover:bg-trellio-teal-deep transition-colors"
+            className="px-4 py-2 rounded-lg bg-scaffld-teal text-white text-sm font-semibold hover:bg-scaffld-teal-deep transition-colors"
           >
             New Invoice
           </button>
@@ -118,7 +127,7 @@ export default function InvoicesList({ invoices=[], clients=[], onOpenInvoice, o
             <button onClick={()=>setStatusOpen(o=>!o)} className="px-3 py-1.5 rounded-full bg-charcoal text-slate-100 text-sm border border-slate-700">Status | {status==='all' ? 'All' : status}</button>
             {statusOpen && (
               <div className="absolute z-20 mt-2 w-72 bg-charcoal border border-slate-700/30 rounded-md shadow p-2">
-                <input placeholder="Search status" className="w-full px-2 py-1 bg-midnight border border-slate-700 text-slate-100 placeholder-slate-500 focus:border-trellio-teal rounded mb-2 text-sm" />
+                <input placeholder="Search status" className="w-full px-2 py-1 bg-midnight border border-slate-700 text-slate-100 placeholder-slate-500 focus:border-scaffld-teal rounded mb-2 text-sm" />
                 <button className={`w-full text-left px-3 py-2 text-slate-100 hover:bg-slate-dark ${status==='all'?'bg-slate-dark':''}`} onClick={()=>{ setStatus('all'); setStatusOpen(false); }}>All</button>
                 {statusOptions.map(s => (
                   <button key={s} className={`w-full text-left px-3 py-2 text-slate-100 hover:bg-slate-dark ${status===s?'bg-slate-dark':''}`} onClick={()=>{ setStatus(s); setStatusOpen(false); }}>{s}</button>
@@ -145,16 +154,18 @@ export default function InvoicesList({ invoices=[], clients=[], onOpenInvoice, o
                   </div>
                 )}
                 <div className="text-right">
-                  <button onClick={()=>setDueOpen(false)} className="px-4 py-2 bg-trellio-teal text-white rounded-md font-semibold hover:bg-trellio-teal-deep transition-colors">Apply</button>
+                  <button onClick={()=>setDueOpen(false)} className="px-4 py-2 bg-scaffld-teal text-white rounded-md font-semibold hover:bg-scaffld-teal-deep transition-colors">Apply</button>
                 </div>
               </div>
             )}
           </div>
         </div>
-        <input value={search} onChange={(e)=>setSearch(e.target.value)} placeholder="Search invoices..." className="px-3 py-2 bg-midnight border border-slate-700 text-slate-100 placeholder-slate-500 focus:border-trellio-teal focus:ring-2 focus:ring-trellio-teal/20 rounded-md text-sm w-72"/>
+        <input value={search} onChange={(e)=>setSearch(e.target.value)} placeholder="Search invoices..." className="px-3 py-2 bg-midnight border border-slate-700 text-slate-100 placeholder-slate-500 focus:border-scaffld-teal focus:ring-2 focus:ring-scaffld-teal/20 rounded-md text-sm w-72"/>
       </div>
 
       <div className="text-sm text-slate-100 mb-2">{(status!=='all' || dueMode!=='all' || search) ? 'Filtered invoices' : 'All invoices'} ({filtered.length} results)</div>
+
+      <BulkActionBar selectedCount={selected.size} onDeselectAll={clearSelection} actions={bulkActions} />
 
       <div className="bg-charcoal rounded-xl shadow-lg border border-slate-700/30 overflow-hidden min-h-[calc(100vh-26rem)]">
         {filtered.length === 0 ? (
@@ -163,23 +174,32 @@ export default function InvoicesList({ invoices=[], clients=[], onOpenInvoice, o
           <table className="w-full">
             <thead className="bg-midnight text-sm border-b border-slate-700">
               <tr>
-                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-trellio-teal transition-colors" onClick={()=>toggleSort('client')}>Client{sortBy==='client' && (sortDir==='asc'?' ^':' v')}</th>
-                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-trellio-teal transition-colors" onClick={()=>toggleSort('number')}>Invoice number{sortBy==='number' && (sortDir==='asc'?' ^':' v')}</th>
+                <th className="p-3 w-10"><input type="checkbox" checked={allChecked} onChange={toggleAll} className="accent-scaffld-teal" /></th>
+                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-scaffld-teal transition-colors" onClick={()=>toggleSort('client')}>Client{sortBy==='client' && (sortDir==='asc'?' ^':' v')}</th>
+                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-scaffld-teal transition-colors" onClick={()=>toggleSort('number')}>Invoice number{sortBy==='number' && (sortDir==='asc'?' ^':' v')}</th>
                 <th className="text-left font-semibold text-slate-300 p-3">Property</th>
-                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-trellio-teal transition-colors" onClick={()=>toggleSort('due')}>Due date{sortBy==='due' && (sortDir==='asc'?' ^':' v')}</th>
-                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-trellio-teal transition-colors" onClick={()=>toggleSort('status')}>Status{sortBy==='status' && (sortDir==='asc'?' ^':' v')}</th>
-                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-trellio-teal transition-colors" onClick={()=>toggleSort('total')}>Total{sortBy==='total' && (sortDir==='asc'?' ^':' v')}</th>
-                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-trellio-teal transition-colors" onClick={()=>toggleSort('balance')}>Balance{sortBy==='balance' && (sortDir==='asc'?' ^':' v')}</th>
+                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-scaffld-teal transition-colors" onClick={()=>toggleSort('due')}>Due date{sortBy==='due' && (sortDir==='asc'?' ^':' v')}</th>
+                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-scaffld-teal transition-colors" onClick={()=>toggleSort('status')}>Status{sortBy==='status' && (sortDir==='asc'?' ^':' v')}</th>
+                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-scaffld-teal transition-colors" onClick={()=>toggleSort('total')}>Total{sortBy==='total' && (sortDir==='asc'?' ^':' v')}</th>
+                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-scaffld-teal transition-colors" onClick={()=>toggleSort('balance')}>Balance{sortBy==='balance' && (sortDir==='asc'?' ^':' v')}</th>
               </tr>
             </thead>
             <tbody className="text-sm">
               {filtered.map(inv => (
                 <tr key={inv.id} className="border-t border-slate-700/30 hover:bg-slate-dark/50 transition-colors" onClick={()=>onOpenInvoice && onOpenInvoice(inv)}>
-                  <td className="p-3"><button className="font-semibold text-trellio-teal hover:underline">{inv._clientName}</button></td>
-                  <td className="p-3"><button onClick={()=>onOpenInvoice && onOpenInvoice(inv)} className="font-semibold text-trellio-teal hover:underline">{inv.invoiceNumber || `#${(inv.id||'').slice(0,6)}`}</button></td>
+                  <td className="p-3" onClick={(e) => e.stopPropagation()}><input type="checkbox" checked={selected.has(inv.id)} onChange={() => toggleOne(inv.id)} className="accent-scaffld-teal" /></td>
+                  <td className="p-3"><button className="font-semibold text-scaffld-teal hover:underline">{inv._clientName}</button></td>
+                  <td className="p-3"><button onClick={()=>onOpenInvoice && onOpenInvoice(inv)} className="font-semibold text-scaffld-teal hover:underline">{inv.invoiceNumber || `#${(inv.id||'').slice(0,6)}`}</button></td>
                   <td className="p-3"><div className="truncate max-w-xs">{inv._address || '-'}</div></td>
                   <td className="p-3">{inv.dueDate ? new Date(inv.dueDate).toLocaleDateString() : '-'}</td>
-                  <td className="p-3">{inv.status}</td>
+                  <td className="p-3">
+                    <div className="flex items-center gap-2">
+                      <span>{inv.status}</span>
+                      {inv.paymentPlan?.enabled && (
+                        <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-scaffld-teal/10 text-scaffld-teal border border-scaffld-teal/20">PLAN</span>
+                      )}
+                    </div>
+                  </td>
                   <td className="p-3 font-semibold text-slate-100">{formatCurrency(inv.total||0)}</td>
                   <td className="p-3 font-semibold text-slate-100">{formatCurrency(inv._balance||0)}</td>
                 </tr>

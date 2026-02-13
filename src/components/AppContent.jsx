@@ -1,13 +1,13 @@
-import React from 'react';
+import React, { Suspense, useEffect } from 'react';
 import { collection, addDoc, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../firebase/config';
 
-import { JOB_STATUSES, initialQuoteState, initialJobState } from '../constants';
-import { exportPayroll } from '../utils';
+import { JOB_STATUSES, initialQuoteState, initialJobState, ROLE_PERMISSIONS } from '../constants';
+import { exportPayroll, hasPermission } from '../utils';
 
 // Icons
 import {
-  PlusCircleIcon, CalendarIcon, InvoiceIcon, BellIcon, BriefcaseIcon,
+  CalendarIcon, InvoiceIcon, BellIcon, BriefcaseIcon,
   UsersIcon, FileTextIcon, DollarSignIcon, TrendingUpIcon,
 } from './icons';
 
@@ -16,7 +16,9 @@ import ClientDetailView from './ClientDetailView';
 import JobDetailView from './JobDetailView';
 import Sidebar from './Sidebar';
 import DashboardCards from './DashboardCards';
-import CalendarView from './CalendarView';
+const CalendarView = React.lazy(() => import('./CalendarView'));
+const ReportsDashboard = React.lazy(() => import('./ReportsDashboard'));
+const ExpensesPage = React.lazy(() => import('./ExpensesPage'));
 import InvoicePrintView from './InvoicePrintView';
 import QuotePrintView from './QuotePrintView';
 import QuoteDetailView from './QuoteDetailView';
@@ -25,15 +27,26 @@ import InvoiceDetailView from './InvoiceDetailView';
 import InvoiceCreateFlow from './InvoiceCreateFlow';
 import PublicQuoteApproval from './PublicQuoteApproval';
 import PublicClientPortal from './PublicClientPortal';
+import PublicBookingPage from './PublicBookingPage';
+import PublicReviewPage from './PublicReviewPage';
+import BookingsList from './BookingsList';
+import ReviewsList from './ReviewsList';
+import CampaignsList from './CampaignsList';
+import CampaignBuilder from './CampaignBuilder';
+import CampaignDetailView from './CampaignDetailView';
+import PublicUnsubscribePage from './PublicUnsubscribePage';
 import Auth from './Auth';
 import QuotesList from './QuotesList';
 import InvoicesList from './InvoicesList';
-import SettingsPage from './SettingsPage';
+const SettingsPage = React.lazy(() => import('./SettingsPage'));
 import PropertyDetailView from './PropertyDetailView';
 import ClientsList from './ClientsList';
 import CreateClient from './CreateClient';
 import JobsList from './JobsList';
-import TimesheetView from './timesheets/TimesheetView';
+const TimesheetView = React.lazy(() => import('./timesheets/TimesheetView'));
+import AppHeader from './common/AppHeader';
+import PlaceholderPage from './common/PlaceholderPage';
+import ScheduleToolbar from './common/ScheduleToolbar';
 
 /**
  * Main application content component.
@@ -71,7 +84,9 @@ export default function AppContent({ auth, appState, handlers }) {
     scheduleView, updateScheduleView,
     scheduleRange, updateScheduleRange,
     calendarDate, setCalendarDate,
-    publicQuoteContext, publicMessage, publicError, publicPortalContext,
+    publicQuoteContext, publicMessage, publicError, publicPortalContext, publicBookingContext, publicReviewContext,
+    publicUnsubscribeContext,
+    reviews, campaigns, selectedCampaign, setSelectedCampaign,
     navigateToView,
     clientSearchTerm, setClientSearchTerm,
   } = appState;
@@ -101,10 +116,28 @@ export default function AppContent({ auth, appState, handlers }) {
     handleUploadInvoiceAttachment, handleRemoveInvoiceAttachment,
     handleGeneratePaymentLink, handleApplyInvoiceDefaults,
     handleSendInvoice, handleSendQuote, handleSendQuoteText,
-    handleMarkNotificationAsRead,
+    handleMarkNotificationAsRead, handleMarkAllNotificationsRead, handleClearReadNotifications,
     handleInviteUser, handleAddTemplate, handleDeleteTemplate,
     handleSaveSettings, handleSaveInvoiceSettings, handleSaveEmailTemplates,
+    handleApproveBooking, handleDeclineBooking,
+    handleDeleteReview,
+    handleCreateCampaign, handleUpdateCampaign, handleDeleteCampaign,
+    handleSendCampaign, computeRecipientCount,
+    handleBulkMarkPaid, handleBulkArchiveInvoices, handleBulkDeleteInvoices,
+    handleBulkArchiveClients, handleBulkDeleteClients, handleBulkTagClients,
+    handleBulkUpdateJobStatus, handleBulkArchiveJobs, handleBulkDeleteJobs,
+    handleConnectAccounting, handleDisconnectAccounting, handleSyncNow, handleSyncInvoice,
+    handleSetupPaymentPlan, handleRecordInstallmentPayment, handleRemovePaymentPlan,
   } = handlers;
+
+  // --- Route guard: redirect unauthorized views ---
+  useEffect(() => {
+    if (!userProfile) return;
+    const perm = `nav.${activeView}`;
+    if (ROLE_PERMISSIONS[perm] && !hasPermission(userProfile.role, perm)) {
+      navigateToView('dashboard');
+    }
+  }, [activeView, userProfile?.role, navigateToView]);
 
   // --- Public views ---
   if (publicQuoteContext) {
@@ -112,7 +145,8 @@ export default function AppContent({ auth, appState, handlers }) {
       <PublicQuoteApproval
         quote={publicQuoteContext.quote}
         client={publicQuoteContext.client}
-        company={companySettings}
+        company={publicQuoteContext.company || companySettings}
+        uid={publicQuoteContext.uid}
         onApprove={publicApprove}
         onDecline={publicDecline}
         message={publicMessage}
@@ -125,11 +159,26 @@ export default function AppContent({ auth, appState, handlers }) {
     return <PublicClientPortal uid={publicPortalContext.uid} clientId={publicPortalContext.clientId} company={companySettings} />;
   }
 
+  if (publicBookingContext) {
+    return <PublicBookingPage context={publicBookingContext} />;
+  }
+
+  if (publicReviewContext) {
+    return <PublicReviewPage context={publicReviewContext} />;
+  }
+
+  if (publicUnsubscribeContext) {
+    return <PublicUnsubscribePage context={publicUnsubscribeContext} />;
+  }
+
   // Check if loading public view (has token in URL but context not loaded yet)
   const hasPublicToken = new URLSearchParams(window.location.search).has('quoteToken') ||
-                         new URLSearchParams(window.location.search).has('portalToken');
+                         new URLSearchParams(window.location.search).has('portalToken') ||
+                         new URLSearchParams(window.location.search).has('bookingToken') ||
+                         new URLSearchParams(window.location.search).has('reviewToken') ||
+                         new URLSearchParams(window.location.search).has('unsubscribe');
 
-  if (hasPublicToken && !publicQuoteContext && !publicPortalContext && !publicError) {
+  if (hasPublicToken && !publicQuoteContext && !publicPortalContext && !publicBookingContext && !publicReviewContext && !publicUnsubscribeContext && !publicError) {
     return (
       <div className="min-h-screen bg-midnight/60 flex items-center justify-center p-6">
         <div className="bg-charcoal rounded-xl shadow-lg p-6 border border-slate-700/30 max-w-lg w-full text-center">
@@ -164,7 +213,7 @@ export default function AppContent({ auth, appState, handlers }) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-medium text-slate-300 mb-1">Client</label>
-            <select value={newJob.clientId} onChange={(e) => { const nextClientId = e.target.value; const nextProperty = findClientProperty(nextClientId, ''); const nextPropertyId = nextProperty?.uid || nextProperty?.id || ''; setNewJob({ ...newJob, clientId: nextClientId, propertyId: nextPropertyId }); }} required className="w-full px-3 py-2 border border-slate-700 rounded-md bg-midnight text-slate-100 focus:ring-trellio-teal/30 focus:border-trellio-teal">
+            <select value={newJob.clientId} onChange={(e) => { const nextClientId = e.target.value; const nextProperty = findClientProperty(nextClientId, ''); const nextPropertyId = nextProperty?.uid || nextProperty?.id || ''; setNewJob({ ...newJob, clientId: nextClientId, propertyId: nextPropertyId }); }} required className="w-full px-3 py-2 border border-slate-700 rounded-md bg-midnight text-slate-100 focus:ring-scaffld-teal/30 focus:border-scaffld-teal">
               <option value="" disabled>Select a client</option>
               {clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
@@ -172,7 +221,7 @@ export default function AppContent({ auth, appState, handlers }) {
           {newJobProperties.length > 0 && (
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-1">Property</label>
-              <select value={newJob.propertyId || ''} onChange={(e) => setNewJob({ ...newJob, propertyId: e.target.value })} className="w-full px-3 py-2 border border-slate-700 rounded-md bg-midnight text-slate-100 focus:ring-trellio-teal/30 focus:border-trellio-teal">
+              <select value={newJob.propertyId || ''} onChange={(e) => setNewJob({ ...newJob, propertyId: e.target.value })} className="w-full px-3 py-2 border border-slate-700 rounded-md bg-midnight text-slate-100 focus:ring-scaffld-teal/30 focus:border-scaffld-teal">
                 <option value="">Select property</option>
                 {newJobProperties.map((p, idx) => <option key={p.uid || p.id || idx} value={p.uid || p.id || String(idx)}>{p.label || p.street1 || `Property ${idx + 1}`}</option>)}
               </select>
@@ -180,20 +229,20 @@ export default function AppContent({ auth, appState, handlers }) {
           )}
           <div>
             <label className="block text-sm font-medium text-slate-300 mb-1">Title</label>
-            <input type="text" value={newJob.title} onChange={(e) => setNewJob({ ...newJob, title: e.target.value })} placeholder="e.g., House Wash - Front" required className="w-full px-3 py-2 border border-slate-700 rounded-md bg-midnight text-slate-100 focus:ring-trellio-teal/30 focus:border-trellio-teal" />
+            <input type="text" value={newJob.title} onChange={(e) => setNewJob({ ...newJob, title: e.target.value })} placeholder="e.g., House Wash - Front" required className="w-full px-3 py-2 border border-slate-700 rounded-md bg-midnight text-slate-100 focus:ring-scaffld-teal/30 focus:border-scaffld-teal" />
           </div>
           {activeView === 'jobs' && (
             <>
               <div>
                 <label className="block text-sm font-medium text-slate-300 mb-1">Job Type</label>
-                <select value={newJob.jobType || 'one_off'} onChange={(e) => { const nextType = e.target.value; setNewJob((prev) => { const next = { ...prev, jobType: nextType }; if (nextType === 'one_off') { next.schedule = 'One-time'; next.billingFrequency = prev.billingFrequency || 'Upon job completion'; } else if (nextType === 'recurring' && (!prev.schedule || prev.schedule === 'One-time')) { next.schedule = 'Weekly'; } return next; }); }} className="w-full px-3 py-2 border border-slate-700 rounded-md bg-midnight text-slate-100 focus:ring-trellio-teal/30 focus:border-trellio-teal">
+                <select value={newJob.jobType || 'one_off'} onChange={(e) => { const nextType = e.target.value; setNewJob((prev) => { const next = { ...prev, jobType: nextType }; if (nextType === 'one_off') { next.schedule = 'One-time'; next.billingFrequency = prev.billingFrequency || 'Upon job completion'; } else if (nextType === 'recurring' && (!prev.schedule || prev.schedule === 'One-time')) { next.schedule = 'Weekly'; } return next; }); }} className="w-full px-3 py-2 border border-slate-700 rounded-md bg-midnight text-slate-100 focus:ring-scaffld-teal/30 focus:border-scaffld-teal">
                   <option value="one_off">One-off job</option>
                   <option value="recurring">Recurring job</option>
                 </select>
               </div>
               <div>
                 <label className="block text-sm font-medium text-slate-300 mb-1">Schedule</label>
-                <select value={newJob.schedule || 'One-time'} onChange={(e) => setNewJob({ ...newJob, schedule: e.target.value })} disabled={(newJob.jobType || 'one_off') === 'one_off'} className="w-full px-3 py-2 border border-slate-700 rounded-md bg-midnight text-slate-100 focus:ring-trellio-teal/30 focus:border-trellio-teal disabled:bg-midnight/60 disabled:text-slate-500">
+                <select value={newJob.schedule || 'One-time'} onChange={(e) => setNewJob({ ...newJob, schedule: e.target.value })} disabled={(newJob.jobType || 'one_off') === 'one_off'} className="w-full px-3 py-2 border border-slate-700 rounded-md bg-midnight text-slate-100 focus:ring-scaffld-teal/30 focus:border-scaffld-teal disabled:bg-midnight/60 disabled:text-slate-500">
                   <option value="One-time">One-time</option>
                   <option value="Weekly">Weekly</option>
                   <option value="Every 2 weeks">Every 2 weeks</option>
@@ -205,15 +254,15 @@ export default function AppContent({ auth, appState, handlers }) {
           )}
           <div>
             <label className="block text-sm font-medium text-slate-300 mb-1">Start</label>
-            <input type="datetime-local" value={newJob.start || ''} onChange={(e) => setNewJob({ ...newJob, start: e.target.value })} required className="w-full px-3 py-2 border border-slate-700 rounded-md bg-midnight text-slate-100 focus:ring-trellio-teal/30 focus:border-trellio-teal" />
+            <input type="datetime-local" value={newJob.start || ''} onChange={(e) => setNewJob({ ...newJob, start: e.target.value })} required className="w-full px-3 py-2 border border-slate-700 rounded-md bg-midnight text-slate-100 focus:ring-scaffld-teal/30 focus:border-scaffld-teal" />
           </div>
           <div>
             <label className="block text-sm font-medium text-slate-300 mb-1">End (optional)</label>
-            <input type="datetime-local" value={newJob.end || ''} onChange={(e) => setNewJob({ ...newJob, end: e.target.value })} className="w-full px-3 py-2 border border-slate-700 rounded-md bg-midnight text-slate-100 focus:ring-trellio-teal/30 focus:border-trellio-teal" />
+            <input type="datetime-local" value={newJob.end || ''} onChange={(e) => setNewJob({ ...newJob, end: e.target.value })} className="w-full px-3 py-2 border border-slate-700 rounded-md bg-midnight text-slate-100 focus:ring-scaffld-teal/30 focus:border-scaffld-teal" />
           </div>
           <div>
             <label className="block text-sm font-medium text-slate-300 mb-1">Status</label>
-            <select value={newJob.status} onChange={(e) => setNewJob({ ...newJob, status: e.target.value })} className="w-full px-3 py-2 border border-slate-700 rounded-md bg-midnight text-slate-100 focus:ring-trellio-teal/30 focus:border-trellio-teal">
+            <select value={newJob.status} onChange={(e) => setNewJob({ ...newJob, status: e.target.value })} className="w-full px-3 py-2 border border-slate-700 rounded-md bg-midnight text-slate-100 focus:ring-scaffld-teal/30 focus:border-scaffld-teal">
               {JOB_STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
             </select>
           </div>
@@ -221,7 +270,7 @@ export default function AppContent({ auth, appState, handlers }) {
             <>
               <div>
                 <label className="block text-sm font-medium text-slate-300 mb-1">Billing Frequency</label>
-                <select value={newJob.billingFrequency || 'Upon job completion'} onChange={(e) => setNewJob({ ...newJob, billingFrequency: e.target.value })} className="w-full px-3 py-2 border border-slate-700 rounded-md bg-midnight text-slate-100 focus:ring-trellio-teal/30 focus:border-trellio-teal">
+                <select value={newJob.billingFrequency || 'Upon job completion'} onChange={(e) => setNewJob({ ...newJob, billingFrequency: e.target.value })} className="w-full px-3 py-2 border border-slate-700 rounded-md bg-midnight text-slate-100 focus:ring-scaffld-teal/30 focus:border-scaffld-teal">
                   <option value="Upon job completion">Upon job completion</option>
                   <option value="Per visit">Per visit</option>
                   <option value="Monthly">Monthly</option>
@@ -236,7 +285,7 @@ export default function AppContent({ auth, appState, handlers }) {
           )}
           <div>
             <label className="block text-sm font-medium text-slate-300 mb-1">Notes</label>
-            <textarea value={newJob.notes || ''} onChange={(e) => setNewJob({ ...newJob, notes: e.target.value })} rows={3} className="w-full px-3 py-2 border border-slate-700 rounded-md bg-midnight text-slate-100 focus:ring-trellio-teal/30 focus:border-trellio-teal" placeholder="Special instructions, access details, etc." />
+            <textarea value={newJob.notes || ''} onChange={(e) => setNewJob({ ...newJob, notes: e.target.value })} rows={3} className="w-full px-3 py-2 border border-slate-700 rounded-md bg-midnight text-slate-100 focus:ring-scaffld-teal/30 focus:border-scaffld-teal" placeholder="Special instructions, access details, etc." />
           </div>
           {activeView === 'schedule' && (
             <div className="md:col-span-2">
@@ -258,7 +307,7 @@ export default function AppContent({ auth, appState, handlers }) {
         </div>
         <div className="mt-6 text-right flex gap-2 justify-end">
           <button type="button" onClick={() => setShowJobForm(false)} className="px-6 py-2 text-slate-300 font-semibold rounded-lg border border-slate-700 hover:bg-midnight/60">Cancel</button>
-          <button type="submit" className="px-6 py-2 bg-trellio-teal text-white font-semibold rounded-lg shadow-md hover:bg-trellio-teal/80">Save Job</button>
+          <button type="submit" className="px-6 py-2 bg-scaffld-teal text-white font-semibold rounded-lg shadow-md hover:bg-scaffld-teal/80">Save Job</button>
         </div>
       </form>
     </div>
@@ -303,61 +352,35 @@ export default function AppContent({ auth, appState, handlers }) {
         }}
         open={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
+        userRole={userProfile?.role}
       />
       <div className="flex-1 max-w-full px-4 sm:px-6 lg:px-8 py-4">
-        {/* Header */}
-        <header className="mb-6 flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <button className="lg:hidden p-2 rounded-md border border-slate-700" onClick={() => setSidebarOpen(true)} aria-label="Open menu">
-              <span className="block w-5 h-0.5 bg-slate-300 mb-1"></span>
-              <span className="block w-5 h-0.5 bg-slate-300 mb-1"></span>
-              <span className="block w-5 h-0.5 bg-slate-300"></span>
-            </button>
-            <div>
-              <p className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-0.5">
-                {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
-              </p>
-              <div className="flex items-center gap-2">
-                <h1 className="text-2xl font-bold font-display text-slate-100 tracking-tight">
-                  {(() => {
-                    const hour = new Date().getHours();
-                    const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
-                    const name = userProfile?.firstName || ((userProfile?.email?.split('@')[0] || '').split(/[._-]/)[0].replace(/^./, c => c.toUpperCase()));
-                    return name ? `${greeting}, ${name}` : greeting;
-                  })()}
-                </h1>
-                {(() => {
-                  const mode = import.meta.env.MODE;
-                  if (mode === 'staging') return <span className="px-2 py-1 text-xs font-semibold rounded bg-harvest-amber/20 text-harvest-amber border border-harvest-amber/30">Staging</span>;
-                  return null;
-                })()}
-              </div>
-              <p className="hidden md:block text-sm text-slate-500 mt-0.5">Run smarter. Grow faster.</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3 relative">
-            <div className="hidden md:block">
-              <input
-                value={globalQuery}
-                onChange={(e)=>setGlobalQuery(e.target.value)}
-                onKeyDown={(e)=>{ if (e.key === 'Enter') { setActiveView('clients'); setClientSearchTerm(globalQuery); } }}
-                placeholder="Search clients..."
-                className="px-3 py-2 bg-charcoal border border-slate-700 rounded-lg text-sm text-slate-100 placeholder-slate-500 focus:border-trellio-teal focus:ring-2 focus:ring-trellio-teal/20 w-64 transition-all"
-                aria-label="Global search"
-              />
-            </div>
-            <button onClick={() => setShowNotifications(s => !s)} className="relative text-slate-400 hover:text-trellio-teal transition-colors">
-              <BellIcon />
-              {unreadNotificationsCount > 0 && <span className="absolute -top-1 -right-1 flex h-4 w-4"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-signal-coral opacity-75"></span><span className="relative inline-flex rounded-full h-4 w-4 bg-signal-coral text-white text-xs items-center justify-center">{unreadNotificationsCount}</span></span>}
-            </button>
-            {showNotifications && (
-              <div className="fixed right-6 top-16 w-96 bg-charcoal rounded-lg shadow-xl border border-slate-700/30 z-50 animate-fade-in-fast max-h-[60vh] overflow-y-auto">
-                <div className="p-3 border-b border-slate-700/30 font-semibold text-sm text-slate-100">Notifications</div>
-                <ul className="divide-y divide-slate-700/30">{notifications.map(n => (<li key={n.id} className={`p-3 text-sm ${!n.read ? 'bg-trellio-teal/10' : ''}`}><p className="text-slate-100">{n.message}</p><div className="flex justify-between items-center mt-1"><p className="text-xs text-slate-500">{new Date(n.createdAt).toLocaleString()}</p>{!n.read && <button onClick={() => handleMarkNotificationAsRead(n.id)} className="text-xs font-semibold text-trellio-teal hover:underline">Mark as read</button>}</div></li>))}</ul>
-              </div>
-            )}
-          </div>
-        </header>
+        <AppHeader
+          userProfile={userProfile}
+          globalQuery={globalQuery} setGlobalQuery={setGlobalQuery}
+          setActiveView={setActiveView} setClientSearchTerm={setClientSearchTerm}
+          setSidebarOpen={setSidebarOpen}
+          showNotifications={showNotifications} setShowNotifications={setShowNotifications}
+          unreadNotificationsCount={unreadNotificationsCount}
+          notifications={notifications}
+          onMarkAsRead={handleMarkNotificationAsRead}
+          onMarkAllAsRead={handleMarkAllNotificationsRead}
+          onClearRead={handleClearReadNotifications}
+          onNotificationNavigate={(n) => {
+            setShowNotifications(false);
+            if (n.type === 'invoice_sent' && n.invoiceId) {
+              const inv = invoices.find(i => i.id === n.invoiceId);
+              if (inv) { setSelectedInvoice(inv); setActiveView('invoices'); }
+            } else if ((n.type === 'quote_sent' || n.type === 'quote_sms') && n.quoteId) {
+              const q = quotes.find(x => x.id === n.quoteId);
+              if (q) { setSelectedQuote(q); setActiveView('quotes'); }
+            } else if (n.type === 'service_request' && n.clientId) {
+              const c = clients.find(cl => cl.id === n.clientId);
+              if (c) { setSelectedClient(c); setActiveView('clients'); }
+            }
+            if (!n.read) handleMarkNotificationAsRead(n.id);
+          }}
+        />
 
         <main>
           {/* Dashboard */}
@@ -388,7 +411,7 @@ export default function AppContent({ auth, appState, handlers }) {
                       <Box bgColor="bg-slate-700" title="Total" count={total} val={totalVal} />
                       <Box bgColor="bg-muted" title="To Go" count={toGo} val={0} />
                       <Box bgColor="bg-blue-500" title="Active" count={active} val={0} />
-                      <Box bgColor="bg-trellio-teal" title="Complete" count={complete} val={0} />
+                      <Box bgColor="bg-scaffld-teal" title="Complete" count={complete} val={0} />
                     </div>
                   );
                 })()}
@@ -403,7 +426,7 @@ export default function AppContent({ auth, appState, handlers }) {
                       <span className="inline-flex items-center justify-center h-7 w-7 rounded-lg bg-harvest-amber/10 text-harvest-amber"><CalendarIcon /></span>
                       <span className="font-semibold text-sm text-slate-100">Upcoming Schedule</span>
                     </div>
-                    <button onClick={() => setActiveView('schedule')} className="text-xs text-trellio-teal hover:underline">View all</button>
+                    <button onClick={() => setActiveView('schedule')} className="text-xs text-scaffld-teal hover:underline">View all</button>
                   </div>
                   <div className="p-4 max-h-[24rem] overflow-y-auto">
                     {(() => {
@@ -433,9 +456,9 @@ export default function AppContent({ auth, appState, handlers }) {
                           <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">{dayLabel(key)}</div>
                           <div className="space-y-1.5">
                             {groups[key].map(job => (
-                              <div key={job.id} onClick={() => { setSelectedJob(job); setActiveView('schedule'); }} className="flex items-center justify-between px-3 py-2 bg-midnight rounded-lg border border-slate-700/30 hover:border-trellio-teal/30 cursor-pointer transition-colors">
+                              <div key={job.id} onClick={() => { setSelectedJob(job); setActiveView('schedule'); }} className="flex items-center justify-between px-3 py-2 bg-midnight rounded-lg border border-slate-700/30 hover:border-scaffld-teal/30 cursor-pointer transition-colors">
                                 <div className="min-w-0 flex-1">
-                                  <p className="text-sm font-medium text-trellio-teal truncate">{job.title}</p>
+                                  <p className="text-sm font-medium text-scaffld-teal truncate">{job.title}</p>
                                   <p className="text-xs text-slate-500">{new Date(job.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
                                 </div>
                                 <div className="flex items-center gap-2 ml-3">
@@ -458,10 +481,10 @@ export default function AppContent({ auth, appState, handlers }) {
                 <div className="bg-charcoal rounded-xl shadow-lg border border-slate-700/30 overflow-hidden">
                   <div className="px-4 py-3 border-b border-slate-700/30 flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="inline-flex items-center justify-center h-7 w-7 rounded-lg bg-trellio-teal/10 text-trellio-teal"><DollarSignIcon /></span>
+                      <span className="inline-flex items-center justify-center h-7 w-7 rounded-lg bg-scaffld-teal/10 text-scaffld-teal"><DollarSignIcon /></span>
                       <span className="font-semibold text-sm text-slate-100">Revenue Summary</span>
                     </div>
-                    <button onClick={() => setActiveView('invoices')} className="text-xs text-trellio-teal hover:underline">View invoices</button>
+                    <button onClick={() => setActiveView('invoices')} className="text-xs text-scaffld-teal hover:underline">View invoices</button>
                   </div>
                   <div className="p-5">
                     {(() => {
@@ -482,7 +505,7 @@ export default function AppContent({ auth, appState, handlers }) {
                         <div className="space-y-5">
                           <div className="flex items-center justify-between">
                             <div className="text-sm text-slate-400">Revenue this month</div>
-                            <div className="text-lg font-display font-semibold text-trellio-teal">{formatMoney(paidThisMonth)}</div>
+                            <div className="text-lg font-display font-semibold text-scaffld-teal">{formatMoney(paidThisMonth)}</div>
                           </div>
                           <div className="flex items-center justify-between">
                             <div className="text-sm text-slate-400">Outstanding</div>
@@ -499,7 +522,7 @@ export default function AppContent({ auth, appState, handlers }) {
                               <span>{paidPct}% collected</span>
                             </div>
                             <div className="h-2.5 bg-slate-700 rounded-full overflow-hidden">
-                              <div className="h-full bg-trellio-teal rounded-full transition-all" style={{ width: `${paidPct}%` }} />
+                              <div className="h-full bg-scaffld-teal rounded-full transition-all" style={{ width: `${paidPct}%` }} />
                             </div>
                           </div>
                           {/* Quick totals */}
@@ -551,8 +574,8 @@ export default function AppContent({ auth, appState, handlers }) {
                     });
                     invoices.forEach(inv => {
                       const cName = clients.find(c => c.id === inv.clientId)?.name || 'Unknown';
-                      if (inv.createdAt) activities.push({ type: 'invoice', icon: <InvoiceIcon />, iconBg: 'bg-trellio-teal/10 text-trellio-teal', text: `Invoice created for ${cName}`, date: inv.createdAt, onClick: () => { setSelectedInvoice(inv); setActiveView('invoices'); } });
-                      if (inv.paidAt) activities.push({ type: 'invoice', icon: <DollarSignIcon />, iconBg: 'bg-trellio-teal/10 text-trellio-teal', text: `Invoice paid by ${cName}`, date: inv.paidAt, onClick: () => { setSelectedInvoice(inv); setActiveView('invoices'); } });
+                      if (inv.createdAt) activities.push({ type: 'invoice', icon: <InvoiceIcon />, iconBg: 'bg-scaffld-teal/10 text-scaffld-teal', text: `Invoice created for ${cName}`, date: inv.createdAt, onClick: () => { setSelectedInvoice(inv); setActiveView('invoices'); } });
+                      if (inv.paidAt) activities.push({ type: 'invoice', icon: <DollarSignIcon />, iconBg: 'bg-scaffld-teal/10 text-scaffld-teal', text: `Invoice paid by ${cName}`, date: inv.paidAt, onClick: () => { setSelectedInvoice(inv); setActiveView('invoices'); } });
                     });
                     activities.sort((a, b) => new Date(b.date) - new Date(a.date));
                     const recent = activities.slice(0, 10);
@@ -630,6 +653,9 @@ export default function AppContent({ auth, appState, handlers }) {
                   clients={clients} quotes={quotes} jobs={jobs} invoices={invoices}
                   onSelectClient={(c) => { setSelectedProperty(null); setSelectedClient(c); }}
                   onNewClientClick={() => { setActiveView('createClient'); }}
+                  onBulkArchiveClients={handleBulkArchiveClients}
+                  onBulkDeleteClients={handleBulkDeleteClients}
+                  onBulkTagClients={handleBulkTagClients}
                 />
               )}
             </div>
@@ -640,11 +666,77 @@ export default function AppContent({ auth, appState, handlers }) {
             <div>
               {selectedJob ? renderJobDetail('Back to jobs') : (
                 <div>
-                  <JobsList jobs={jobs} clients={clients} quotes={quotes} invoices={invoices} onOpenJob={(job) => setSelectedJob(job)} onNewJobClick={() => setShowJobForm(s=>!s)} onManageJobForms={() => setActiveView('settings')} />
+                  <JobsList jobs={jobs} clients={clients} quotes={quotes} invoices={invoices} onOpenJob={(job) => setSelectedJob(job)} onNewJobClick={() => setShowJobForm(s=>!s)} onManageJobForms={() => setActiveView('settings')} onBulkUpdateJobStatus={handleBulkUpdateJobStatus} onBulkArchiveJobs={handleBulkArchiveJobs} onBulkDeleteJobs={handleBulkDeleteJobs} />
                   {showJobForm && renderJobForm()}
                 </div>
               )}
             </div>
+          )}
+
+          {/* Bookings */}
+          {activeView === 'bookings' && (
+            <div>
+              {selectedJob ? renderJobDetail('Back to bookings') : (
+                <BookingsList
+                  jobs={jobs}
+                  getClientNameById={getClientNameById}
+                  onSelectJob={(job) => setSelectedJob(job)}
+                  onApproveBooking={handleApproveBooking}
+                  onDeclineBooking={handleDeclineBooking}
+                />
+              )}
+            </div>
+          )}
+
+          {/* Reviews */}
+          {activeView === 'reviews' && (
+            <ReviewsList
+              reviews={reviews}
+              getClientNameById={getClientNameById}
+              onDelete={handleDeleteReview}
+            />
+          )}
+
+          {/* Campaigns */}
+          {activeView === 'campaigns' && (
+            selectedCampaign ? (
+              <CampaignDetailView
+                campaign={selectedCampaign}
+                onBack={() => setSelectedCampaign(null)}
+                onEdit={(c) => { setSelectedCampaign(c); setActiveView('createCampaign'); }}
+                onSend={handleSendCampaign}
+                onDelete={async (id) => { await handleDeleteCampaign(id); setSelectedCampaign(null); }}
+              />
+            ) : (
+              <CampaignsList
+                campaigns={campaigns}
+                onSelect={(c) => setSelectedCampaign(c)}
+                onCreate={() => { setSelectedCampaign(null); setActiveView('createCampaign'); }}
+              />
+            )
+          )}
+
+          {/* Create/Edit Campaign */}
+          {activeView === 'createCampaign' && (
+            <CampaignBuilder
+              campaign={selectedCampaign}
+              clients={clients}
+              allTags={[...new Set(clients.flatMap((c) => c.tags || []))]}
+              computeRecipientCount={computeRecipientCount}
+              onSave={async (data) => {
+                if (selectedCampaign?.id) {
+                  await handleUpdateCampaign(selectedCampaign.id, data);
+                  setSelectedCampaign({ ...selectedCampaign, ...data });
+                  setActiveView('campaigns');
+                  return selectedCampaign.id;
+                }
+                const id = await handleCreateCampaign(data);
+                if (id) setActiveView('campaigns');
+                return id;
+              }}
+              onSend={handleSendCampaign}
+              onCancel={() => { setSelectedCampaign(null); setActiveView('campaigns'); }}
+            />
           )}
 
           {/* Quotes */}
@@ -695,6 +787,7 @@ export default function AppContent({ auth, appState, handlers }) {
                 initialClientId={invoiceCreateContext.clientId}
                 initialJobIds={invoiceCreateContext.jobIds}
                 initialMode={invoiceCreateContext.mode}
+                userRole={userProfile?.role}
                 onCancel={() => { setActiveView('invoices'); setSelectedInvoice(null); setInvoiceCreateContext({ clientId: '', jobIds: [], mode: 'job' }); }}
                 onCreateInvoice={(draft) => handleCreateInvoiceFromDraft(draft)}
               />
@@ -706,43 +799,15 @@ export default function AppContent({ auth, appState, handlers }) {
             <div>
               {selectedJob ? renderJobDetail(undefined) : (
                 <div>
-                  <div className="mb-6 flex justify-between items-center">
-                    <div className="flex items-center">
-                      <h2 className="text-2xl font-semibold font-display text-slate-100 flex items-center"><CalendarIcon /> Schedule</h2>
-                      <div className="ml-4 flex items-center gap-3">
-                        <span className="isolate inline-flex rounded-md shadow-sm">
-                          <button onClick={() => updateScheduleView('list')} className={`relative inline-flex items-center rounded-l-md px-3 py-1 text-sm font-semibold transition-colors ${scheduleView === 'list' ? 'bg-trellio-teal text-white' : 'bg-charcoal text-slate-300 border border-slate-700 hover:bg-slate-dark'}`}>List</button>
-                          <button onClick={() => updateScheduleView('calendar')} className={`relative -ml-px inline-flex items-center rounded-r-md px-3 py-1 text-sm font-semibold transition-colors ${scheduleView === 'calendar' ? 'bg-trellio-teal text-white' : 'bg-charcoal text-slate-300 border border-slate-700 hover:bg-slate-dark'}`}>Calendar</button>
-                        </span>
-                        <div className="flex items-center gap-2">
-                          <label className="text-xs text-slate-400">Range</label>
-                          <select value={scheduleRange} onChange={(e)=>updateScheduleRange(e.target.value)} className="px-2 py-1 bg-charcoal border border-slate-700 text-slate-100 rounded-md text-xs focus:border-trellio-teal focus:ring-2 focus:ring-trellio-teal/20">
-                            <option value="today">Today</option>
-                            <option value="week">This Week</option>
-                            <option value="month">This Month</option>
-                          </select>
-                        </div>
-                      </div>
-                    </div>
-                    <button onClick={() => setShowJobForm(s => !s)} className="flex items-center justify-center px-4 py-2 bg-trellio-teal text-white font-semibold rounded-lg shadow-md hover:bg-trellio-teal-deep focus:outline-none focus:ring-2 focus:ring-trellio-teal/40 transition-colors"><PlusCircleIcon /><span>{showJobForm ? 'Cancel' : 'Schedule Job'}</span></button>
-                  </div>
+                  <ScheduleToolbar
+                    scheduleView={scheduleView} updateScheduleView={updateScheduleView}
+                    scheduleRange={scheduleRange} updateScheduleRange={updateScheduleRange}
+                    jobStatusFilter={jobStatusFilter} setJobStatusFilter={appState.setJobStatusFilter}
+                    assigneeFilter={assigneeFilter} setAssigneeFilter={appState.setAssigneeFilter}
+                    staff={staff}
+                    showJobForm={showJobForm} setShowJobForm={setShowJobForm}
+                  />
                   {showJobForm && renderJobForm()}
-                  {/* Job status filter chips */}
-                  <div className="mb-4 flex flex-wrap gap-2">
-                    {JOB_STATUSES.map(s => {
-                      const active = jobStatusFilter.includes(s);
-                      return <button key={s} onClick={() => appState.setJobStatusFilter(prev => active ? prev.filter(x=>x!==s) : [...prev, s])} className={`px-2 py-1 rounded-full text-xs font-medium border transition-colors ${active ? 'bg-trellio-teal text-white border-trellio-teal' : 'bg-charcoal text-slate-300 border-slate-700'}`}>{s}</button>;
-                    })}
-                    <div className="flex items-center gap-2 ml-auto">
-                      <label className="text-xs text-slate-400">Assignee</label>
-                      <select value={assigneeFilter} onChange={(e)=>appState.setAssigneeFilter(e.target.value)} className="px-2 py-1 bg-charcoal border border-slate-700 text-slate-100 rounded-md text-xs focus:border-trellio-teal focus:ring-2 focus:ring-trellio-teal/20">
-                        <option value="">All</option>
-                        <option value="unassigned">Unassigned</option>
-                        {staff.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-                      </select>
-                    </div>
-                    {(jobStatusFilter.length>0 || assigneeFilter) && <button onClick={() => { appState.setJobStatusFilter([]); appState.setAssigneeFilter(''); }} className="px-2 py-1 rounded-full text-xs font-medium bg-charcoal text-slate-300 border border-slate-700">Clear</button>}
-                  </div>
                   {scheduleView === 'list' ? (
                     <div className="bg-charcoal rounded-xl shadow-lg border border-slate-700/30 overflow-hidden">{isLoading ? <div className="text-center p-10 text-slate-400">Loading...</div> : filteredJobs.length === 0 ? <div className="text-center p-10 text-slate-400"><h3 className="text-lg font-medium">No jobs scheduled!</h3></div> : (
                       (() => {
@@ -763,7 +828,7 @@ export default function AppContent({ auth, appState, handlers }) {
                                     <li key={job.id} onClick={() => setSelectedJob(job)} className="list-row cursor-pointer">
                                       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between">
                                         <div>
-                                          <p className="font-semibold text-trellio-teal">{job.title}</p>
+                                          <p className="font-semibold text-scaffld-teal">{job.title}</p>
                                           <p className="text-sm text-slate-400">{getClientNameById(job.clientId)}</p>
                                           {(job.assignees && job.assignees.length>0) && (
                                             <div className="mt-2 flex flex-wrap gap-2">
@@ -774,7 +839,7 @@ export default function AppContent({ auth, appState, handlers }) {
                                         </div>
                                         <div className="flex flex-col items-start sm:items-end mt-4 sm:mt-0">
                                           <p className="text-md font-semibold text-slate-100">{formatDateTime(job.start)}</p>
-                                          <div className="mt-2 w-40"><select value={job.status} onClick={(e) => e.stopPropagation()} onChange={(e) => handleUpdateJobStatus(job, e.target.value)} className="w-full p-1 bg-midnight border border-slate-700 text-slate-100 rounded-md shadow-sm text-xs focus:ring-trellio-teal/20 focus:border-trellio-teal"><option disabled>Change status...</option>{JOB_STATUSES.map(s => <option key={s} value={s}>{s}</option>)}</select></div>
+                                          <div className="mt-2 w-40"><select value={job.status} onClick={(e) => e.stopPropagation()} onChange={(e) => handleUpdateJobStatus(job, e.target.value)} className="w-full p-1 bg-midnight border border-slate-700 text-slate-100 rounded-md shadow-sm text-xs focus:ring-scaffld-teal/20 focus:border-scaffld-teal"><option disabled>Change status...</option>{JOB_STATUSES.map(s => <option key={s} value={s}>{s}</option>)}</select></div>
                                         </div>
                                       </div>
                                     </li>
@@ -787,7 +852,9 @@ export default function AppContent({ auth, appState, handlers }) {
                       })()
                     )}</div>
                   ) : scheduleView === 'calendar' ? (
-                    <CalendarView jobs={filteredJobs} staff={staff} calendarDate={calendarDate} setCalendarDate={setCalendarDate} onJobSelect={setSelectedJob} scheduleRange={scheduleRange} />
+                    <Suspense fallback={<div className="text-center p-10 text-slate-400">Loading...</div>}>
+                      <CalendarView jobs={filteredJobs} staff={staff} calendarDate={calendarDate} setCalendarDate={setCalendarDate} onJobSelect={setSelectedJob} scheduleRange={scheduleRange} />
+                    </Suspense>
                   ) : null}
                 </div>
               )}
@@ -808,17 +875,23 @@ export default function AppContent({ auth, appState, handlers }) {
                   onRemoveAttachment={(invoice, url) => handleRemoveInvoiceAttachment(invoice, url)}
                   onApplyInvoiceDefaults={handleApplyInvoiceDefaults}
                   onOpenClient={(clientId) => { const c = clients.find(cl=>cl.id===clientId); if (c) { setActiveView('clients'); setSelectedProperty(null); setSelectedClient(c); } }}
+                  onSyncInvoice={handleSyncInvoice}
+                  onSetupPaymentPlan={handleSetupPaymentPlan}
+                  onRecordInstallmentPayment={handleRecordInstallmentPayment}
+                  onRemovePaymentPlan={handleRemovePaymentPlan}
                   userRole={userProfile?.role} defaultTaxRate={companySettings?.defaultGstRate}
                   stripeEnabled={stripeEnabled}
+                  accountingConnected={!!(companySettings.integrations?.quickbooks?.connected || companySettings.integrations?.xero?.connected)}
                 />
               ) : (
-                <InvoicesList invoices={invoices} clients={clients} onOpenInvoice={(inv)=> setSelectedInvoice(inv)} onNewInvoice={() => startInvoiceCreate()} />
+                <InvoicesList invoices={invoices} clients={clients} onOpenInvoice={(inv)=> setSelectedInvoice(inv)} onNewInvoice={() => startInvoiceCreate()} onBulkMarkPaid={handleBulkMarkPaid} onBulkArchiveInvoices={handleBulkArchiveInvoices} onBulkDeleteInvoices={handleBulkDeleteInvoices} />
               )}
             </div>
           )}
 
           {/* Settings */}
           {activeView === 'settings' && (
+            <Suspense fallback={<div className="text-center p-10 text-slate-400">Loading...</div>}>
             <SettingsPage
               companySettings={companySettings}
               invoiceSettings={invoiceSettings}
@@ -839,12 +912,18 @@ export default function AppContent({ auth, appState, handlers }) {
               handleAddTemplate={handleAddTemplate}
               handleDeleteTemplate={handleDeleteTemplate}
               handleLogout={handleLogout}
+              handleInviteUser={handleInviteUser}
               appState={appState}
+              onConnectAccounting={handleConnectAccounting}
+              onDisconnectAccounting={handleDisconnectAccounting}
+              onSyncNow={handleSyncNow}
             />
+            </Suspense>
           )}
 
           {/* Timesheets */}
           {activeView === 'timesheets' && (
+            <Suspense fallback={<div className="text-center p-10 text-slate-400">Loading...</div>}>
             <TimesheetView
               onExportPayroll={(entries, format) => {
                 const startDate = entries[0]?.start;
@@ -856,79 +935,22 @@ export default function AppContent({ auth, appState, handlers }) {
                 setSelectedJob(job);
               }}
             />
+            </Suspense>
           )}
 
           {/* Placeholder pages */}
-          {['requests','reports','expenses','apps'].includes(activeView) && (() => {
-            const pageConfig = {
-              requests: {
-                icon: <BellIcon className="h-12 w-12 text-trellio-teal" />,
-                title: 'Service Requests',
-                description: 'Accept and manage service requests from customers online. Streamline your intake process and never miss a lead.',
-                features: [
-                  'Accept requests from customers via online forms',
-                  'Auto-create quotes from incoming requests',
-                  'Track request status and response times',
-                  'Customer self-service portal integration',
-                ],
-              },
-              reports: {
-                icon: <TrendingUpIcon className="h-12 w-12 text-trellio-teal" />,
-                title: 'Reports & Analytics',
-                description: 'Get actionable insights into your business performance with detailed reports and visual dashboards.',
-                features: [
-                  'Revenue and profit trend reports',
-                  'Job completion and scheduling analytics',
-                  'Staff productivity and utilisation dashboards',
-                  'Client retention and growth metrics',
-                ],
-              },
-              expenses: {
-                icon: <DollarSignIcon className="h-12 w-12 text-trellio-teal" />,
-                title: 'Expense Tracking',
-                description: 'Log and categorise business expenses to keep your finances organised and tax-ready.',
-                features: [
-                  'Log expenses against jobs or projects',
-                  'Attach receipts and documentation',
-                  'Categorise by type for easy reporting',
-                  'Export expense data for tax filing',
-                ],
-              },
-              apps: {
-                icon: <BriefcaseIcon className="h-12 w-12 text-trellio-teal" />,
-                title: 'Apps & Integrations',
-                description: 'Connect Trellio with the tools you already use to automate your workflows.',
-                features: [
-                  'Sync with accounting software (Xero, QuickBooks)',
-                  'Payment gateway integrations (Stripe)',
-                  'Calendar sync with Google and Outlook',
-                  'Custom workflow automations',
-                ],
-              },
-            };
-            const config = pageConfig[activeView];
-            return (
-              <div className="min-h-[calc(100vh-12rem)] flex items-start justify-center pt-16">
-                <div className="bg-charcoal rounded-xl border border-slate-700/30 p-10 max-w-lg w-full text-center">
-                  <div className="flex justify-center mb-5">{config.icon}</div>
-                  <h2 className="text-2xl font-semibold font-display text-slate-100 mb-2">{config.title}</h2>
-                  <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-trellio-teal/15 text-trellio-teal mb-4">Coming Soon</span>
-                  <p className="text-slate-400 text-sm mb-6">{config.description}</p>
-                  <div className="text-left bg-midnight/60 rounded-lg p-5 border border-slate-700/20">
-                    <p className="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-3">Planned Features</p>
-                    <ul className="space-y-2">
-                      {config.features.map((f, i) => (
-                        <li key={i} className="flex items-start gap-2 text-sm text-slate-400">
-                          <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-trellio-teal flex-shrink-0" />
-                          {f}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            );
-          })()}
+          {activeView === 'requests' && <PlaceholderPage icon={<BellIcon className="h-12 w-12 text-scaffld-teal" />} title="Service Requests" description="Accept and manage service requests from customers online. Streamline your intake process and never miss a lead." features={['Accept requests from customers via online forms', 'Auto-create quotes from incoming requests', 'Track request status and response times', 'Customer self-service portal integration']} />}
+          {activeView === 'reports' && (
+            <Suspense fallback={<div className="text-center p-10 text-slate-400">Loading reports...</div>}>
+              <ReportsDashboard />
+            </Suspense>
+          )}
+          {activeView === 'expenses' && (
+            <Suspense fallback={<div className="text-center p-10 text-slate-400">Loading expenses...</div>}>
+              <ExpensesPage />
+            </Suspense>
+          )}
+          {activeView === 'apps' && <PlaceholderPage icon={<BriefcaseIcon className="h-12 w-12 text-scaffld-teal" />} title="Apps & Integrations" description="Connect Scaffld with the tools you already use to automate your workflows." features={['Sync with accounting software (Xero, QuickBooks)', 'Payment gateway integrations (Stripe)', 'Calendar sync with Google and Outlook', 'Custom workflow automations']} />}
         </main>
       </div>
     </div>

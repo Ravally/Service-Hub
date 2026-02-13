@@ -1,4 +1,4 @@
-# Trellio — Coding Conventions
+# Scaffld — Coding Conventions
 
 **Last Updated:** February 12, 2026
 
@@ -47,13 +47,13 @@ export default function FeatureCard({ item, onAction }) {
 
 ## Brand Usage
 
-- **Primary actions:** `btn-primary` (trellio-teal)
+- **Primary actions:** `btn-primary` (scaffld-teal)
 - **Secondary actions:** `btn-secondary` (charcoal/slate)
 - **Destructive actions:** `btn-accent-coral` (signal-coral)
 - **Backgrounds:** `bg-midnight` (page), `bg-charcoal` (cards)
 - **Text:** `text-slate-100` (primary), `text-slate-400` (secondary)
 - **Borders:** `border-slate-700/30`
-- **Inputs:** `bg-midnight border-slate-700 focus:border-trellio-teal`
+- **Inputs:** `bg-midnight border-slate-700 focus:border-scaffld-teal`
 
 ## Error Handling
 

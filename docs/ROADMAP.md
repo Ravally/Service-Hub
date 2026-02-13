@@ -1,4 +1,4 @@
-# Trellio - Master Product Roadmap
+# Scaffld - Master Product Roadmap
 
 **Last Updated**: February 12, 2026
 **Status**: Phase 1 Complete ✅ | Phase 2.3 Complete ✅ | Phase 2.1-2.2 In Progress 🚧
@@ -7,9 +7,9 @@
 
 ## Executive Summary
 
-**Trellio** (formerly Service Hub) is transforming into a Jobber-level field service management platform with **AI-powered automation** as a competitive advantage. This roadmap outlines our path to feature parity and beyond, serving businesses in pool service, HVAC, pest control, property management, and equipment maintenance industries.
+**Scaffld** (formerly Service Hub) is transforming into a Jobber-level field service management platform with **AI-powered automation** as a competitive advantage. This roadmap outlines our path to feature parity and beyond, serving businesses in pool service, HVAC, pest control, property management, and equipment maintenance industries.
 
-**Mission**: Structure your growth through intelligent automation and modern field service tools.
+**Mission**: Build on Scaffld through intelligent automation and modern field service tools.
 
 **Vision**: Become the leading AI-first field service platform, surpassing Jobber with superior UX, faster innovation, and predictive intelligence.
 
@@ -135,11 +135,11 @@
 
 ---
 
-## Feature Comparison: Trellio vs Jobber
+## Feature Comparison: Scaffld vs Jobber
 
 ### ✅ Features We Have (At Parity)
 
-| Feature | Trellio | Jobber |
+| Feature | Scaffld | Jobber |
 |---------|---------|--------|
 | Client Management | ✅ | ✅ |
 | Quotes/Estimates | ✅ | ✅ |
@@ -183,11 +183,11 @@
 
 ## Competitive Advantages
 
-### 🤖 What Sets Trellio Apart
+### 🤖 What Sets Scaffld Apart
 
 #### 1. AI-First Architecture
 **Jobber**: Adding AI features gradually
-**Trellio**: Built with AI from the ground up
+**Scaffld**: Built with AI from the ground up
 - Intelligent job scheduling
 - Predictive analytics
 - Automated content generation
@@ -195,7 +195,7 @@
 
 #### 2. Modern Tech Stack
 **Jobber**: Legacy architecture
-**Trellio**: React 18, Firebase, Expo
+**Scaffld**: React 18, Firebase, Expo
 - Faster, more responsive
 - Real-time updates
 - Better developer experience = faster iteration
@@ -203,7 +203,7 @@
 
 #### 3. Superior Mobile Experience
 **Jobber**: Native apps (complex codebase)
-**Trellio**: Expo (single codebase, OTA updates)
+**Scaffld**: Expo (single codebase, OTA updates)
 - Faster feature deployment
 - Instant bug fixes without app store review
 - Seamless iOS/Android parity
@@ -211,7 +211,7 @@
 
 #### 4. Pricing Strategy
 **Jobber**: $39-$599/month + per-user fees + transaction fees
-**Trellio**: Freemium model (planned)
+**Scaffld**: Freemium model (planned)
 - Free tier for solo operators
 - Pro tier: $29/month (competitive)
 - AI features: $49/month add-on
@@ -417,7 +417,7 @@
 ## Architecture & Code Quality
 
 ### Current Architecture Strengths
-- ✅ Clean, modular codebase (see [TRELLIO_ARCHITECTURE.md](TRELLIO_ARCHITECTURE.md))
+- ✅ Clean, modular codebase (see [SCAFFLD_ARCHITECTURE.md](SCAFFLD_ARCHITECTURE.md))
 - ✅ Centralized utilities (no duplication)
 - ✅ Separation of concerns (state, logic, UI)
 - ✅ Custom hooks for data management
@@ -479,7 +479,7 @@
 - [Deployment Guide](guides/DEPLOYMENT.md) - Build & release process
 
 ### Brand & Design
-- [Trellio Brand Guide](../brand/TRELLIO_BRAND.md) - Complete brand system
+- [Scaffld Brand Guide](../brand/SCAFFLD_BRAND.md) - Complete brand system
 - [Brand Quick Reference](../brand/README.md) - Colors, fonts, voice
 
 ### External Resources
@@ -509,4 +509,4 @@ For questions about this roadmap, implementation details, or strategic direction
 
 ---
 
-*Trellio - Structure your growth.* 🔺
+*Scaffld - Build on Scaffld.* 🔺

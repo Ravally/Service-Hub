@@ -9,3 +9,5 @@ export * from './textUtils.js';
 export * from './validation.js';
 export * from './smsHelpers.js';
 export * from './payrollExport.js';
+export * from './permissions.js';
+export * from './clientSegments.js';

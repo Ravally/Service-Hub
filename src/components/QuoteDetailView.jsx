@@ -2,14 +2,15 @@
 // src/components/QuoteDetailView.jsx
 import React, { useEffect, useMemo, useState } from 'react';
 import { ChevronLeftIcon, EditIcon, FileTextIcon, PlusCircleIcon } from './icons';
-import { formatCurrency, formatDate, computeTotals } from '../utils';
+import { formatCurrency, formatDate, computeTotals, hasPermission } from '../utils';
 import { STATUS_COLORS } from '../constants';
+import CustomFieldEditor from './common/CustomFieldEditor';
 
 const SectionHeader = ({ title, onEdit, isEditing }) => (
   <div className="flex items-center justify-between mb-4">
     <h3 className="text-lg font-semibold text-slate-100">{title}</h3>
     {onEdit && (
-      <button onClick={onEdit} className="text-sm font-semibold text-trellio-teal hover:text-trellio-teal/80">
+      <button onClick={onEdit} className="text-sm font-semibold text-scaffld-teal hover:text-scaffld-teal/80">
         <span className="inline-flex items-center gap-2"><EditIcon /> {isEditing ? 'Cancel' : 'Edit'}</span>
       </button>
     )}
@@ -24,7 +25,7 @@ const Toggle = ({ label, value, onChange }) => (
   <button
     type="button"
     onClick={() => onChange(!value)}
-    className={`w-12 h-6 rounded-full flex items-center px-1 transition-colors ${value ? 'bg-trellio-teal' : 'bg-slate-700'}`}
+    className={`w-12 h-6 rounded-full flex items-center px-1 transition-colors ${value ? 'bg-scaffld-teal' : 'bg-slate-700'}`}
   >
     <span className={`h-4 w-4 bg-charcoal rounded-full transition-transform ${value ? 'translate-x-6' : ''}`} />
     <span className="sr-only">{label}</span>
@@ -130,15 +131,7 @@ export default function QuoteDetailView({
   const requiredDeposit = financialDraft.depositRequiredAmount || (financialDraft.depositRequiredPercent ? (totals.total * (financialDraft.depositRequiredPercent / 100)) : 0);
 
   const statusClass = STATUS_COLORS?.[quote.status] || 'bg-midnight text-slate-300';
-  const canEdit = userRole === 'admin' || userRole === 'manager';
-
-  const addCustomField = () => setOverviewDraft(prev => ({ ...prev, customFields: [...prev.customFields, { key: '', value: '' }] }));
-  const updateCustomField = (idx, field, value) => setOverviewDraft(prev => {
-    const next = [...prev.customFields];
-    next[idx] = { ...next[idx], [field]: value };
-    return { ...prev, customFields: next };
-  });
-  const removeCustomField = (idx) => setOverviewDraft(prev => ({ ...prev, customFields: prev.customFields.filter((_, i) => i !== idx) }));
+  const canEdit = hasPermission(userRole, 'edit.quote');
 
   const addLineItem = () => setLineItemsDraft(prev => ([...prev, { description: '', name: '', qty: 1, price: 0, note: '', isOptional: false, imageUrl: '' }]));
   const updateLineItem = (idx, field, value) => setLineItemsDraft(prev => {
@@ -190,7 +183,7 @@ export default function QuoteDetailView({
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <button onClick={onBack} className="flex items-center gap-2 text-sm font-semibold text-slate-400 hover:text-trellio-teal">
+      <button onClick={onBack} className="flex items-center gap-2 text-sm font-semibold text-slate-400 hover:text-scaffld-teal">
         <ChevronLeftIcon />
         Back to all quotes
       </button>
@@ -204,7 +197,7 @@ export default function QuoteDetailView({
           <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={() => onConvertToJob && onConvertToJob(quote)}
-              className="px-4 py-2 bg-trellio-teal text-midnight rounded-lg text-sm font-semibold hover:bg-trellio-teal/90"
+              className="px-4 py-2 bg-scaffld-teal text-midnight rounded-lg text-sm font-semibold hover:bg-scaffld-teal/90"
             >
               Convert to Job
             </button>
@@ -219,7 +212,9 @@ export default function QuoteDetailView({
                 <div className="absolute right-0 mt-2 w-64 bg-charcoal border border-slate-700/30 rounded-xl shadow-lg z-30 text-sm">
                   <button className="w-full text-left px-4 py-2 hover:bg-midnight text-slate-100" onClick={() => { onConvertToJob && onConvertToJob(quote); setMenuOpen(false); }}>Convert to Job</button>
                   <button className="w-full text-left px-4 py-2 hover:bg-midnight text-slate-100" onClick={() => { onCreateSimilar && onCreateSimilar(quote); setMenuOpen(false); }}>Create Similar Quote</button>
-                  <button className="w-full text-left px-4 py-2 hover:bg-midnight text-slate-100" onClick={() => { onCollectDeposit && onCollectDeposit(quote); setMenuOpen(false); }}>Collect Deposit</button>
+                  {!quote.depositCollected && (
+                    <button className="w-full text-left px-4 py-2 hover:bg-midnight text-slate-100" onClick={() => { onCollectDeposit && onCollectDeposit(quote); setMenuOpen(false); }}>Collect Deposit</button>
+                  )}
                   <div className="px-4 pt-2 text-xs text-slate-500">Send as...</div>
                   <button className="w-full text-left px-4 py-2 hover:bg-midnight text-slate-100" onClick={() => { onSendEmail && onSendEmail(quote); setMenuOpen(false); }}>Email</button>
                   {(/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) && (
@@ -262,45 +257,32 @@ export default function QuoteDetailView({
                   value={overviewDraft.title}
                   onChange={(e) => setOverviewDraft({ ...overviewDraft, title: e.target.value })}
                   placeholder="Quote title"
-                  className="w-full px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-trellio-teal focus:ring-1 focus:ring-trellio-teal/20"
+                  className="w-full px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-scaffld-teal focus:ring-1 focus:ring-scaffld-teal/20"
                 />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <input
                     value={overviewDraft.quoteNumber}
                     onChange={(e) => setOverviewDraft({ ...overviewDraft, quoteNumber: e.target.value })}
                     placeholder="Quote number"
-                    className="px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-trellio-teal focus:ring-1 focus:ring-trellio-teal/20"
+                    className="px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-scaffld-teal focus:ring-1 focus:ring-scaffld-teal/20"
                   />
                   <input
                     value={overviewDraft.salesperson}
                     onChange={(e) => setOverviewDraft({ ...overviewDraft, salesperson: e.target.value })}
                     placeholder="Assigned salesperson"
-                    className="px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-trellio-teal focus:ring-1 focus:ring-trellio-teal/20"
+                    className="px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-scaffld-teal focus:ring-1 focus:ring-scaffld-teal/20"
                   />
                 </div>
                 <div>
                   <div className="text-xs text-slate-400 mb-2">Custom fields</div>
-                  {overviewDraft.customFields.map((field, idx) => (
-                    <div key={`${field.key}-${idx}`} className="grid grid-cols-[1fr_1fr_auto] gap-2 mb-2">
-                      <input
-                        value={field.key}
-                        onChange={(e) => updateCustomField(idx, 'key', e.target.value)}
-                        placeholder="Field name"
-                        className="px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-trellio-teal focus:ring-1 focus:ring-trellio-teal/20"
-                      />
-                      <input
-                        value={field.value}
-                        onChange={(e) => updateCustomField(idx, 'value', e.target.value)}
-                        placeholder="Value"
-                        className="px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-trellio-teal focus:ring-1 focus:ring-trellio-teal/20"
-                      />
-                      <button onClick={() => removeCustomField(idx)} className="text-signal-coral text-xs font-semibold hover:text-signal-coral/80">Remove</button>
-                    </div>
-                  ))}
-                  <button onClick={addCustomField} className="text-sm font-semibold text-trellio-teal hover:text-trellio-teal/80">+ Add field</button>
+                  <CustomFieldEditor
+                    entityType="quotes"
+                    customFields={overviewDraft.customFields}
+                    onChange={(updated) => setOverviewDraft(prev => ({ ...prev, customFields: updated }))}
+                  />
                 </div>
                 <div className="text-right">
-                  <button onClick={saveOverview} className="px-4 py-2 bg-trellio-teal text-midnight rounded-md text-sm font-semibold hover:bg-trellio-teal/90">Save</button>
+                  <button onClick={saveOverview} className="px-4 py-2 bg-scaffld-teal text-midnight rounded-md text-sm font-semibold hover:bg-scaffld-teal/90">Save</button>
                 </div>
               </div>
             ) : (
@@ -313,12 +295,14 @@ export default function QuoteDetailView({
                   <div className="text-xs text-slate-400">Required Deposit</div>
                   <div className="font-semibold">{formatCurrency(requiredDeposit)}</div>
                 </div>
-                {overviewDraft.customFields.map((field, idx) => (
-                  <div key={`${field.key}-${idx}`}>
-                    <div className="text-xs text-slate-400">{field.key || 'Custom field'}</div>
-                    <div className="font-semibold">{field.value || '-'}</div>
-                  </div>
-                ))}
+                <div className="md:col-span-2">
+                  <CustomFieldEditor
+                    entityType="quotes"
+                    customFields={overviewDraft.customFields}
+                    onChange={() => {}}
+                    disabled
+                  />
+                </div>
               </div>
             )}
           </div>
@@ -334,14 +318,14 @@ export default function QuoteDetailView({
                 <select
                   value={clientDraft.clientId}
                   onChange={(e) => setClientDraft({ ...clientDraft, clientId: e.target.value })}
-                  className="px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-trellio-teal focus:ring-1 focus:ring-trellio-teal/20"
+                  className="px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-scaffld-teal focus:ring-1 focus:ring-scaffld-teal/20"
                 >
                   {clientOptions.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                 </select>
                 <select
                   value={clientDraft.propertyId}
                   onChange={(e) => setClientDraft({ ...clientDraft, propertyId: e.target.value })}
-                  className="px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-trellio-teal focus:ring-1 focus:ring-trellio-teal/20"
+                  className="px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-scaffld-teal focus:ring-1 focus:ring-scaffld-teal/20"
                 >
                   <option value="">Select property</option>
                   {propertyOptions.map((p, idx) => (
@@ -351,7 +335,7 @@ export default function QuoteDetailView({
                 <select
                   value={clientDraft.contactId}
                   onChange={(e) => setClientDraft({ ...clientDraft, contactId: e.target.value })}
-                  className="px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-trellio-teal focus:ring-1 focus:ring-trellio-teal/20"
+                  className="px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-scaffld-teal focus:ring-1 focus:ring-scaffld-teal/20"
                 >
                   <option value="">Select contact</option>
                   {contactOptions.map((c, idx) => (
@@ -359,14 +343,14 @@ export default function QuoteDetailView({
                   ))}
                 </select>
                 <div className="text-right md:col-span-2">
-                  <button onClick={saveClient} className="px-4 py-2 bg-trellio-teal text-midnight rounded-md text-sm font-semibold hover:bg-trellio-teal/90">Save</button>
+                  <button onClick={saveClient} className="px-4 py-2 bg-scaffld-teal text-midnight rounded-md text-sm font-semibold hover:bg-scaffld-teal/90">Save</button>
                 </div>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-100">
                 <div>
                   <div className="text-xs text-slate-400">Client</div>
-                  <button onClick={() => onOpenClient && onOpenClient(quote.clientId)} className="font-semibold text-trellio-teal hover:underline">
+                  <button onClick={() => onOpenClient && onOpenClient(quote.clientId)} className="font-semibold text-scaffld-teal hover:underline">
                     {client?.name || 'Client'}
                   </button>
                   <div className="text-xs text-slate-400 mt-2">Property</div>
@@ -375,7 +359,7 @@ export default function QuoteDetailView({
                 <div>
                   <div className="text-xs text-slate-400">Contact</div>
                   <div>{client?.phone || client?.phones?.[0]?.number || 'No phone'}</div>
-                  <div className="text-trellio-teal">{client?.email || client?.emails?.[0]?.address || 'No email'}</div>
+                  <div className="text-scaffld-teal">{client?.email || client?.emails?.[0]?.address || 'No email'}</div>
                 </div>
               </div>
             )}
@@ -395,7 +379,7 @@ export default function QuoteDetailView({
                       value={item.name || ''}
                       onChange={(e) => updateLineItem(idx, 'name', e.target.value)}
                       placeholder="Name"
-                      className="px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-trellio-teal focus:ring-1 focus:ring-trellio-teal/20"
+                      className="px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-scaffld-teal focus:ring-1 focus:ring-scaffld-teal/20"
                     />
                     <input
                       type="number"
@@ -403,7 +387,7 @@ export default function QuoteDetailView({
                       value={item.qty || 0}
                       onChange={(e) => updateLineItem(idx, 'qty', e.target.value)}
                       placeholder="Quantity"
-                      className="px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-trellio-teal focus:ring-1 focus:ring-trellio-teal/20"
+                      className="px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-scaffld-teal focus:ring-1 focus:ring-scaffld-teal/20"
                     />
                     <input
                       type="number"
@@ -411,7 +395,7 @@ export default function QuoteDetailView({
                       value={item.unitCost || 0}
                       onChange={(e) => updateLineItem(idx, 'unitCost', e.target.value)}
                       placeholder="Unit cost"
-                      className="px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-trellio-teal focus:ring-1 focus:ring-trellio-teal/20"
+                      className="px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-scaffld-teal focus:ring-1 focus:ring-scaffld-teal/20"
                     />
                     <input
                       type="number"
@@ -419,20 +403,20 @@ export default function QuoteDetailView({
                       value={item.price || 0}
                       onChange={(e) => updateLineItem(idx, 'price', e.target.value)}
                       placeholder="Unit price"
-                      className="px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-trellio-teal focus:ring-1 focus:ring-trellio-teal/20"
+                      className="px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-scaffld-teal focus:ring-1 focus:ring-scaffld-teal/20"
                     />
                     <input
                         value={item.imageUrl || ''}
                         onChange={(e) => updateLineItem(idx, 'imageUrl', e.target.value)}
                         placeholder="Image URL"
-                        className="px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-trellio-teal focus:ring-1 focus:ring-trellio-teal/20"
+                        className="px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-scaffld-teal focus:ring-1 focus:ring-scaffld-teal/20"
                       />
                     </div>
                     <textarea
                       value={item.description || item.note || ''}
                       onChange={(e) => updateLineItem(idx, 'description', e.target.value)}
                       placeholder="Description"
-                      className="w-full px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-trellio-teal focus:ring-1 focus:ring-trellio-teal/20"
+                      className="w-full px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-scaffld-teal focus:ring-1 focus:ring-scaffld-teal/20"
                     />
                     <label className="flex items-center gap-2 text-xs text-slate-400">
                       <input
@@ -447,11 +431,11 @@ export default function QuoteDetailView({
                     </div>
                   </div>
                 ))}
-                <button onClick={addLineItem} className="flex items-center gap-2 text-sm font-semibold text-trellio-teal hover:text-trellio-teal/80">
+                <button onClick={addLineItem} className="flex items-center gap-2 text-sm font-semibold text-scaffld-teal hover:text-scaffld-teal/80">
                   <PlusCircleIcon /> Add Line Item
                 </button>
                 <div className="text-right">
-                  <button onClick={saveLineItems} className="px-4 py-2 bg-trellio-teal text-midnight rounded-md text-sm font-semibold hover:bg-trellio-teal/90">Save</button>
+                  <button onClick={saveLineItems} className="px-4 py-2 bg-scaffld-teal text-midnight rounded-md text-sm font-semibold hover:bg-scaffld-teal/90">Save</button>
                 </div>
               </div>
             ) : (
@@ -516,13 +500,13 @@ export default function QuoteDetailView({
                   value={financialDraft.taxRate}
                   onChange={(e) => setFinancialDraft({ ...financialDraft, taxRate: e.target.value })}
                   placeholder="Tax rate (%)"
-                  className="px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-trellio-teal focus:ring-1 focus:ring-trellio-teal/20"
+                  className="px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-scaffld-teal focus:ring-1 focus:ring-scaffld-teal/20"
                 />
                 <div className="flex gap-2">
                   <select
                     value={financialDraft.quoteDiscountType}
                     onChange={(e) => setFinancialDraft({ ...financialDraft, quoteDiscountType: e.target.value })}
-                    className="px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-trellio-teal focus:ring-1 focus:ring-trellio-teal/20"
+                    className="px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-scaffld-teal focus:ring-1 focus:ring-scaffld-teal/20"
                   >
                     <option value="amount">Discount $</option>
                     <option value="percent">Discount %</option>
@@ -540,17 +524,17 @@ export default function QuoteDetailView({
                   value={financialDraft.depositRequiredAmount}
                   onChange={(e) => setFinancialDraft({ ...financialDraft, depositRequiredAmount: e.target.value })}
                   placeholder="Required deposit amount"
-                  className="px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-trellio-teal focus:ring-1 focus:ring-trellio-teal/20"
+                  className="px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-scaffld-teal focus:ring-1 focus:ring-scaffld-teal/20"
                 />
                 <input
                   type="number"
                   value={financialDraft.depositRequiredPercent}
                   onChange={(e) => setFinancialDraft({ ...financialDraft, depositRequiredPercent: e.target.value })}
                   placeholder="Required deposit %"
-                  className="px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-trellio-teal focus:ring-1 focus:ring-trellio-teal/20"
+                  className="px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-scaffld-teal focus:ring-1 focus:ring-scaffld-teal/20"
                 />
                 <div className="md:col-span-2 text-right">
-                  <button onClick={saveFinancials} className="px-4 py-2 bg-trellio-teal text-midnight rounded-md text-sm font-semibold hover:bg-trellio-teal/90">Save</button>
+                  <button onClick={saveFinancials} className="px-4 py-2 bg-scaffld-teal text-midnight rounded-md text-sm font-semibold hover:bg-scaffld-teal/90">Save</button>
                 </div>
               </div>
             ) : (
@@ -566,6 +550,15 @@ export default function QuoteDetailView({
                 <div>
                   <div className="text-xs text-slate-400">Required deposit</div>
                   <div className="font-semibold">{formatCurrency(requiredDeposit)}</div>
+                  {quote.depositCollected && (
+                    <div className="text-xs text-scaffld-teal mt-1">
+                      Collected {quote.depositMethod === 'stripe' ? 'via Stripe' : 'manually'}
+                      {quote.depositCollectedAt && ` on ${new Date(quote.depositCollectedAt).toLocaleDateString()}`}
+                    </div>
+                  )}
+                  {requiredDeposit > 0 && !quote.depositCollected && (
+                    <div className="text-xs text-harvest-amber mt-1">Pending collection</div>
+                  )}
                 </div>
               </div>
             )}
@@ -583,18 +576,18 @@ export default function QuoteDetailView({
                   value={legalDraft.contractTerms}
                   onChange={(e) => setLegalDraft({ ...legalDraft, contractTerms: e.target.value })}
                   placeholder="Contract terms"
-                  className="w-full px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-trellio-teal focus:ring-1 focus:ring-trellio-teal/20"
+                  className="w-full px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-scaffld-teal focus:ring-1 focus:ring-scaffld-teal/20"
                   rows={4}
                 />
                 <textarea
                   value={legalDraft.disclaimers}
                   onChange={(e) => setLegalDraft({ ...legalDraft, disclaimers: e.target.value })}
                   placeholder="Disclaimers"
-                  className="w-full px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-trellio-teal focus:ring-1 focus:ring-trellio-teal/20"
+                  className="w-full px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 focus:border-scaffld-teal focus:ring-1 focus:ring-scaffld-teal/20"
                   rows={3}
                 />
                 <div className="text-right">
-                  <button onClick={saveLegal} className="px-4 py-2 bg-trellio-teal text-midnight rounded-md text-sm font-semibold hover:bg-trellio-teal/90">Save</button>
+                  <button onClick={saveLegal} className="px-4 py-2 bg-scaffld-teal text-midnight rounded-md text-sm font-semibold hover:bg-scaffld-teal/90">Save</button>
                 </div>
               </div>
             ) : (

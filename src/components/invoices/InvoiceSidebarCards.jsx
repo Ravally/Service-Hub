@@ -1,7 +1,7 @@
 import React from 'react';
 import { toDateInput } from '../../utils';
 
-export function InvoiceDetailsCard({ draft, canEdit, customFields, handleIssueDateChange, handleDueTermChange, addCustomField, updateCustomField, removeCustomField, updateDraft }) {
+export function InvoiceDetailsCard({ draft, canEdit, handleIssueDateChange, handleDueTermChange, updateDraft, customFieldsNode }) {
   return (
     <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-5">
       <h3 className="text-lg font-semibold text-slate-100 mb-4">Invoice details</h3>
@@ -22,14 +22,7 @@ export function InvoiceDetailsCard({ draft, canEdit, customFields, handleIssueDa
             <option value="Yes">Yes</option><option value="No">No</option>
           </select>
         </div>
-        <button type="button" onClick={addCustomField} className="px-3 py-2 rounded-md border border-green-200 text-trellio-teal text-sm font-semibold" disabled={!canEdit}>Add Custom Field</button>
-        {customFields.map((field, idx) => (
-          <div key={`${field.key}-${idx}`} className="grid grid-cols-[1fr_1fr_auto] gap-2">
-            <input value={field.key} onChange={(e) => updateCustomField(idx, 'key', e.target.value)} placeholder="Field" className="px-2 py-1 border border-slate-700/30 rounded-md text-sm" disabled={!canEdit} />
-            <input value={field.value} onChange={(e) => updateCustomField(idx, 'value', e.target.value)} placeholder="Value" className="px-2 py-1 border border-slate-700/30 rounded-md text-sm" disabled={!canEdit} />
-            {canEdit && <button onClick={() => removeCustomField(idx)} className="text-xs font-semibold text-signal-coral">Remove</button>}
-          </div>
-        ))}
+        {customFieldsNode}
       </div>
     </div>
   );
@@ -40,13 +33,13 @@ export function ClientViewCard({ draft, canEdit, showClientView, setShowClientVi
     <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-5">
       <div className="flex items-center gap-3">
         <span className="text-lg font-semibold text-slate-100">Client view</span>
-        <button type="button" onClick={() => setShowClientView((v) => !v)} className="text-sm font-semibold text-trellio-teal underline">
+        <button type="button" onClick={() => setShowClientView((v) => !v)} className="text-sm font-semibold text-scaffld-teal underline">
           {showClientView ? 'Cancel' : 'Change'}
         </button>
       </div>
       {showClientView && (
         <div className="mt-3 text-sm text-slate-100 space-y-3">
-          <div>Adjust what your client will see on this invoice. To change the default for all future invoices, visit the <span className="text-trellio-teal underline">PDF Style</span>.</div>
+          <div>Adjust what your client will see on this invoice. To change the default for all future invoices, visit the <span className="text-scaffld-teal underline">PDF Style</span>.</div>
           <div className="flex flex-wrap gap-4">
             {[['showQuantities', 'Quantities'], ['showUnitCosts', 'Unit costs'], ['showLineItemTotals', 'Line item totals'], ['showTotals', 'Totals'], ['showAccountBalance', 'Account balance'], ['showLateStamp', 'Late stamp']].map(([key, label]) => (
               <label key={key} className="flex items-center gap-2 text-sm">
@@ -90,7 +83,7 @@ export function InternalNotesCard({ draft, canEdit, updateDraft, onUploadAttachm
       <div className="border-2 border-dashed border-slate-700/30 rounded-2xl p-4 text-center text-sm text-slate-400">
         <div className="flex items-center justify-center gap-2">
           <span>Drag your files here or</span>
-          <label className="text-trellio-teal font-semibold cursor-pointer">
+          <label className="text-scaffld-teal font-semibold cursor-pointer">
             Select a File
             <input type="file" className="hidden" onChange={handleAttachmentUpload} disabled={!canEdit} />
           </label>

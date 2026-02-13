@@ -1,4 +1,4 @@
-# Trellio - Development Environment Setup Guide
+# Scaffld - Development Environment Setup Guide
 
 **Last Updated**: February 11, 2026
 **Version**: 2.0
@@ -99,7 +99,7 @@ npm audit fix
 
 1. Go to [Firebase Console](https://console.firebase.google.com/)
 2. Click "Add Project"
-3. Enter project name: `trellio-dev` (or your preferred name)
+3. Enter project name: `scaffld-dev` (or your preferred name)
 4. Enable Google Analytics (optional)
 5. Wait for project creation (~30 seconds)
 
@@ -137,7 +137,7 @@ npm audit fix
 1. Navigate to Project Settings (gear icon)
 2. Scroll to "Your apps"
 3. Click "Web" icon (</>) to add web app
-4. Register app name: `Trellio Web`
+4. Register app name: `Scaffld Web`
 5. Copy the Firebase configuration object
 
 **Example configuration**:
@@ -591,11 +591,11 @@ Create `.vscode/snippets.code-snippets`:
 
 After completing setup:
 
-1. **Read Architecture Guide**: [../TRELLIO_ARCHITECTURE.md](../TRELLIO_ARCHITECTURE.md)
-2. **Review Master Roadmap**: [../TRELLIO_MASTER_ROADMAP.md](../TRELLIO_MASTER_ROADMAP.md)
+1. **Read Architecture Guide**: [../SCAFFLD_ARCHITECTURE.md](../SCAFFLD_ARCHITECTURE.md)
+2. **Review Master Roadmap**: [../SCAFFLD_MASTER_ROADMAP.md](../SCAFFLD_MASTER_ROADMAP.md)
 3. **Check Current Phase**: [../phases/PHASE_2_IN_PROGRESS.md](../phases/PHASE_2_IN_PROGRESS.md)
-4. **Follow Coding Guidelines**: See [../TRELLIO_ARCHITECTURE.md#coding-conventions](../TRELLIO_ARCHITECTURE.md#coding-conventions)
-5. **Review Brand System**: [../../brand/TRELLIO_BRAND.md](../../brand/TRELLIO_BRAND.md)
+4. **Follow Coding Guidelines**: See [../SCAFFLD_ARCHITECTURE.md#coding-conventions](../SCAFFLD_ARCHITECTURE.md#coding-conventions)
+5. **Review Brand System**: [../../brand/SCAFFLD_BRAND.md](../../brand/SCAFFLD_BRAND.md)
 
 ---
 
@@ -646,13 +646,13 @@ firebase emulators:start   # Start local emulators
 - [Stripe Docs](https://stripe.com/docs)
 
 ### Community
-- [Trellio GitHub Issues](https://github.com/your-org/service-hub-app/issues)
+- [Scaffld GitHub Issues](https://github.com/your-org/service-hub-app/issues)
 - [Firebase Support](https://firebase.google.com/support)
 - [React Community](https://react.dev/community)
 
 ### Internal
 - **Project Lead**: [Your Name]
-- **Architecture Questions**: See [TRELLIO_ARCHITECTURE.md](../TRELLIO_ARCHITECTURE.md)
+- **Architecture Questions**: See [SCAFFLD_ARCHITECTURE.md](../SCAFFLD_ARCHITECTURE.md)
 - **Deployment Questions**: See [DEPLOYMENT.md](DEPLOYMENT.md)
 
 ---

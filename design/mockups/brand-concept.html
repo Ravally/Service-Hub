@@ -3,27 +3,27 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Trellio — Brand Concept</title>
+<title>Scaffld — Brand Concept</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    /* TRELLIO BRAND PALETTE */
-    --trellio-primary: #0EA5A0;
-    --trellio-primary-deep: #087F7A;
-    --trellio-primary-light: #B2F0ED;
-    --trellio-primary-glow: #0EA5A033;
-    --trellio-accent: #F7845E;
-    --trellio-accent-warm: #FFAA5C;
-    --trellio-accent-light: #FFDCC8;
-    --trellio-midnight: #0C1220;
-    --trellio-charcoal: #1A2332;
-    --trellio-slate: #2D3B4E;
-    --trellio-muted: #6B7F96;
-    --trellio-silver: #A3B4C8;
-    --trellio-cream: #FFF9F5;
-    --trellio-white: #FFFFFF;
-    --trellio-sage: #C8E6C9;
-    --trellio-lavender: #E8DEF8;
+    /* SCAFFLD BRAND PALETTE */
+    --scaffld-primary: #0EA5A0;
+    --scaffld-primary-deep: #087F7A;
+    --scaffld-primary-light: #B2F0ED;
+    --scaffld-primary-glow: #0EA5A033;
+    --scaffld-accent: #F7845E;
+    --scaffld-accent-warm: #FFAA5C;
+    --scaffld-accent-light: #FFDCC8;
+    --scaffld-midnight: #0C1220;
+    --scaffld-charcoal: #1A2332;
+    --scaffld-slate: #2D3B4E;
+    --scaffld-muted: #6B7F96;
+    --scaffld-silver: #A3B4C8;
+    --scaffld-cream: #FFF9F5;
+    --scaffld-white: #FFFFFF;
+    --scaffld-sage: #C8E6C9;
+    --scaffld-lavender: #E8DEF8;
 
     --font-display: 'Playfair Display', Georgia, serif;
     --font-body: 'DM Sans', system-ui, sans-serif;
@@ -34,12 +34,12 @@
 
   html {
     scroll-behavior: smooth;
-    background: var(--trellio-midnight);
+    background: var(--scaffld-midnight);
   }
 
   body {
     font-family: var(--font-body);
-    color: var(--trellio-white);
+    color: var(--scaffld-white);
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
   }
@@ -54,7 +54,7 @@
     justify-content: center;
     position: relative;
     overflow: hidden;
-    background: var(--trellio-midnight);
+    background: var(--scaffld-midnight);
   }
 
   .hero::before {
@@ -76,14 +76,14 @@
     100% { transform: translate(-3%, 2%) scale(1.05); }
   }
 
-  /* Trellis lattice pattern */
+  /* scaffold lattice pattern */
   .hero-lattice {
     position: absolute;
     inset: 0;
     opacity: 0.035;
     background-image:
-      linear-gradient(30deg, var(--trellio-primary) 1px, transparent 1px),
-      linear-gradient(-30deg, var(--trellio-primary) 1px, transparent 1px);
+      linear-gradient(30deg, var(--scaffld-primary) 1px, transparent 1px),
+      linear-gradient(-30deg, var(--scaffld-primary) 1px, transparent 1px);
     background-size: 60px 104px;
     animation: latticeDrift 30s linear infinite;
   }
@@ -108,7 +108,7 @@
     font-size: 0.7rem;
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: var(--trellio-primary);
+    color: var(--scaffld-primary);
     background: rgba(14, 165, 160, 0.08);
     border: 1px solid rgba(14, 165, 160, 0.2);
     padding: 10px 20px;
@@ -121,7 +121,7 @@
     content: '';
     width: 6px;
     height: 6px;
-    background: var(--trellio-primary);
+    background: var(--scaffld-primary);
     border-radius: 50%;
     animation: pulse 2s ease-in-out infinite;
   }
@@ -155,7 +155,7 @@
   }
 
   .hero-title span {
-    background: linear-gradient(135deg, var(--trellio-white) 0%, var(--trellio-primary-light) 50%, var(--trellio-primary) 100%);
+    background: linear-gradient(135deg, var(--scaffld-white) 0%, var(--scaffld-primary-light) 50%, var(--scaffld-primary) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -163,7 +163,7 @@
 
   .hero-subtitle {
     font-size: clamp(1rem, 2vw, 1.35rem);
-    color: var(--trellio-silver);
+    color: var(--scaffld-silver);
     max-width: 500px;
     margin: 0 auto 3rem;
     line-height: 1.6;
@@ -175,7 +175,7 @@
     font-family: var(--font-display);
     font-style: italic;
     font-size: clamp(1rem, 1.5vw, 1.15rem);
-    color: var(--trellio-accent);
+    color: var(--scaffld-accent);
     animation: fadeUp 1s ease-out 0.9s both;
     opacity: 0.9;
   }
@@ -197,7 +197,7 @@
     font-size: 0.65rem;
     letter-spacing: 0.25em;
     text-transform: uppercase;
-    color: var(--trellio-primary);
+    color: var(--scaffld-primary);
     margin-bottom: 1rem;
     display: flex;
     align-items: center;
@@ -208,7 +208,7 @@
     content: '';
     width: 24px;
     height: 1px;
-    background: var(--trellio-primary);
+    background: var(--scaffld-primary);
   }
 
   .section-title {
@@ -222,7 +222,7 @@
 
   .section-desc {
     font-size: 1.05rem;
-    color: var(--trellio-silver);
+    color: var(--scaffld-silver);
     max-width: 600px;
     line-height: 1.7;
     font-weight: 300;
@@ -232,7 +232,7 @@
      COLOR PALETTE
      ============================================ */
   .palette-section {
-    background: var(--trellio-charcoal);
+    background: var(--scaffld-charcoal);
     position: relative;
   }
 
@@ -258,7 +258,7 @@
 
   .color-card {
     padding: 0;
-    background: var(--trellio-charcoal);
+    background: var(--scaffld-charcoal);
     transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     cursor: pointer;
     position: relative;
@@ -295,13 +295,13 @@
   .color-hex {
     font-family: var(--font-mono);
     font-size: 0.72rem;
-    color: var(--trellio-muted);
+    color: var(--scaffld-muted);
     letter-spacing: 0.05em;
   }
 
   .color-role {
     font-size: 0.7rem;
-    color: var(--trellio-silver);
+    color: var(--scaffld-silver);
     margin-top: 6px;
     font-style: italic;
   }
@@ -310,7 +310,7 @@
      TYPOGRAPHY
      ============================================ */
   .type-section {
-    background: var(--trellio-midnight);
+    background: var(--scaffld-midnight);
   }
 
   .type-showcase {
@@ -335,7 +335,7 @@
     left: 0;
     width: 3px;
     height: 100%;
-    background: linear-gradient(180deg, var(--trellio-primary), var(--trellio-accent));
+    background: linear-gradient(180deg, var(--scaffld-primary), var(--scaffld-accent));
     border-radius: 3px;
   }
 
@@ -344,7 +344,7 @@
     font-size: 0.65rem;
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: var(--trellio-primary);
+    color: var(--scaffld-primary);
     margin-bottom: 1.5rem;
     display: flex;
     align-items: center;
@@ -352,7 +352,7 @@
   }
 
   .type-role {
-    color: var(--trellio-muted);
+    color: var(--scaffld-muted);
     font-size: 0.6rem;
     letter-spacing: 0.15em;
   }
@@ -364,7 +364,7 @@
     letter-spacing: -0.04em;
     line-height: 1.1;
     margin-bottom: 1.5rem;
-    background: linear-gradient(135deg, var(--trellio-white) 30%, var(--trellio-silver));
+    background: linear-gradient(135deg, var(--scaffld-white) 30%, var(--scaffld-silver));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -377,7 +377,7 @@
     font-style: italic;
     line-height: 1.3;
     margin-bottom: 1.5rem;
-    color: var(--trellio-accent);
+    color: var(--scaffld-accent);
     opacity: 0.9;
   }
 
@@ -385,7 +385,7 @@
     font-family: var(--font-body);
     font-size: 1.05rem;
     line-height: 1.75;
-    color: var(--trellio-silver);
+    color: var(--scaffld-silver);
     font-weight: 300;
     max-width: 620px;
   }
@@ -394,7 +394,7 @@
     font-family: var(--font-mono);
     font-size: 0.85rem;
     line-height: 1.8;
-    color: var(--trellio-primary-light);
+    color: var(--scaffld-primary-light);
     background: rgba(14, 165, 160, 0.06);
     padding: 1.5rem 2rem;
     border-radius: 10px;
@@ -413,7 +413,7 @@
   .type-weight {
     font-family: var(--font-body);
     font-size: 1.5rem;
-    color: var(--trellio-silver);
+    color: var(--scaffld-silver);
     line-height: 1.2;
   }
 
@@ -421,7 +421,7 @@
     display: block;
     font-size: 0.6rem;
     font-family: var(--font-mono);
-    color: var(--trellio-muted);
+    color: var(--scaffld-muted);
     letter-spacing: 0.15em;
     text-transform: uppercase;
     margin-top: 4px;
@@ -431,7 +431,7 @@
      LOGO SYSTEM
      ============================================ */
   .logo-section {
-    background: var(--trellio-charcoal);
+    background: var(--scaffld-charcoal);
     position: relative;
   }
 
@@ -469,20 +469,20 @@
   }
 
   .logo-card.dark {
-    background: var(--trellio-midnight);
+    background: var(--scaffld-midnight);
     border: 1px solid rgba(255,255,255,0.06);
   }
 
   .logo-card.light {
-    background: var(--trellio-cream);
+    background: var(--scaffld-cream);
   }
 
   .logo-card.primary {
-    background: var(--trellio-primary);
+    background: var(--scaffld-primary);
   }
 
   .logo-card.accent {
-    background: linear-gradient(135deg, var(--trellio-primary-deep), var(--trellio-primary));
+    background: linear-gradient(135deg, var(--scaffld-primary-deep), var(--scaffld-primary));
   }
 
   .logo-card-label {
@@ -497,8 +497,8 @@
     opacity: 0.5;
   }
 
-  .logo-card.light .logo-card-label { color: var(--trellio-slate); }
-  .logo-card.dark .logo-card-label { color: var(--trellio-silver); }
+  .logo-card.light .logo-card-label { color: var(--scaffld-slate); }
+  .logo-card.dark .logo-card-label { color: var(--scaffld-silver); }
   .logo-card.primary .logo-card-label,
   .logo-card.accent .logo-card-label { color: rgba(255,255,255,0.6); }
 
@@ -518,16 +518,16 @@
     flex-shrink: 0;
   }
 
-  .logo-card.dark .logo-wordmark { color: var(--trellio-white); }
-  .logo-card.light .logo-wordmark { color: var(--trellio-midnight); }
+  .logo-card.dark .logo-wordmark { color: var(--scaffld-white); }
+  .logo-card.light .logo-wordmark { color: var(--scaffld-midnight); }
   .logo-card.primary .logo-wordmark,
-  .logo-card.accent .logo-wordmark { color: var(--trellio-white); }
+  .logo-card.accent .logo-wordmark { color: var(--scaffld-white); }
 
   /* ============================================
      BRAND ELEMENTS
      ============================================ */
   .elements-section {
-    background: var(--trellio-midnight);
+    background: var(--scaffld-midnight);
   }
 
   .elements-grid {
@@ -538,7 +538,7 @@
   }
 
   .element-card {
-    background: var(--trellio-charcoal);
+    background: var(--scaffld-charcoal);
     border-radius: 20px;
     padding: 2.5rem;
     border: 1px solid rgba(255,255,255,0.04);
@@ -560,7 +560,7 @@
 
   .element-card p {
     font-size: 0.9rem;
-    color: var(--trellio-silver);
+    color: var(--scaffld-silver);
     line-height: 1.65;
     font-weight: 300;
   }
@@ -578,29 +578,29 @@
 
   .element-icon.teal {
     background: rgba(14, 165, 160, 0.12);
-    color: var(--trellio-primary);
+    color: var(--scaffld-primary);
   }
 
   .element-icon.coral {
     background: rgba(247, 132, 94, 0.12);
-    color: var(--trellio-accent);
+    color: var(--scaffld-accent);
   }
 
   .element-icon.gold {
     background: rgba(255, 170, 92, 0.12);
-    color: var(--trellio-accent-warm);
+    color: var(--scaffld-accent-warm);
   }
 
   .element-icon.sage {
     background: rgba(200, 230, 201, 0.12);
-    color: var(--trellio-sage);
+    color: var(--scaffld-sage);
   }
 
   /* ============================================
      CTA / MOCKUP SECTION
      ============================================ */
   .cta-section {
-    background: linear-gradient(180deg, var(--trellio-charcoal) 0%, var(--trellio-midnight) 100%);
+    background: linear-gradient(180deg, var(--scaffld-charcoal) 0%, var(--scaffld-midnight) 100%);
     text-align: center;
     position: relative;
     overflow: hidden;
@@ -644,20 +644,20 @@
   }
 
   .btn-primary {
-    background: var(--trellio-primary);
+    background: var(--scaffld-primary);
     color: white;
     box-shadow: 0 4px 20px rgba(14, 165, 160, 0.3), inset 0 1px 0 rgba(255,255,255,0.15);
   }
 
   .btn-primary:hover {
-    background: var(--trellio-primary-deep);
+    background: var(--scaffld-primary-deep);
     transform: translateY(-2px);
     box-shadow: 0 8px 30px rgba(14, 165, 160, 0.4);
   }
 
   .btn-ghost {
     background: transparent;
-    color: var(--trellio-white);
+    color: var(--scaffld-white);
     border: 1px solid rgba(255,255,255,0.15);
   }
 
@@ -672,7 +672,7 @@
      ============================================ */
   .gradient-bar {
     height: 4px;
-    background: linear-gradient(90deg, var(--trellio-primary), var(--trellio-accent-warm), var(--trellio-accent), var(--trellio-primary-deep));
+    background: linear-gradient(90deg, var(--scaffld-primary), var(--scaffld-accent-warm), var(--scaffld-accent), var(--scaffld-primary-deep));
     background-size: 300% 100%;
     animation: gradientFlow 8s ease infinite;
   }
@@ -688,7 +688,7 @@
      ============================================ */
   .ui-preview {
     margin-top: 3rem;
-    background: var(--trellio-charcoal);
+    background: var(--scaffld-charcoal);
     border-radius: 20px;
     border: 1px solid rgba(255,255,255,0.06);
     overflow: hidden;
@@ -721,7 +721,7 @@
     padding: 5px 14px;
     font-family: var(--font-mono);
     font-size: 0.65rem;
-    color: var(--trellio-muted);
+    color: var(--scaffld-muted);
     margin-left: 12px;
   }
 
@@ -741,7 +741,7 @@
     font-family: var(--font-body);
     font-weight: 700;
     font-size: 1.1rem;
-    color: var(--trellio-primary);
+    color: var(--scaffld-primary);
     display: flex;
     align-items: center;
     gap: 8px;
@@ -760,14 +760,14 @@
     padding: 10px 12px;
     border-radius: 8px;
     font-size: 0.8rem;
-    color: var(--trellio-muted);
+    color: var(--scaffld-muted);
     margin-bottom: 2px;
     transition: all 0.2s;
   }
 
   .ui-nav-item.active {
     background: rgba(14, 165, 160, 0.1);
-    color: var(--trellio-primary);
+    color: var(--scaffld-primary);
   }
 
   .ui-nav-icon {
@@ -798,7 +798,7 @@
   }
 
   .ui-btn-sm {
-    background: var(--trellio-primary);
+    background: var(--scaffld-primary);
     color: white;
     border: none;
     padding: 8px 16px;
@@ -824,7 +824,7 @@
 
   .ui-stat-label {
     font-size: 0.65rem;
-    color: var(--trellio-muted);
+    color: var(--scaffld-muted);
     font-family: var(--font-mono);
     letter-spacing: 0.1em;
     text-transform: uppercase;
@@ -836,13 +836,13 @@
     margin-top: 4px;
   }
 
-  .ui-stat-value.teal { color: var(--trellio-primary); }
-  .ui-stat-value.coral { color: var(--trellio-accent); }
-  .ui-stat-value.gold { color: var(--trellio-accent-warm); }
+  .ui-stat-value.teal { color: var(--scaffld-primary); }
+  .ui-stat-value.coral { color: var(--scaffld-accent); }
+  .ui-stat-value.gold { color: var(--scaffld-accent-warm); }
 
   .ui-stat-delta {
     font-size: 0.7rem;
-    color: var(--trellio-primary);
+    color: var(--scaffld-primary);
     margin-top: 4px;
   }
 
@@ -855,25 +855,25 @@
   .ui-schedule-block {
     flex: 1;
     background: rgba(14, 165, 160, 0.06);
-    border-left: 3px solid var(--trellio-primary);
+    border-left: 3px solid var(--scaffld-primary);
     border-radius: 0 8px 8px 0;
     padding: 12px;
   }
 
   .ui-schedule-block:nth-child(2) {
     background: rgba(247, 132, 94, 0.06);
-    border-color: var(--trellio-accent);
+    border-color: var(--scaffld-accent);
   }
 
   .ui-schedule-block:nth-child(3) {
     background: rgba(255, 170, 92, 0.06);
-    border-color: var(--trellio-accent-warm);
+    border-color: var(--scaffld-accent-warm);
   }
 
   .ui-sched-time {
     font-family: var(--font-mono);
     font-size: 0.6rem;
-    color: var(--trellio-muted);
+    color: var(--scaffld-muted);
     margin-bottom: 4px;
   }
 
@@ -884,7 +884,7 @@
 
   .ui-sched-crew {
     font-size: 0.65rem;
-    color: var(--trellio-silver);
+    color: var(--scaffld-silver);
     margin-top: 3px;
   }
 
@@ -892,7 +892,7 @@
      VOICE SECTION
      ============================================ */
   .voice-section {
-    background: var(--trellio-charcoal);
+    background: var(--scaffld-charcoal);
     position: relative;
   }
 
@@ -916,12 +916,12 @@
   .voice-card {
     padding: 2rem;
     border-radius: 16px;
-    background: var(--trellio-midnight);
+    background: var(--scaffld-midnight);
     border: 1px solid rgba(255,255,255,0.04);
   }
 
   .voice-do {
-    color: var(--trellio-primary);
+    color: var(--scaffld-primary);
     font-family: var(--font-mono);
     font-size: 0.65rem;
     letter-spacing: 0.2em;
@@ -933,7 +933,7 @@
   }
 
   .voice-dont {
-    color: var(--trellio-accent);
+    color: var(--scaffld-accent);
     font-family: var(--font-mono);
     font-size: 0.65rem;
     letter-spacing: 0.2em;
@@ -948,7 +948,7 @@
     font-size: 1.05rem;
     line-height: 1.6;
     font-style: italic;
-    color: var(--trellio-silver);
+    color: var(--scaffld-silver);
   }
 
   /* ============================================
@@ -958,10 +958,10 @@
     text-align: center;
     padding: 3rem 2rem;
     font-size: 0.75rem;
-    color: var(--trellio-muted);
+    color: var(--scaffld-muted);
     font-family: var(--font-mono);
     letter-spacing: 0.1em;
-    background: var(--trellio-midnight);
+    background: var(--scaffld-midnight);
   }
 
   /* ============================================
@@ -991,7 +991,7 @@
 
     <div class="hero-logo-mark">
       <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <!-- Trellis icon mark -->
+        <!-- scaffold icon mark -->
         <rect x="4" y="4" width="72" height="72" rx="18" fill="url(#mark-bg)" />
         <!-- Lattice structure -->
         <path d="M25 58V30L40 18L55 30V58" stroke="url(#mark-gradient)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
@@ -1014,9 +1014,9 @@
       </svg>
     </div>
 
-    <h1 class="hero-title"><span>trellio</span></h1>
-    <p class="hero-subtitle">The service hub that helps your crew grow upward. Built bold. Designed for the field.</p>
-    <p class="hero-tagline">"Structure your growth."</p>
+    <h1 class="hero-title"><span>scaffld</span></h1>
+    <p class="hero-subtitle">The service hub that helps your crew build bigger. Built bold. Designed for the field.</p>
+    <p class="hero-tagline">"Build on Scaffld."</p>
   </div>
 </section>
 
@@ -1032,7 +1032,7 @@
     <div class="color-card">
       <div class="color-swatch" style="background: linear-gradient(135deg, #0EA5A0, #087F7A);"></div>
       <div class="color-info">
-        <div class="color-name">Trellio Teal</div>
+        <div class="color-name">Scaffld Teal</div>
         <div class="color-hex">#0EA5A0</div>
         <div class="color-role">Primary — CTAs, identity, trust</div>
       </div>
@@ -1111,7 +1111,7 @@
         <span class="type-role">Primary — Headlines & Body</span>
       </div>
       <div class="type-display-sample">Schedule smarter.<br/>Grow faster.</div>
-      <div class="type-body-sample">Trellio gives your crew the structure to thrive. From scheduling and dispatching to invoicing and payments — everything flows through one beautiful hub designed for the realities of fieldwork.</div>
+      <div class="type-body-sample">Scaffld gives your crew the structure to thrive. From scheduling and dispatching to invoicing and payments — everything flows through one beautiful hub designed for the realities of fieldwork.</div>
       <div class="type-weights">
         <div class="type-weight" style="font-weight:300">Light <span>300</span></div>
         <div class="type-weight" style="font-weight:400">Regular <span>400</span></div>
@@ -1126,7 +1126,7 @@
         Playfair Display
         <span class="type-role">Accent — Editorial & Taglines</span>
       </div>
-      <div class="type-serif-sample">"Structure your growth."</div>
+      <div class="type-serif-sample">"Build on Scaffld."</div>
       <div class="type-body-sample">Used sparingly for taglines, pull quotes, and hero moments. The italic serif adds soul and warmth — a human counterpoint to the tech-forward primary type.</div>
     </div>
 
@@ -1149,19 +1149,23 @@
 <section class="logo-section">
   <div class="section-label">03 — Logo System</div>
   <h2 class="section-title">One mark.<br/>Every context.</h2>
-  <p class="section-desc">The Trellio logo combines a geometric lattice icon with a bold wordmark. The icon represents the trellis — a growth framework. The nodes represent your crew, connected and climbing.</p>
+  <p class="section-desc">The Scaffld logo combines a geometric lattice icon with a bold wordmark. The icon represents the scaffold — a the framework under your crew. The nodes represent your crew, connected and climbing.</p>
 
   <div class="logo-grid">
     <div class="logo-card dark">
       <div class="logo-wordmark">
         <svg class="mark" viewBox="0 0 36 36" fill="none">
-          <path d="M6 28V14L18 6L30 14V28" stroke="#0EA5A0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M6 20H30" stroke="#0EA5A0" stroke-width="1.8" stroke-linecap="round" opacity="0.7"/>
-          <circle cx="18" cy="6" r="2.5" fill="#0EA5A0"/>
-          <circle cx="6" cy="14" r="1.8" fill="#F7845E" opacity="0.8"/>
-          <circle cx="30" cy="14" r="1.8" fill="#FFAA5C" opacity="0.8"/>
+          <path d="M10 4V32" stroke="#0EA5A0" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M26 4V32" stroke="#0EA5A0" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M10 10H26" stroke="#0EA5A0" stroke-width="2" stroke-linecap="round"/>
+          <path d="M10 20H26" stroke="#0EA5A0" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+        <path d="M10 30H26" stroke="#0EA5A0" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+        <path d="M10 10L26 20" stroke="#F7845E" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+          <circle cx="10" cy="4" r="2" fill="#F7845E" opacity="0.8"/>
+          
+          <circle cx="26" cy="4" r="2" fill="#FFAA5C" opacity="0.8"/>
         </svg>
-        trellio
+        scaffld
       </div>
       <span class="logo-card-label">Dark Background</span>
     </div>
@@ -1175,7 +1179,7 @@
           <circle cx="6" cy="14" r="1.8" fill="#F7845E" opacity="0.8"/>
           <circle cx="30" cy="14" r="1.8" fill="#FFAA5C" opacity="0.8"/>
         </svg>
-        trellio
+        scaffld
       </div>
       <span class="logo-card-label">Light Background</span>
     </div>
@@ -1189,7 +1193,7 @@
           <circle cx="6" cy="14" r="1.8" fill="white" opacity="0.6"/>
           <circle cx="30" cy="14" r="1.8" fill="white" opacity="0.6"/>
         </svg>
-        trellio
+        scaffld
       </div>
       <span class="logo-card-label">On Primary</span>
     </div>
@@ -1203,7 +1207,7 @@
           <circle cx="6" cy="14" r="1.8" fill="white" opacity="0.6"/>
           <circle cx="30" cy="14" r="1.8" fill="white" opacity="0.6"/>
         </svg>
-        trellio
+        scaffld
       </div>
       <span class="logo-card-label">Gradient</span>
     </div>
@@ -1215,7 +1219,7 @@
      ============================================ -->
 <section class="elements-section">
   <div class="section-label">04 — Product Preview</div>
-  <h2 class="section-title">What Trellio feels like<br/>in the real world</h2>
+  <h2 class="section-title">What Scaffld feels like<br/>in the real world</h2>
   <p class="section-desc">A glimpse at how the brand system translates into a living product — from dashboard to schedule.</p>
 
   <div class="ui-preview">
@@ -1223,7 +1227,7 @@
       <div class="ui-dot"></div>
       <div class="ui-dot"></div>
       <div class="ui-dot"></div>
-      <div class="ui-url-bar">app.trellio.app/dashboard</div>
+      <div class="ui-url-bar">app.scaffld.app/dashboard</div>
     </div>
     <div class="ui-body">
       <div class="ui-sidebar">
@@ -1233,7 +1237,7 @@
             <path d="M6 20H30" stroke="#0EA5A0" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
             <circle cx="18" cy="6" r="2.5" fill="#0EA5A0"/>
           </svg>
-          Trellio
+          Scaffld
         </div>
         <div class="ui-nav-item active">
           <div class="ui-nav-icon"></div>
@@ -1282,7 +1286,7 @@
             <div class="ui-stat-delta">2 on break</div>
           </div>
         </div>
-        <div style="font-size:0.75rem; color: var(--trellio-muted); font-family: var(--font-mono); letter-spacing:0.1em; text-transform: uppercase; margin-bottom: 0.75rem;">Today's Schedule</div>
+        <div style="font-size:0.75rem; color: var(--scaffld-muted); font-family: var(--font-mono); letter-spacing:0.1em; text-transform: uppercase; margin-bottom: 0.75rem;">Today's Schedule</div>
         <div class="ui-schedule-row">
           <div class="ui-schedule-block">
             <div class="ui-sched-time">8:00 AM</div>
@@ -1310,7 +1314,7 @@
      ============================================ -->
 <section class="voice-section">
   <div class="section-label">05 — Brand Voice</div>
-  <h2 class="section-title">How Trellio speaks</h2>
+  <h2 class="section-title">How Scaffld speaks</h2>
   <p class="section-desc">Bold, practical, human. We talk like a sharp business partner — never like a software manual.</p>
 
   <div class="voice-grid">
@@ -1332,7 +1336,7 @@
     </div>
     <div class="voice-card">
       <div class="voice-do">✦ We say</div>
-      <div class="voice-example">"Structure your growth."</div>
+      <div class="voice-example">"Build on Scaffld."</div>
     </div>
     <div class="voice-card">
       <div class="voice-dont">✕ We don't say</div>
@@ -1346,7 +1350,7 @@
      ============================================ -->
 <section class="elements-section">
   <div class="section-label">06 — Brand Principles</div>
-  <h2 class="section-title">What Trellio<br/>stands for</h2>
+  <h2 class="section-title">What Scaffld<br/>stands for</h2>
   <p class="section-desc">Four principles that guide every design decision, feature priority, and customer interaction.</p>
 
   <div class="elements-grid">
@@ -1362,8 +1366,8 @@
     </div>
     <div class="element-card">
       <div class="element-icon gold">○</div>
-      <h3>Growth Architecture</h3>
-      <p>Like a trellis for a vine — we provide the structure, you provide the ambition. Our platform scales as you climb.</p>
+      <h3>Build Architecture</h3>
+      <p>Like a scaffold for a vine — we provide the structure, you provide the ambition. Our platform scales as you climb.</p>
     </div>
     <div class="element-card">
       <div class="element-icon sage">□</div>
@@ -1379,7 +1383,7 @@
 <section class="cta-section">
   <div class="section-label" style="justify-content:center;">The Foundation</div>
   <h2 class="section-title" style="text-align:center; max-width:600px; margin: 0 auto 1rem;">Ready to build<br/>on this?</h2>
-  <p class="section-desc" style="text-align:center; margin: 0 auto;">This is the brand concept for Trellio. Every color, font, and word is designed to set you apart from Jobber and own the space.</p>
+  <p class="section-desc" style="text-align:center; margin: 0 auto;">This is the brand concept for Scaffld. Every color, font, and word is designed to set you apart from Jobber and own the space.</p>
   <div class="cta-buttons">
     <a class="btn btn-primary" href="#">Let's Build →</a>
     <a class="btn btn-ghost" href="#">Refine Further</a>
@@ -1390,7 +1394,7 @@
 <div class="gradient-bar"></div>
 
 <footer class="footer">
-  TRELLIO BRAND CONCEPT — 2026 — CONFIDENTIAL
+  SCAFFLD BRAND CONCEPT — 2026 — CONFIDENTIAL
 </footer>
 
 </body>

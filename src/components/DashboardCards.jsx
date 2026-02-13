@@ -13,7 +13,7 @@ const Header = ({ icon, title, action, accent }) => (
 );
 
 const Card = ({ title, children, action, icon, accent }) => (
-  <div className="bg-charcoal rounded-xl border border-slate-700/30 shadow-sm overflow-hidden hover:border-trellio-teal/30 transition-all relative">
+  <div className="bg-charcoal rounded-xl border border-slate-700/30 shadow-sm overflow-hidden hover:border-scaffld-teal/30 transition-all relative">
     <div className={`absolute top-0 left-0 right-0 h-1 ${accent?.bar || ''}`} />
     <Header icon={icon} title={title} action={action} accent={accent} />
     <div className="p-4">
@@ -101,7 +101,7 @@ const DashboardCards = ({ quotes = [], jobs = [], invoices = [], onNewQuote, onN
       <div className="flex items-center justify-between">
         <h2 className="text-3xl font-bold font-display text-slate-100">Home</h2>
         <div className="hidden md:flex items-center gap-2">
-          <button className="px-3 py-1.5 text-sm font-semibold rounded-lg bg-trellio-teal/10 text-trellio-teal border border-trellio-teal/30 hover:bg-trellio-teal/20 transition-colors">View Insights</button>
+          <button className="px-3 py-1.5 text-sm font-semibold rounded-lg bg-scaffld-teal/10 text-scaffld-teal border border-scaffld-teal/30 hover:bg-scaffld-teal/20 transition-colors">View Insights</button>
           <button className="px-3 py-1.5 text-sm font-semibold rounded-lg bg-charcoal text-slate-300 border border-slate-700 hover:bg-slate-dark transition-colors">More Actions</button>
         </div>
       </div>
@@ -125,7 +125,7 @@ const DashboardCards = ({ quotes = [], jobs = [], invoices = [], onNewQuote, onN
           accent={{ bg: 'bg-signal-coral/10', text: 'text-signal-coral', bar: 'bg-signal-coral' }}
           action={<div className="hidden sm:flex items-center gap-2"><button onClick={onNewQuote} className="chip border-signal-coral/30 text-signal-coral bg-signal-coral/10 hover:bg-signal-coral/20 transition-colors">New Quote</button></div>}
         >
-          <StatRow label="Approved" value={<span>{data.accepted}</span>} sub={<span className="text-trellio-teal">{data.fmt(data.acceptedSum)}</span>} />
+          <StatRow label="Approved" value={<span>{data.accepted}</span>} sub={<span className="text-scaffld-teal">{data.fmt(data.acceptedSum)}</span>} />
           <StatRow label="Changes requested" value={<span>0</span>} />
           <StatRow label="Draft" value={<span>{data.draftQu}</span>} />
           <div className="mt-3 text-xs text-slate-500">Last 7 Days</div>
@@ -154,8 +154,8 @@ const DashboardCards = ({ quotes = [], jobs = [], invoices = [], onNewQuote, onN
         <Card
           title="Invoices"
           icon={<InvoiceIcon className="h-4 w-4 block" />}
-          accent={{ bg: 'bg-trellio-teal/10', text: 'text-trellio-teal', bar: 'bg-trellio-teal' }}
-          action={<span className="hidden sm:inline chip border-trellio-teal/30 text-trellio-teal bg-trellio-teal/10 hover:bg-trellio-teal/20 transition-colors cursor-pointer">New Invoice</span>}
+          accent={{ bg: 'bg-scaffld-teal/10', text: 'text-scaffld-teal', bar: 'bg-scaffld-teal' }}
+          action={<span className="hidden sm:inline chip border-scaffld-teal/30 text-scaffld-teal bg-scaffld-teal/10 hover:bg-scaffld-teal/20 transition-colors cursor-pointer">New Invoice</span>}
         >
           <StatRow label="Past Due" value={<span>{data.pastDueCount}</span>} sub={<span className="text-signal-coral">{data.fmt(data.pastDueSum)}</span>} />
           <StatRow label="Awaiting payment" value={<span>{data.awaitingCount}</span>} sub={<span className="text-harvest-amber">{data.fmt(data.awaitingSum)}</span>} />
@@ -163,7 +163,7 @@ const DashboardCards = ({ quotes = [], jobs = [], invoices = [], onNewQuote, onN
           <div className="mt-3 text-xs text-slate-500">Last 30 Days</div>
           <div className="mt-2 text-xs text-slate-400 flex items-center gap-4">
             <span><span className="legend-dot bg-blue-400 mr-1"></span>Sent {data.sentInv}</span>
-            <span><span className="legend-dot bg-trellio-teal mr-1"></span>Paid {data.paidInv}</span>
+            <span><span className="legend-dot bg-scaffld-teal mr-1"></span>Paid {data.paidInv}</span>
           </div>
         </Card>
       </div>

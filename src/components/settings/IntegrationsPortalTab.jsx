@@ -1,7 +1,76 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { inputCls, labelCls, sectionCls, sectionTitle, saveBtnCls, Toggle } from './settingsShared';
 
-export default function IntegrationsPortalTab({ tab, companySettings, cs, csn, handleSaveSettings }) {
+function AccountingCard({ provider, label, desc, config, csn, onConnect, onDisconnect, onSyncNow }) {
+  const [expanded, setExpanded] = useState(false);
+  const connected = config?.connected || false;
+  const displayName = config?.companyName || config?.organizationName || '';
+  const lastSync = config?.lastSyncAt;
+  const syncSettings = config?.syncSettings || {};
+
+  const updateSyncSetting = (key, value) => {
+    csn('integrations', {
+      [provider]: { ...(config || {}), syncSettings: { ...syncSettings, [key]: value } },
+    });
+  };
+
+  return (
+    <div className={sectionCls}>
+      <div className="flex items-center justify-between">
+        <div>
+          <h4 className="font-semibold text-slate-100">{label}</h4>
+          <p className="text-sm text-slate-400">{desc}</p>
+          {connected && displayName && (
+            <p className="text-xs text-scaffld-teal mt-1">{displayName}</p>
+          )}
+        </div>
+        <div className="flex items-center gap-2">
+          {connected ? (
+            <>
+              <span className="text-xs font-medium text-scaffld-teal bg-scaffld-teal/10 px-2 py-1 rounded">Connected</span>
+              <button type="button" onClick={() => onSyncNow?.(provider)} className="px-3 py-1.5 text-sm font-medium border border-scaffld-teal rounded-md text-scaffld-teal hover:bg-scaffld-teal hover:text-white transition-colors">Sync Now</button>
+              <button type="button" onClick={() => setExpanded(e => !e)} className="px-3 py-1.5 text-sm font-medium border border-slate-700 rounded-md text-slate-300 hover:bg-midnight transition-colors">{expanded ? 'Hide' : 'Settings'}</button>
+              <button type="button" onClick={() => onDisconnect?.(provider)} className="px-3 py-1.5 text-sm font-medium border border-signal-coral rounded-md text-signal-coral hover:bg-signal-coral hover:text-white transition-colors">Disconnect</button>
+            </>
+          ) : (
+            <button type="button" onClick={() => onConnect?.(provider)} className="px-3 py-1.5 text-sm font-medium border border-slate-700 rounded-md text-slate-300 hover:bg-midnight transition-colors">Connect</button>
+          )}
+        </div>
+      </div>
+
+      {connected && lastSync && (
+        <p className="text-xs text-slate-500 mt-2">Last synced: {new Date(lastSync).toLocaleString()}</p>
+      )}
+
+      {connected && expanded && (
+        <div className="mt-4 pt-4 border-t border-slate-700/30 space-y-3">
+          <Toggle
+            checked={config?.autoSync || false}
+            onChange={v => csn('integrations', { [provider]: { ...(config || {}), autoSync: v } })}
+            label="Auto-sync when invoices are sent or paid"
+          />
+          <div className="space-y-2">
+            <Toggle checked={syncSettings.syncInvoices ?? true} onChange={v => updateSyncSetting('syncInvoices', v)} label="Sync invoices" />
+            <Toggle checked={syncSettings.syncPayments ?? true} onChange={v => updateSyncSetting('syncPayments', v)} label="Sync payments" />
+            <Toggle checked={syncSettings.syncContacts ?? true} onChange={v => updateSyncSetting('syncContacts', v)} label="Sync contacts" />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
+            <div>
+              <label className={labelCls}>Revenue Account Code</label>
+              <input type="text" value={syncSettings.revenueAccountCode || ''} onChange={e => updateSyncSetting('revenueAccountCode', e.target.value)} className={inputCls + ' font-mono text-sm'} placeholder="e.g. 200" />
+            </div>
+            <div>
+              <label className={labelCls}>Tax Account Code</label>
+              <input type="text" value={syncSettings.taxAccountCode || ''} onChange={e => updateSyncSetting('taxAccountCode', e.target.value)} className={inputCls + ' font-mono text-sm'} placeholder="e.g. 820" />
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default function IntegrationsPortalTab({ tab, companySettings, cs, csn, handleSaveSettings, onConnectAccounting, onDisconnectAccounting, onSyncNow }) {
   if (tab === 'integrations') {
     return (
       <div>
@@ -24,27 +93,27 @@ export default function IntegrationsPortalTab({ tab, companySettings, cs, csn, h
           )}
         </div>
 
-        {/* Accounting */}
-        {[
-          { key: 'xero', name: 'Xero', desc: 'Sync invoices and payments with Xero accounting' },
-          { key: 'myob', name: 'MYOB', desc: 'Sync invoices and payments with MYOB' },
-        ].map(intg => (
-          <div key={intg.key} className={sectionCls}>
-            <div className="flex items-center justify-between">
-              <div>
-                <h4 className="font-semibold text-slate-100">{intg.name}</h4>
-                <p className="text-sm text-slate-400">{intg.desc}</p>
-              </div>
-              <div className="flex items-center gap-3">
-                {companySettings.integrations?.[intg.key]?.connected ? (
-                  <span className="text-xs font-medium text-trellio-teal bg-trellio-teal/10 px-2 py-1 rounded">Connected</span>
-                ) : (
-                  <button type="button" className="px-3 py-1.5 text-sm font-medium border border-slate-700 rounded-md text-slate-300 hover:bg-midnight transition-colors">Connect</button>
-                )}
-              </div>
-            </div>
-          </div>
-        ))}
+        {/* Accounting Integrations */}
+        <AccountingCard
+          provider="quickbooks"
+          label="QuickBooks Online"
+          desc="Sync invoices, payments, and contacts with QuickBooks"
+          config={companySettings.integrations?.quickbooks}
+          csn={csn}
+          onConnect={onConnectAccounting}
+          onDisconnect={onDisconnectAccounting}
+          onSyncNow={onSyncNow}
+        />
+        <AccountingCard
+          provider="xero"
+          label="Xero"
+          desc="Sync invoices, payments, and contacts with Xero accounting"
+          config={companySettings.integrations?.xero}
+          csn={csn}
+          onConnect={onConnectAccounting}
+          onDisconnect={onDisconnectAccounting}
+          onSyncNow={onSyncNow}
+        />
 
         {/* Google Calendar */}
         <div className={sectionCls}>
@@ -54,7 +123,7 @@ export default function IntegrationsPortalTab({ tab, companySettings, cs, csn, h
               <p className="text-sm text-slate-400">Sync scheduled jobs and appointments</p>
             </div>
             {companySettings.integrations?.googleCalendar?.connected ? (
-              <span className="text-xs font-medium text-trellio-teal bg-trellio-teal/10 px-2 py-1 rounded">Connected</span>
+              <span className="text-xs font-medium text-scaffld-teal bg-scaffld-teal/10 px-2 py-1 rounded">Connected</span>
             ) : (
               <button type="button" className="px-3 py-1.5 text-sm font-medium border border-slate-700 rounded-md text-slate-300 hover:bg-midnight transition-colors">Connect</button>
             )}

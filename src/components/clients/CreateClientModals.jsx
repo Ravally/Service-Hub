@@ -22,6 +22,10 @@ export function CommSettingsModal({ commPrefs, setCommPrefs, onClose }) {
             <div className="text-sm font-semibold">Reviews</div>
             <label className="flex items-center justify-between text-sm py-2"><span>Ask for a review</span><input type="checkbox" checked={commPrefs.askForReview} onChange={(e) => setCommPrefs({ ...commPrefs, askForReview: e.target.checked })} /></label>
           </div>
+          <div>
+            <div className="text-sm font-semibold">Marketing</div>
+            <label className="flex items-center justify-between text-sm py-2"><span>Opted out of marketing emails</span><input type="checkbox" checked={commPrefs.marketingOptOut || false} onChange={(e) => setCommPrefs({ ...commPrefs, marketingOptOut: e.target.checked })} /></label>
+          </div>
         </div>
         <div className="mt-4 text-right space-x-2">
           <button onClick={onClose} className="px-4 py-2 bg-midnight rounded-md">Cancel</button>

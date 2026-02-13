@@ -1,4 +1,4 @@
-# Trellio - Deployment Guide
+# Scaffld - Deployment Guide
 
 **Last Updated**: February 11, 2026
 **Version**: 2.0
@@ -44,8 +44,8 @@
 | Environment | Purpose | URL | Branch |
 |-------------|---------|-----|--------|
 | **Development** | Local testing | localhost:5173 | * |
-| **Staging** | Pre-production testing | staging.trellio.app | develop |
-| **Production** | Live application | app.trellio.app | master |
+| **Staging** | Pre-production testing | staging.scaffld.app | develop |
+| **Production** | Live application | app.scaffld.app | master |
 
 ---
 
@@ -301,21 +301,21 @@ project-root/
 **Development (.env)**:
 ```env
 VITE_FIREBASE_API_KEY=dev_api_key
-VITE_FIREBASE_PROJECT_ID=trellio-dev
+VITE_FIREBASE_PROJECT_ID=scaffld-dev
 VITE_STRIPE_PUBLISHABLE_KEY=pk_test_...
 ```
 
 **Staging (.env.staging)**:
 ```env
 VITE_FIREBASE_API_KEY=staging_api_key
-VITE_FIREBASE_PROJECT_ID=trellio-staging
+VITE_FIREBASE_PROJECT_ID=scaffld-staging
 VITE_STRIPE_PUBLISHABLE_KEY=pk_test_...
 ```
 
 **Production (.env.production)**:
 ```env
 VITE_FIREBASE_API_KEY=prod_api_key
-VITE_FIREBASE_PROJECT_ID=trellio-prod
+VITE_FIREBASE_PROJECT_ID=scaffld-prod
 VITE_STRIPE_PUBLISHABLE_KEY=pk_live_...
 ```
 
@@ -325,12 +325,12 @@ VITE_STRIPE_PUBLISHABLE_KEY=pk_live_...
 # Build for staging
 cp .env.staging .env
 npm run build
-firebase deploy --only hosting --project trellio-staging
+firebase deploy --only hosting --project scaffld-staging
 
 # Build for production
 cp .env.production .env
 npm run build
-firebase deploy --only hosting --project trellio-prod
+firebase deploy --only hosting --project scaffld-prod
 ```
 
 **Or use environment-specific scripts**:
@@ -341,8 +341,8 @@ Add to `package.json`:
   "scripts": {
     "build:staging": "cp .env.staging .env && vite build",
     "build:prod": "cp .env.production .env && vite build",
-    "deploy:staging": "npm run build:staging && firebase deploy --only hosting --project trellio-staging",
-    "deploy:prod": "npm run build:prod && firebase deploy --only hosting --project trellio-prod"
+    "deploy:staging": "npm run build:staging && firebase deploy --only hosting --project scaffld-staging",
+    "deploy:prod": "npm run build:prod && firebase deploy --only hosting --project scaffld-prod"
   }
 }
 ```
@@ -404,7 +404,7 @@ jobs:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
           firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_PROD }}'
           channelId: live
-          projectId: trellio-prod
+          projectId: scaffld-prod
 
       - name: Deploy to Firebase (Staging)
         if: github.ref == 'refs/heads/develop'
@@ -413,7 +413,7 @@ jobs:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
           firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_STAGING }}'
           channelId: live
-          projectId: trellio-staging
+          projectId: scaffld-staging
 ```
 
 ### Setup Secrets in GitHub
@@ -792,7 +792,7 @@ git checkout v1.2.3                         # Checkout tag
 ### Internal
 - **DevOps Contact**: [Your Name]
 - **Setup Guide**: [SETUP.md](SETUP.md)
-- **Architecture**: [../TRELLIO_ARCHITECTURE.md](../TRELLIO_ARCHITECTURE.md)
+- **Architecture**: [../SCAFFLD_ARCHITECTURE.md](../SCAFFLD_ARCHITECTURE.md)
 
 ---
 

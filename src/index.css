@@ -1,4 +1,4 @@
-/* Trellio Fonts */
+/* Scaffld Fonts */
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 @tailwind base;
@@ -48,14 +48,14 @@ body {
     @apply inline-flex items-center justify-center rounded-lg text-sm font-medium px-4 py-2 transition-all;
   }
 
-  /* Trellio Button Variants */
+  /* Scaffld Button Variants */
   .btn-primary {
     @apply text-white focus:outline-none focus:ring-2 shadow-sm;
-    background-color: #0EA5A0; /* trellio-teal */
-    --tw-ring-color: rgba(14, 165, 160, 0.4); /* trellio-teal with 40% opacity */
+    background-color: #0EA5A0; /* scaffld-teal */
+    --tw-ring-color: rgba(14, 165, 160, 0.4); /* scaffld-teal with 40% opacity */
   }
   .btn-primary:hover {
-    background-color: #087F7A; /* trellio-teal-deep */
+    background-color: #087F7A; /* scaffld-teal-deep */
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   }
   .btn-secondary {

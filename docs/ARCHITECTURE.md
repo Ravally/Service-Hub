@@ -1,4 +1,4 @@
-# Trellio — Architecture
+# Scaffld — Architecture
 
 **Last Updated:** February 12, 2026
 
@@ -7,7 +7,7 @@
 | Layer | Technology |
 |-------|-----------|
 | Frontend | React 18 + Vite |
-| Styling | Tailwind CSS with Trellio design tokens |
+| Styling | Tailwind CSS with Scaffld design tokens |
 | Backend | Firebase (Firestore, Auth, Storage, Functions) |
 | Payments | Stripe |
 | State | React Context API + custom hooks |

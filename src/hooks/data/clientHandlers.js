@@ -39,7 +39,12 @@ export function createClientHandlers(deps) {
     const phones = (data.phones || []).map(p => ({ label: (p.label||'').trim(), number: (p.number||'').trim() })).filter(p => p.label || p.number);
     const emails = (data.emails || []).map(e => ({ label: (e.label||'').trim(), address: (e.address||'').trim() })).filter(e => e.label || e.address);
     const properties = Array.isArray(data.properties) ? data.properties : [];
-    const customFields = (data.customFields || []).filter(cf => (cf && (cf.key || cf.value))).map(cf => ({ key: (cf.key||'').trim(), value: (cf.value||'').trim() }));
+    const customFields = (data.customFields || [])
+      .filter(cf => cf && (cf.fieldId || cf.key || cf.value))
+      .map(cf => cf.fieldId
+        ? { fieldId: cf.fieldId, fieldName: (cf.fieldName || '').trim(), fieldType: cf.fieldType || 'text', value: cf.value ?? '' }
+        : { key: (cf.key || '').trim(), value: (cf.value || '').trim() }
+      );
     const base = {
       name: data.name,
       title: (data.title||'').trim(),
@@ -197,6 +202,34 @@ export function createClientHandlers(deps) {
     setActiveView('createClient');
   };
 
+  const handleBulkArchiveClients = async (ids = []) => {
+    if (!db || !userId || !Array.isArray(ids) || ids.length === 0) return;
+    try {
+      await Promise.all(ids.map(id =>
+        updateDoc(doc(db, `users/${userId}/clients`, id), { archived: true, status: 'Archived' })
+      ));
+    } catch (e) { console.error('Bulk archive clients error', e); }
+  };
+
+  const handleBulkDeleteClients = async (ids = []) => {
+    if (!db || !userId || !Array.isArray(ids) || ids.length === 0) return;
+    if (!window.confirm(`Delete ${ids.length} client(s)? This cannot be undone.`)) return;
+    try {
+      await Promise.all(ids.map(id => deleteDoc(doc(db, `users/${userId}/clients`, id))));
+    } catch (e) { console.error('Bulk delete clients error', e); }
+  };
+
+  const handleBulkTagClients = async (ids = [], tag) => {
+    if (!db || !userId || !Array.isArray(ids) || ids.length === 0 || !tag) return;
+    try {
+      await Promise.all(ids.map(id => {
+        const client = clients.find(c => c.id === id);
+        const newTags = [...new Set([...(client?.tags || []), tag])];
+        return updateDoc(doc(db, `users/${userId}/clients`, id), { tags: newTags });
+      }));
+    } catch (e) { console.error('Bulk tag clients error', e); }
+  };
+
   return {
     handleCreateClientPage,
     handleUpdateClient,
@@ -209,5 +242,8 @@ export function createClientHandlers(deps) {
     downloadVCardForClient,
     archiveClient,
     startNewPropertyForClient,
+    handleBulkArchiveClients,
+    handleBulkDeleteClients,
+    handleBulkTagClients,
   };
 }

@@ -92,10 +92,10 @@ const CalendarView = ({ jobs, calendarDate, setCalendarDate, onJobSelect, staff 
               const bg = getJobColor(job);
               const fg = getContrast(bg);
               return (
-                <div key={job.id} onClick={() => onJobSelect(job)} className="flex items-center justify-between p-3 bg-midnight rounded-lg border border-slate-700/30 hover:border-trellio-teal/30 cursor-pointer transition-colors">
+                <div key={job.id} onClick={() => onJobSelect(job)} className="flex items-center justify-between p-3 bg-midnight rounded-lg border border-slate-700/30 hover:border-scaffld-teal/30 cursor-pointer transition-colors">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <p className="font-semibold text-trellio-teal text-sm truncate">{job.title}</p>
+                      <p className="font-semibold text-scaffld-teal text-sm truncate">{job.title}</p>
                       {job.status && (
                         <span className="px-2 py-0.5 text-[10px] font-medium rounded-full bg-slate-700/30 text-slate-300 border border-slate-700 whitespace-nowrap">{job.status}</span>
                       )}
@@ -142,10 +142,10 @@ const CalendarView = ({ jobs, calendarDate, setCalendarDate, onJobSelect, staff 
             <div
               key={index}
               onClick={() => handleDayClick(day)}
-              className={`relative border rounded-md p-1 overflow-y-auto bg-midnight cursor-pointer transition-colors ${isSelected ? 'border-trellio-teal ring-1 ring-trellio-teal/30' : 'border-slate-700/30 hover:border-slate-600'}`}
+              className={`relative border rounded-md p-1 overflow-y-auto bg-midnight cursor-pointer transition-colors ${isSelected ? 'border-scaffld-teal ring-1 ring-scaffld-teal/30' : 'border-slate-700/30 hover:border-slate-600'}`}
             >
               {day && (
-                <span className={`absolute top-1 right-2 text-xs text-slate-300 ${isToday ? 'bg-trellio-teal text-white rounded-full h-5 w-5 flex items-center justify-center' : ''}`}>{day}</span>
+                <span className={`absolute top-1 right-2 text-xs text-slate-300 ${isToday ? 'bg-scaffld-teal text-white rounded-full h-5 w-5 flex items-center justify-center' : ''}`}>{day}</span>
               )}
               {jobsForDay.map(job => {
                 const bg = getJobColor(job);
@@ -192,10 +192,10 @@ const CalendarView = ({ jobs, calendarDate, setCalendarDate, onJobSelect, staff 
               <div
                 key={key}
                 onClick={() => handleWeekDayClick(day)}
-                className={`relative border rounded-md p-2 overflow-y-auto bg-midnight cursor-pointer transition-colors ${isSelected ? 'border-trellio-teal ring-1 ring-trellio-teal/30' : 'border-slate-700/30 hover:border-slate-600'}`}
+                className={`relative border rounded-md p-2 overflow-y-auto bg-midnight cursor-pointer transition-colors ${isSelected ? 'border-scaffld-teal ring-1 ring-scaffld-teal/30' : 'border-slate-700/30 hover:border-slate-600'}`}
               >
                 <div className="flex items-center justify-between text-sm mb-1">
-                  <span className={`font-medium ${isToday ? 'text-trellio-teal' : 'text-slate-300'}`}>{day.getDate()}</span>
+                  <span className={`font-medium ${isToday ? 'text-scaffld-teal' : 'text-slate-300'}`}>{day.getDate()}</span>
                 </div>
                 {jobsForDay.map(job => {
                   const bg = getJobColor(job);
@@ -233,10 +233,10 @@ const CalendarView = ({ jobs, calendarDate, setCalendarDate, onJobSelect, staff 
           const ids = job.assignees || [];
           const bg = getJobColor(job); const fg = getContrast(bg);
           return (
-            <div key={job.id} onClick={() => onJobSelect(job)} className="bg-midnight rounded-xl shadow border border-slate-700/30 p-3 cursor-pointer hover:border-trellio-teal/30 transition-colors">
+            <div key={job.id} onClick={() => onJobSelect(job)} className="bg-midnight rounded-xl shadow border border-slate-700/30 p-3 cursor-pointer hover:border-scaffld-teal/30 transition-colors">
               <div className="flex justify-between items-start">
                 <div>
-                  <p className="font-semibold text-trellio-teal">{job.title}</p>
+                  <p className="font-semibold text-scaffld-teal">{job.title}</p>
                   {job.start && <p className="text-xs text-slate-400">{new Date(job.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>}
                 </div>
                 <div className="flex -space-x-1 ml-2">
@@ -264,9 +264,9 @@ const CalendarView = ({ jobs, calendarDate, setCalendarDate, onJobSelect, staff 
   return (
     <div className="bg-charcoal p-4 rounded-xl shadow-lg border border-slate-700/30">
       <div className="flex justify-between items-center mb-4">
-        <button onClick={() => changePeriod(-1)} className="p-2 rounded-full text-slate-300 hover:bg-slate-dark hover:text-trellio-teal transition-colors"><ChevronLeftIcon /></button>
+        <button onClick={() => changePeriod(-1)} className="p-2 rounded-full text-slate-300 hover:bg-slate-dark hover:text-scaffld-teal transition-colors"><ChevronLeftIcon /></button>
         <h2 className="text-lg font-semibold text-slate-100">{title}</h2>
-        <button onClick={() => changePeriod(1)} className="p-2 rounded-full text-slate-300 hover:bg-slate-dark hover:text-trellio-teal transition-colors"><ChevronRightIcon /></button>
+        <button onClick={() => changePeriod(1)} className="p-2 rounded-full text-slate-300 hover:bg-slate-dark hover:text-scaffld-teal transition-colors"><ChevronRightIcon /></button>
       </div>
 
       {scheduleRange === 'month' && <MonthGrid />}

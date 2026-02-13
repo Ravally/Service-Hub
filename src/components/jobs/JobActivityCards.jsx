@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { formatCurrency, formatDate } from '../../utils';
+import { formatCurrency, formatDate, hasPermission } from '../../utils';
+import { EXPENSE_CATEGORIES } from '../../constants';
 
 export default function JobActivityCards({ job, userRole, onUpdate, onUploadAttachment, onRemoveAttachment }) {
   const [showExpenseForm, setShowExpenseForm] = useState(false);
-  const [expenseDraft, setExpenseDraft] = useState({ title: '', amount: '', note: '', date: '' });
+  const [expenseDraft, setExpenseDraft] = useState({ title: '', amount: '', note: '', date: '', category: 'other' });
   const [showChemicalForm, setShowChemicalForm] = useState(false);
   const [chemicalDraft, setChemicalDraft] = useState({ date: '', name: '', notes: '' });
   const [notes, setNotes] = useState(job.notes || '');
@@ -13,7 +14,7 @@ export default function JobActivityCards({ job, userRole, onUpdate, onUploadAtta
     setNotes(job.notes || '');
     setShowExpenseForm(false);
     setShowChemicalForm(false);
-    setExpenseDraft({ title: '', amount: '', note: '', date: '' });
+    setExpenseDraft({ title: '', amount: '', note: '', date: '', category: 'other' });
     setChemicalDraft({ date: '', name: '', notes: '' });
   }, [job]);
 
@@ -26,11 +27,12 @@ export default function JobActivityCards({ job, userRole, onUpdate, onUploadAtta
       id: `expense_${Date.now()}`,
       title: expenseDraft.title || 'Expense',
       amount: Number(expenseDraft.amount || 0),
+      category: expenseDraft.category || 'other',
       note: expenseDraft.note || '',
       date: expenseDraft.date || '',
     }];
     onUpdate(job.id, { expenses: next });
-    setExpenseDraft({ title: '', amount: '', note: '', date: '' });
+    setExpenseDraft({ title: '', amount: '', note: '', date: '', category: 'other' });
     setShowExpenseForm(false);
   };
 
@@ -66,18 +68,21 @@ export default function JobActivityCards({ job, userRole, onUpdate, onUploadAtta
       <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-xl font-semibold text-slate-100">Expenses</h3>
-          <button onClick={() => setShowExpenseForm((v) => !v)} className="px-3 py-1.5 rounded-md border border-slate-700/30 text-sm font-semibold text-trellio-teal hover:bg-green-50">
+          <button onClick={() => setShowExpenseForm((v) => !v)} className="px-3 py-1.5 rounded-md border border-slate-700/30 text-sm font-semibold text-scaffld-teal hover:bg-green-50">
             {showExpenseForm ? 'Cancel' : 'New Expense'}
           </button>
         </div>
         {showExpenseForm && (
-          <div className="mb-4 grid grid-cols-1 md:grid-cols-5 gap-3 text-sm">
-            <input value={expenseDraft.title} onChange={(e) => setExpenseDraft({ ...expenseDraft, title: e.target.value })} placeholder="Expense title" className="md:col-span-2 px-3 py-2 border border-slate-700 rounded-md" />
-            <input type="number" min="0" value={expenseDraft.amount} onChange={(e) => setExpenseDraft({ ...expenseDraft, amount: e.target.value })} placeholder="Amount" className="px-3 py-2 border border-slate-700 rounded-md" />
-            <input type="date" value={expenseDraft.date} onChange={(e) => setExpenseDraft({ ...expenseDraft, date: e.target.value })} className="px-3 py-2 border border-slate-700 rounded-md" />
-            <input value={expenseDraft.note} onChange={(e) => setExpenseDraft({ ...expenseDraft, note: e.target.value })} placeholder="Notes" className="md:col-span-3 px-3 py-2 border border-slate-700 rounded-md" />
+          <div className="mb-4 grid grid-cols-1 md:grid-cols-6 gap-3 text-sm">
+            <input value={expenseDraft.title} onChange={(e) => setExpenseDraft({ ...expenseDraft, title: e.target.value })} placeholder="Expense title" className="md:col-span-2 px-3 py-2 border border-slate-700 rounded-md bg-midnight text-slate-100" />
+            <input type="number" min="0" value={expenseDraft.amount} onChange={(e) => setExpenseDraft({ ...expenseDraft, amount: e.target.value })} placeholder="Amount" className="px-3 py-2 border border-slate-700 rounded-md bg-midnight text-slate-100" />
+            <select value={expenseDraft.category} onChange={(e) => setExpenseDraft({ ...expenseDraft, category: e.target.value })} className="px-3 py-2 border border-slate-700 rounded-md bg-midnight text-slate-100">
+              {EXPENSE_CATEGORIES.map((c) => <option key={c.key} value={c.key}>{c.label}</option>)}
+            </select>
+            <input type="date" value={expenseDraft.date} onChange={(e) => setExpenseDraft({ ...expenseDraft, date: e.target.value })} className="px-3 py-2 border border-slate-700 rounded-md bg-midnight text-slate-100" />
+            <input value={expenseDraft.note} onChange={(e) => setExpenseDraft({ ...expenseDraft, note: e.target.value })} placeholder="Notes" className="md:col-span-4 px-3 py-2 border border-slate-700 rounded-md bg-midnight text-slate-100" />
             <div className="md:col-span-2 flex justify-end">
-              <button onClick={handleAddExpense} className="px-4 py-2 bg-trellio-teal text-white rounded-md text-sm font-semibold hover:bg-trellio-teal/90">Add Expense</button>
+              <button onClick={handleAddExpense} className="px-4 py-2 bg-scaffld-teal text-white rounded-md text-sm font-semibold hover:bg-scaffld-teal/90">Add Expense</button>
             </div>
           </div>
         )}
@@ -86,9 +91,14 @@ export default function JobActivityCards({ job, userRole, onUpdate, onUploadAtta
         ) : (
           <div className="space-y-2 text-sm">
             {expenseEntries.map((expense, idx) => (
-              <div key={`${expense.id || idx}`} className="flex items-center justify-between border-b pb-2">
+              <div key={`${expense.id || idx}`} className="flex items-center justify-between border-b border-slate-700/20 pb-2">
                 <div>
-                  <div className="font-semibold text-slate-100">{expense.title || 'Expense'}</div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold text-slate-100">{expense.title || 'Expense'}</span>
+                    <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-slate-700/50 text-slate-400">
+                      {EXPENSE_CATEGORIES.find((c) => c.key === expense.category)?.label || 'Other'}
+                    </span>
+                  </div>
                   <div className="text-xs text-slate-400">{expense.note || ''}</div>
                 </div>
                 <div className="font-semibold text-slate-100">{formatCurrency(expense.amount || expense.cost || 0)}</div>
@@ -102,7 +112,7 @@ export default function JobActivityCards({ job, userRole, onUpdate, onUploadAtta
       <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-xl font-semibold text-slate-100">Chemical tracking</h3>
-          <button onClick={() => setShowChemicalForm((v) => !v)} className="px-3 py-1.5 rounded-md border border-slate-700/30 text-sm font-semibold text-trellio-teal hover:bg-green-50">
+          <button onClick={() => setShowChemicalForm((v) => !v)} className="px-3 py-1.5 rounded-md border border-slate-700/30 text-sm font-semibold text-scaffld-teal hover:bg-green-50">
             {showChemicalForm ? 'Cancel' : 'Record Treatment'}
           </button>
         </div>
@@ -112,7 +122,7 @@ export default function JobActivityCards({ job, userRole, onUpdate, onUploadAtta
             <input value={chemicalDraft.name} onChange={(e) => setChemicalDraft({ ...chemicalDraft, name: e.target.value })} placeholder="Chemical name" className="px-3 py-2 border border-slate-700 rounded-md" />
             <input value={chemicalDraft.notes} onChange={(e) => setChemicalDraft({ ...chemicalDraft, notes: e.target.value })} placeholder="Notes" className="md:col-span-2 px-3 py-2 border border-slate-700 rounded-md" />
             <div className="md:col-span-4 flex justify-end">
-              <button onClick={handleAddChemical} className="px-4 py-2 bg-trellio-teal text-white rounded-md text-sm font-semibold hover:bg-trellio-teal/90">Add Treatment</button>
+              <button onClick={handleAddChemical} className="px-4 py-2 bg-scaffld-teal text-white rounded-md text-sm font-semibold hover:bg-scaffld-teal/90">Add Treatment</button>
             </div>
           </div>
         )}
@@ -138,14 +148,14 @@ export default function JobActivityCards({ job, userRole, onUpdate, onUploadAtta
         </div>
         <div className="mt-4 flex items-center justify-end gap-2">
           <button onClick={() => setNotes(job.notes || '')} className="px-4 py-2 rounded-lg border border-slate-700 text-sm font-semibold text-slate-100 hover:bg-midnight">Cancel</button>
-          <button onClick={() => onUpdate(job.id, { notes })} className="px-4 py-2 rounded-lg bg-trellio-teal text-white text-sm font-semibold hover:bg-trellio-teal/90">Save Job</button>
+          <button onClick={() => onUpdate(job.id, { notes })} className="px-4 py-2 rounded-lg bg-scaffld-teal text-white text-sm font-semibold hover:bg-scaffld-teal/90">Save Job</button>
         </div>
       </div>
 
       {/* Attachments */}
       <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-6">
         <h3 className="text-xl font-semibold text-slate-100 mb-4">Attachments</h3>
-        {(userRole === 'admin' || userRole === 'manager' || userRole === 'tech') && (
+        {hasPermission(userRole, 'job.uploadAttachment') && (
           <div className="flex items-center gap-2 mb-3">
             <input type="file" onChange={(e) => { const f = e.target.files?.[0]; if (f && onUploadAttachment) onUploadAttachment(f); e.target.value = ''; }} className="text-sm" />
           </div>
@@ -161,7 +171,7 @@ export default function JobActivityCards({ job, userRole, onUpdate, onUploadAtta
                 )}
                 <div className="p-2 flex items-center justify-between">
                   <a href={a.url} target="_blank" rel="noreferrer" className="text-blue-700 text-sm hover:underline truncate">{a.name}</a>
-                  {(userRole === 'admin' || userRole === 'manager') && (
+                  {hasPermission(userRole, 'job.removeAttachment') && (
                     <button onClick={() => onRemoveAttachment && onRemoveAttachment(a.url)} className="text-xs text-signal-coral hover:text-red-800">Remove</button>
                   )}
                 </div>

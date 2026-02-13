@@ -29,7 +29,7 @@ export default function JobLabourCard({ job, staff, laborEntries, onUpdate }) {
     <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-6">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-xl font-semibold text-slate-100">Labour</h3>
-        <button onClick={() => setShowForm((v) => !v)} className="px-3 py-1.5 rounded-md border border-slate-700/30 text-sm font-semibold text-trellio-teal hover:bg-green-50">
+        <button onClick={() => setShowForm((v) => !v)} className="px-3 py-1.5 rounded-md border border-slate-700/30 text-sm font-semibold text-scaffld-teal hover:bg-green-50">
           {showForm ? 'Cancel' : 'Manual Time Entry'}
         </button>
       </div>
@@ -50,7 +50,7 @@ export default function JobLabourCard({ job, staff, laborEntries, onUpdate }) {
           <input type="number" min="0" value={draft.cost} onChange={(e) => setDraft({ ...draft, cost: e.target.value })} placeholder="Cost" className="px-3 py-2 border border-slate-700 rounded-md" />
           <input value={draft.note} onChange={(e) => setDraft({ ...draft, note: e.target.value })} placeholder="Notes" className="md:col-span-4 px-3 py-2 border border-slate-700 rounded-md" />
           <div className="md:col-span-2 flex justify-end">
-            <button onClick={handleAdd} className="px-4 py-2 bg-trellio-teal text-white rounded-md text-sm font-semibold hover:bg-trellio-teal/90">Add Time Entry</button>
+            <button onClick={handleAdd} className="px-4 py-2 bg-scaffld-teal text-white rounded-md text-sm font-semibold hover:bg-scaffld-teal/90">Add Time Entry</button>
           </div>
         </div>
       )}

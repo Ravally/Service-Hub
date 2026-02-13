@@ -4,7 +4,8 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   onAuthStateChanged,
-  signOut
+  signOut,
+  sendPasswordResetEmail,
 } from 'firebase/auth';
 import { doc, getDoc, setDoc, collection, query, where, getDocs, deleteDoc } from 'firebase/firestore';
 import { db } from '../firebase/config';
@@ -135,6 +136,16 @@ export function AuthProvider({ children }) {
     }
   };
 
+  const resetPassword = async (email) => {
+    try {
+      setError('');
+      await sendPasswordResetEmail(auth, email);
+    } catch (err) {
+      setError(err.message);
+      throw err;
+    }
+  };
+
   const updateUserProfile = async (updates) => {
     if (!userId) return;
     try {
@@ -156,6 +167,7 @@ export function AuthProvider({ children }) {
     signUp,
     signIn,
     logout,
+    resetPassword,
     updateUserProfile,
     isAuthenticated: !!user,
     userRole: userProfile?.role || 'member',

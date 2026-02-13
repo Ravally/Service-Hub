@@ -1,7 +1,7 @@
 // src/components/ClientDetailView.jsx
 import React, { useEffect, useMemo, useState } from 'react';
 import { AtSignIcon, ChevronLeftIcon, MapPinIcon, PhoneIcon, EditIcon } from './icons';
-import { formatCurrency, formatDate, formatDateTime } from '../utils';
+import { formatCurrency, formatDate, formatDateTime, computeClientSegments, getSegmentDef } from '../utils';
 import { STATUS_COLORS } from '../constants';
 
 const ClientDetailView = ({
@@ -45,6 +45,12 @@ const ClientDetailView = ({
   const clientQuotes = (quotes || []).filter((q) => q.clientId === client.id);
   const clientJobs = (jobs || []).filter((j) => j.clientId === client.id);
   const clientInvoices = (invoices || []).filter((i) => i.clientId === client.id);
+
+  const clientSegmentKeys = useMemo(() => {
+    const segs = computeClientSegments([client], jobs, invoices);
+    const keys = segs.get(client.id) || [];
+    return keys.filter(k => k !== 'vip');
+  }, [client, jobs, invoices]);
 
   const billingEntries = useMemo(() => {
     const out = [];
@@ -99,14 +105,14 @@ const ClientDetailView = ({
 
   return (
     <div className="animate-fade-in">
-      <button onClick={onBack} className="flex items-center gap-2 text-sm font-semibold text-slate-400 hover:text-trellio-teal mb-3">
+      <button onClick={onBack} className="flex items-center gap-2 text-sm font-semibold text-slate-400 hover:text-scaffld-teal mb-3">
         <ChevronLeftIcon /> Back to Clients
       </button>
 
       {/* Header */}
       <div className="mb-6 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-full bg-charcoal border border-slate-700/30 flex items-center justify-center text-trellio-teal font-bold">{initials}</div>
+          <div className="h-10 w-10 rounded-full bg-charcoal border border-slate-700/30 flex items-center justify-center text-scaffld-teal font-bold">{initials}</div>
           <h1 className="text-3xl font-extrabold text-slate-100">{client.name}</h1>
         </div>
         <div className="flex items-center gap-2">
@@ -114,7 +120,7 @@ const ClientDetailView = ({
             type="button"
             disabled={!client.email}
             onClick={() => { if (client.email) window.location.href = `mailto:${client.email}`; }}
-            className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-md border text-sm font-semibold ${client.email ? 'bg-trellio-teal/10 text-trellio-teal border-trellio-teal/30 hover:bg-trellio-teal/20' : 'bg-charcoal text-slate-500 border-slate-700/30 cursor-not-allowed'}`}
+            className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-md border text-sm font-semibold ${client.email ? 'bg-scaffld-teal/10 text-scaffld-teal border-scaffld-teal/30 hover:bg-scaffld-teal/20' : 'bg-charcoal text-slate-500 border-slate-700/30 cursor-not-allowed'}`}
           >
             <AtSignIcon className="h-4 w-4" /> Email
           </button>
@@ -164,7 +170,7 @@ const ClientDetailView = ({
                   <div key={p.uid || idx} className="border border-slate-700/30 rounded-xl p-4">
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div className="flex items-start gap-3">
-                        <div className="h-10 w-10 rounded-xl border border-slate-700/30 flex items-center justify-center text-trellio-teal bg-trellio-teal/10">
+                        <div className="h-10 w-10 rounded-xl border border-slate-700/30 flex items-center justify-center text-scaffld-teal bg-scaffld-teal/10">
                           <MapPinIcon className="h-5 w-5" />
                         </div>
                         <div>
@@ -227,6 +233,14 @@ const ClientDetailView = ({
               </div>
             </div>
           )}
+          {clientSegmentKeys.length > 0 && (
+            <div className="mt-4">
+              <div className="text-sm font-semibold mb-2 text-slate-100">Segments</div>
+              <div className="flex flex-wrap gap-2">
+                {clientSegmentKeys.map(key => { const def = getSegmentDef(key); return def ? (<span key={key} className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${def.color}`}>{def.label}</span>) : null; })}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -239,7 +253,7 @@ const ClientDetailView = ({
             </div>
             <div className="flex items-center gap-2 text-sm mb-3">
               {['active','quotes','jobs','invoices'].map(t => (
-                <button key={t} onClick={()=>setOverviewTab(t)} className={`px-3 py-1 rounded-full border ${overviewTab===t? 'bg-trellio-teal text-midnight border-trellio-teal':'bg-midnight text-slate-100 border-slate-700/30'}`}>{t.charAt(0).toUpperCase()+t.slice(1)}</button>
+                <button key={t} onClick={()=>setOverviewTab(t)} className={`px-3 py-1 rounded-full border ${overviewTab===t? 'bg-scaffld-teal text-midnight border-scaffld-teal':'bg-midnight text-slate-100 border-slate-700/30'}`}>{t.charAt(0).toUpperCase()+t.slice(1)}</button>
               ))}
             </div>
             <div>
@@ -273,9 +287,9 @@ const ClientDetailView = ({
                       </div>
                       <div>
                         {typeof item.amount==='number' && Number.isFinite(item.amount) && <span className="font-semibold text-slate-100">{formatCurrency(item.amount)}</span>}
-                        {item.type==='job' && <button className="ml-3 text-trellio-teal hover:text-trellio-teal/80" onClick={()=> onOpenJob && onOpenJob(clientJobs.find(j=>j.id===item.id))}>Open</button>}
-                        {item.type==='invoice' && <button className="ml-3 text-trellio-teal hover:text-trellio-teal/80" onClick={()=> onOpenInvoice && onOpenInvoice(clientInvoices.find(i=>i.id===item.id))}>Open</button>}
-                        {item.type==='quote' && <button className="ml-3 text-trellio-teal hover:text-trellio-teal/80" onClick={()=> onOpenQuote && onOpenQuote(clientQuotes.find(q=>q.id===item.id))}>Open</button>}
+                        {item.type==='job' && <button className="ml-3 text-scaffld-teal hover:text-scaffld-teal/80" onClick={()=> onOpenJob && onOpenJob(clientJobs.find(j=>j.id===item.id))}>Open</button>}
+                        {item.type==='invoice' && <button className="ml-3 text-scaffld-teal hover:text-scaffld-teal/80" onClick={()=> onOpenInvoice && onOpenInvoice(clientInvoices.find(i=>i.id===item.id))}>Open</button>}
+                        {item.type==='quote' && <button className="ml-3 text-scaffld-teal hover:text-scaffld-teal/80" onClick={()=> onOpenQuote && onOpenQuote(clientQuotes.find(q=>q.id===item.id))}>Open</button>}
                       </div>
                     </li>
                   ))}
@@ -284,24 +298,24 @@ const ClientDetailView = ({
               {overviewTab === 'quotes' && (
                 <ul className="divide-y divide-slate-700/30 text-sm">{clientQuotes.map(q => (
                   <li key={q.id} className="py-2 flex items-center justify-between">
-                    <div><span className="font-semibold text-trellio-teal">{q.quoteNumber || q.id.substring(0,6)}</span> <span className="text-slate-400 ml-2">{formatDate(q.createdAt)}</span></div>
-                    <div><span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_COLORS[q.status]}`}>{q.status}</span><button className="ml-3 text-trellio-teal hover:text-trellio-teal/80" onClick={()=>onOpenQuote&&onOpenQuote(q)}>Open</button></div>
+                    <div><span className="font-semibold text-scaffld-teal">{q.quoteNumber || q.id.substring(0,6)}</span> <span className="text-slate-400 ml-2">{formatDate(q.createdAt)}</span></div>
+                    <div><span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_COLORS[q.status]}`}>{q.status}</span><button className="ml-3 text-scaffld-teal hover:text-scaffld-teal/80" onClick={()=>onOpenQuote&&onOpenQuote(q)}>Open</button></div>
                   </li>
                 ))}</ul>
               )}
               {overviewTab === 'jobs' && (
                 <ul className="divide-y divide-slate-700/30 text-sm">{clientJobs.map(j => (
                   <li key={j.id} className="py-2 flex items-center justify-between">
-                    <div><span className="font-semibold text-trellio-teal">{j.jobNumber}</span> <span className="text-slate-400 ml-2">{formatDateTime(j.start)}</span></div>
-                    <div><span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_COLORS[j.status]}`}>{j.status}</span><button className="ml-3 text-trellio-teal hover:text-trellio-teal/80" onClick={()=>onOpenJob&&onOpenJob(j)}>Open</button></div>
+                    <div><span className="font-semibold text-scaffld-teal">{j.jobNumber}</span> <span className="text-slate-400 ml-2">{formatDateTime(j.start)}</span></div>
+                    <div><span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_COLORS[j.status]}`}>{j.status}</span><button className="ml-3 text-scaffld-teal hover:text-scaffld-teal/80" onClick={()=>onOpenJob&&onOpenJob(j)}>Open</button></div>
                   </li>
                 ))}</ul>
               )}
               {overviewTab === 'invoices' && (
                 <ul className="divide-y divide-slate-700/30 text-sm">{clientInvoices.map(i => (
                   <li key={i.id} className="py-2 flex items-center justify-between">
-                    <div><span className="font-semibold text-trellio-teal">{i.invoiceNumber || i.id.substring(0,6)}</span> <span className="text-slate-400 ml-2">{formatDate(i.issueDate || i.createdAt)}</span></div>
-                    <div><span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_COLORS[i.status]}`}>{i.status}</span><span className="ml-3 font-semibold text-slate-100">{formatCurrency(i.total)}</span><button className="ml-3 text-trellio-teal hover:text-trellio-teal/80" onClick={()=>onOpenInvoice&&onOpenInvoice(i)}>Open</button></div>
+                    <div><span className="font-semibold text-scaffld-teal">{i.invoiceNumber || i.id.substring(0,6)}</span> <span className="text-slate-400 ml-2">{formatDate(i.issueDate || i.createdAt)}</span></div>
+                    <div><span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_COLORS[i.status]}`}>{i.status}</span><span className="ml-3 font-semibold text-slate-100">{formatCurrency(i.total)}</span><button className="ml-3 text-scaffld-teal hover:text-scaffld-teal/80" onClick={()=>onOpenInvoice&&onOpenInvoice(i)}>Open</button></div>
                   </li>
                 ))}</ul>
               )}
@@ -317,7 +331,7 @@ const ClientDetailView = ({
               <ul className="divide-y divide-slate-700/30 text-sm">
                 {clientJobs.slice().sort((a,b)=> new Date(a.start||0) - new Date(b.start||0)).slice(0,8).map(j => (
                   <li key={j.id} className="py-2 flex items-center justify-between">
-                    <div><span className="font-medium text-trellio-teal">{j.jobNumber}</span>{j.start && <span className="ml-2 text-slate-400">{formatDateTime(j.start)}</span>}</div>
+                    <div><span className="font-medium text-scaffld-teal">{j.jobNumber}</span>{j.start && <span className="ml-2 text-slate-400">{formatDateTime(j.start)}</span>}</div>
                     <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_COLORS[j.status]||'bg-midnight text-slate-100'}`}>{j.status}</span>
                   </li>
                 ))}
@@ -359,14 +373,14 @@ const ClientDetailView = ({
                       <div className="font-medium text-slate-100">{e.label}</div>
                       <div className="text-xs text-slate-400">{formatDate(e.date)} {e.method?`• ${e.method}`:''} {e.status?`• ${e.status}`:''}</div>
                     </div>
-                    <div className={`font-semibold ${e.amount<0?'text-trellio-teal':'text-slate-100'}`}>{e.amount<0?'-':''}{formatCurrency(Math.abs(e.amount || 0))}</div>
+                    <div className={`font-semibold ${e.amount<0?'text-scaffld-teal':'text-slate-100'}`}>{e.amount<0?'-':''}{formatCurrency(Math.abs(e.amount || 0))}</div>
                   </li>
                 ))}
               </ul>
             )}
             <div className="mt-3 pt-2 border-t border-slate-700/30 text-sm flex items-center justify-between">
               <span className="font-semibold text-slate-100">Current balance</span>
-              <span className={`font-bold ${currentBalance>0?'text-signal-coral':'text-trellio-teal'}`}>{formatCurrency(currentBalance)}</span>
+              <span className={`font-bold ${currentBalance>0?'text-signal-coral':'text-scaffld-teal'}`}>{formatCurrency(currentBalance)}</span>
             </div>
           </div>
         </div>

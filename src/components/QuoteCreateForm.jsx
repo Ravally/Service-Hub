@@ -4,6 +4,7 @@ import { formatCurrency } from '../utils';
 import { computeTotals } from '../utils/calculations';
 import { rewriteText } from '../utils/textUtils';
 import { MAX_LINE_ITEMS, initialLineItem } from '../constants';
+import CustomFieldEditor from './common/CustomFieldEditor';
 
 const buildLineItem = (opts = {}) => ({
   ...initialLineItem,
@@ -79,13 +80,6 @@ export default function QuoteCreateForm({
   };
 
   const customFields = Array.isArray(quote.customFields) ? quote.customFields : [];
-  const addCustomField = () => updateQuote({ customFields: [...customFields, { key: '', value: '' }] });
-  const updateCustomField = (idx, field, value) => {
-    const next = [...customFields];
-    next[idx] = { ...next[idx], [field]: value };
-    updateQuote({ customFields: next });
-  };
-  const removeCustomField = (idx) => updateQuote({ customFields: customFields.filter((_, i) => i !== idx) });
 
   return (
     <div className="bg-charcoal p-8 rounded-2xl shadow-lg mb-8 border border-slate-700/30 animate-fade-in">
@@ -158,33 +152,12 @@ export default function QuoteCreateForm({
                 </div>
               </div>
               <div>
-                <div className="flex items-center justify-between mb-2">
-                  <div className="text-sm font-semibold text-slate-400">Want to customize?</div>
-                  <button
-                    type="button"
-                    onClick={addCustomField}
-                    className="px-4 py-2 rounded-full border border-slate-700/30 text-sm font-semibold text-green-700 shadow-sm"
-                  >
-                    Add field
-                  </button>
-                </div>
-                {customFields.map((field, idx) => (
-                  <div key={`${field.key}-${idx}`} className="grid grid-cols-[1fr_1fr_auto] gap-2 mb-3">
-                    <input
-                      value={field.key}
-                      onChange={(e) => updateCustomField(idx, 'key', e.target.value)}
-                      placeholder="Field name"
-                      className="px-3 py-2 border border-slate-700/30 rounded-xl text-sm"
-                    />
-                    <input
-                      value={field.value}
-                      onChange={(e) => updateCustomField(idx, 'value', e.target.value)}
-                      placeholder="Value"
-                      className="px-3 py-2 border border-slate-700/30 rounded-xl text-sm"
-                    />
-                    <button onClick={() => removeCustomField(idx)} className="text-xs font-semibold text-red-600">Remove</button>
-                  </div>
-                ))}
+                <div className="text-sm font-semibold text-slate-400 mb-2">Custom fields</div>
+                <CustomFieldEditor
+                  entityType="quotes"
+                  customFields={customFields}
+                  onChange={(updated) => updateQuote({ customFields: updated })}
+                />
               </div>
             </div>
           </div>

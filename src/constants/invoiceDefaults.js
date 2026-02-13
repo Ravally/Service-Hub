@@ -39,3 +39,11 @@ export const LINE_ITEM_TYPES = [
   { value: 'line_item', label: 'Line Item' },
   { value: 'text', label: 'Text Section' },
 ];
+
+export const PAYMENT_PLAN_FREQUENCIES = [
+  { value: 'weekly', label: 'Weekly' },
+  { value: 'bi-weekly', label: 'Bi-weekly' },
+  { value: 'monthly', label: 'Monthly' },
+];
+
+export const PAYMENT_PLAN_LIMITS = { minInstallments: 2, maxInstallments: 12 };

@@ -2,8 +2,9 @@ import React from 'react';
 import { collection, addDoc, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../../firebase/config';
 import { inputCls, labelCls, sectionCls, saveBtnCls } from './settingsShared';
+import TeamInviteSection from './TeamInviteSection';
 
-export default function StaffTemplatesTab({ tab, userId, staff, quoteTemplates, newStaff, setNewStaff, newTemplate, setNewTemplate, handleAddTemplate, handleDeleteTemplate }) {
+export default function StaffTemplatesTab({ tab, userId, staff, quoteTemplates, newStaff, setNewStaff, newTemplate, setNewTemplate, handleAddTemplate, handleDeleteTemplate, newInvite, setNewInvite, handleInviteUser, userEmail }) {
   if (tab === 'staff') {
     return (
       <div>
@@ -44,6 +45,14 @@ export default function StaffTemplatesTab({ tab, userId, staff, quoteTemplates, 
             )}
           </div>
         </div>
+        {handleInviteUser && (
+          <TeamInviteSection
+            newInvite={newInvite}
+            setNewInvite={setNewInvite}
+            handleInviteUser={handleInviteUser}
+            userEmail={userEmail}
+          />
+        )}
       </div>
     );
   }

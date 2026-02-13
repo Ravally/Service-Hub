@@ -87,8 +87,11 @@ export function createQuoteHandlers(deps) {
 
   const sanitizeQuoteDraft = (draft) => {
     const customFields = (draft.customFields || [])
-      .filter(cf => cf && (cf.key || cf.value))
-      .map(cf => ({ key: (cf.key || '').trim(), value: (cf.value || '').trim() }));
+      .filter(cf => cf && (cf.fieldId || cf.key || cf.value))
+      .map(cf => cf.fieldId
+        ? { fieldId: cf.fieldId, fieldName: (cf.fieldName || '').trim(), fieldType: cf.fieldType || 'text', value: cf.value ?? '' }
+        : { key: (cf.key || '').trim(), value: (cf.value || '').trim() }
+      );
     const lineItems = (draft.lineItems || []).slice(0, 100).map(it => ({ ...it }));
     const clientViewSettings = {
       showQuantities: draft.clientViewSettings?.showQuantities !== false,
@@ -301,8 +304,48 @@ export function createQuoteHandlers(deps) {
   };
 
   const handleCollectDeposit = async (quote) => {
-    const amount = quote?.depositRequiredAmount || 0;
-    alert(`Collect deposit: ${amount ? `$${amount}` : 'No deposit set'}. Stripe integration pending.`);
+    if (!quote) return;
+    const totals = computeQuoteTotals(quote);
+    const depositAmt = quote.depositRequiredAmount
+      ? Math.round(parseFloat(quote.depositRequiredAmount) * 100)
+      : (quote.depositRequiredPercent
+        ? Math.round(totals.total * (parseFloat(quote.depositRequiredPercent) / 100) * 100)
+        : 0);
+    if (depositAmt <= 0) { alert('No deposit amount configured on this quote.'); return; }
+    if (quote.depositCollected) { alert('Deposit has already been collected.'); return; }
+
+    const useStripe = window.confirm(
+      `Collect deposit of $${(depositAmt / 100).toFixed(2)} via Stripe?\n\nClick OK for Stripe payment link, or Cancel to mark as manually collected.`
+    );
+
+    try {
+      if (useStripe) {
+        const base = import.meta.env?.VITE_FUNCTIONS_BASE_URL;
+        if (!base) { alert('Stripe not configured. Set VITE_FUNCTIONS_BASE_URL.'); return; }
+        const res = await fetch(`${base.replace(/\/$/, '')}/api/createDepositCheckoutSession`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            uid: userId, quoteId: quote.id, depositAmount: depositAmt,
+            successUrl: `${window.location.origin}?depositPaid=1`,
+            cancelUrl: window.location.href,
+          }),
+        });
+        if (!res.ok) throw new Error('Failed to create deposit checkout session');
+        const data = await res.json();
+        window.prompt('Deposit payment link (send to client):', data.url);
+      } else {
+        const now = new Date().toISOString();
+        const updates = { depositCollected: true, depositCollectedAt: now, depositAmount: depositAmt, depositMethod: 'manual' };
+        await updateDoc(doc(db, `users/${userId}/quotes`, quote.id), updates);
+        if (selectedQuote?.id === quote.id) setSelectedQuote(prev => ({ ...prev, ...updates }));
+        await logAudit('collect_deposit', 'quote', quote.id, { amount: depositAmt, method: 'manual' });
+        alert('Deposit marked as manually collected.');
+      }
+    } catch (err) {
+      console.error('Collect deposit error:', err);
+      alert('Failed to collect deposit. Please try again.');
+    }
   };
 
   const handleCollectSignature = async (quote) => {

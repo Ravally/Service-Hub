@@ -103,6 +103,7 @@ export default function InvoiceCreateFlow({
   initialMode = 'job',
   onCancel,
   onCreateInvoice,
+  userRole,
 }) {
   const [step, setStep] = useState('select');
   const [mode, setMode] = useState(initialMode || 'job');
@@ -158,7 +159,7 @@ export default function InvoiceCreateFlow({
         mode="create"
         onBack={() => setStep('select')}
         onCreateInvoice={onCreateInvoice}
-        userRole="admin"
+        userRole={userRole || 'admin'}
       />
     );
   }

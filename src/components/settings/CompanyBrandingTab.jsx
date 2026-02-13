@@ -17,7 +17,7 @@ export default function CompanyBrandingTab({ tab, companySettings, cs, csn, logo
               ) : (
                 <div className="h-20 w-20 flex items-center justify-center bg-midnight text-slate-500 rounded-md border border-slate-700/30"><BriefcaseIcon className="h-8 w-8" /></div>
               )}
-              <input type="file" accept="image/png, image/jpeg" onChange={(e) => setLogoFile(e.target.files[0])} className="block w-full text-sm text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-trellio-teal/15 file:text-trellio-teal hover:file:bg-trellio-teal/25" />
+              <input type="file" accept="image/png, image/jpeg" onChange={(e) => setLogoFile(e.target.files[0])} className="block w-full text-sm text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-scaffld-teal/15 file:text-scaffld-teal hover:file:bg-scaffld-teal/25" />
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -72,7 +72,7 @@ export default function CompanyBrandingTab({ tab, companySettings, cs, csn, logo
                 onClick={() => cs({ pdfLayout: opt.value })}
                 className={`p-4 rounded-lg border text-left transition-colors ${
                   (companySettings.pdfLayout || 'detailed') === opt.value
-                    ? 'border-trellio-teal bg-trellio-teal/10 text-trellio-teal'
+                    ? 'border-scaffld-teal bg-scaffld-teal/10 text-scaffld-teal'
                     : 'border-slate-700 hover:border-slate-500 text-slate-300'
                 }`}
               >

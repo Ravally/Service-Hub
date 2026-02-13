@@ -8,7 +8,7 @@
 
 ## Executive Summary
 
-Phase 2 transforms Trellio into a complete field service platform with native mobile apps for iOS and Android. This phase includes web-based form builders, mobile app development using Expo, and GPS tracking with route optimization.
+Phase 2 transforms Scaffld into a complete field service platform with native mobile apps for iOS and Android. This phase includes web-based form builders, mobile app development using Expo, and GPS tracking with route optimization.
 
 **Timeline**:
 - **Phase 2.3**: Job Forms & Checklists (Web Foundation) - 6 weeks ✅ Complete
@@ -823,8 +823,8 @@ src/
 ## References
 
 - Full Phase 2 plan: `../../PHASE2-PLAN.md` (archived)
-- Mobile architecture: `../TRELLIO_ARCHITECTURE.md`
-- Master roadmap: `../TRELLIO_MASTER_ROADMAP.md`
+- Mobile architecture: `../SCAFFLD_ARCHITECTURE.md`
+- Master roadmap: `../SCAFFLD_MASTER_ROADMAP.md`
 - Form templates: `../../src/constants/sampleTemplates.js`
 
 ---

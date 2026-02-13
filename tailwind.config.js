@@ -7,12 +7,12 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Trellio Primary
-        'trellio-teal': '#0EA5A0',
-        'trellio-teal-deep': '#087F7A',
-        'trellio-teal-light': '#B2F0ED',
+        // Scaffld Primary
+        'scaffld-teal': '#0EA5A0',
+        'scaffld-teal-deep': '#087F7A',
+        'scaffld-teal-light': '#B2F0ED',
 
-        // Trellio Accents
+        // Scaffld Accents
         'signal-coral': '#F7845E',
         'signal-coral-deep': '#E56840',
         'signal-coral-light': '#FFDCC8',
@@ -20,7 +20,7 @@ export default {
         'harvest-amber-deep': '#FF9633',
         'harvest-amber-light': '#FFE8CC',
 
-        // Trellio Neutrals
+        // Scaffld Neutrals
         'midnight': '#0C1220',
         'charcoal': '#1A2332',
         'slate-dark': '#2D3B4E',

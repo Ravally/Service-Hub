@@ -31,13 +31,13 @@ export default function JobInfoCard({ job, client, staff, statusColors, onUpdate
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 text-sm text-slate-400">
-            {isToday && <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-trellio-teal">Today</span>}
+            {isToday && <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-scaffld-teal">Today</span>}
             <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${jobStatusClass}`}>{job.status}</span>
           </div>
           <div className="mt-3 flex items-center gap-3">
             <h1 className="text-3xl font-bold text-slate-100">{clientName}</h1>
             {onOpenClient && (
-              <button onClick={() => onOpenClient(job.clientId)} className="text-trellio-teal text-lg font-semibold hover:text-green-800">Link</button>
+              <button onClick={() => onOpenClient(job.clientId)} className="text-scaffld-teal text-lg font-semibold hover:text-green-800">Link</button>
             )}
           </div>
           {job.title && <p className="text-sm text-slate-400 mt-1">{job.title}</p>}
@@ -58,7 +58,7 @@ export default function JobInfoCard({ job, client, staff, statusColors, onUpdate
           <div>
             <h3 className="text-sm font-semibold text-slate-100 mb-3">Property address</h3>
             <div className="flex gap-3">
-              <div className="h-12 w-12 rounded-xl border border-slate-700/30 flex items-center justify-center text-trellio-teal bg-green-50">
+              <div className="h-12 w-12 rounded-xl border border-slate-700/30 flex items-center justify-center text-scaffld-teal bg-green-50">
                 <MapPinIcon />
               </div>
               <div className="text-sm text-slate-100 space-y-1">
@@ -70,7 +70,7 @@ export default function JobInfoCard({ job, client, staff, statusColors, onUpdate
             <h3 className="text-sm font-semibold text-slate-100 mb-3">Contact details</h3>
             <div className="space-y-2 text-sm text-slate-100">
               <div className="flex items-center gap-2"><PhoneIcon /> <span>{contactPhone}</span></div>
-              <div className="flex items-center gap-2"><AtSignIcon /> <span className="text-trellio-teal">{contactEmail}</span></div>
+              <div className="flex items-center gap-2"><AtSignIcon /> <span className="text-scaffld-teal">{contactEmail}</span></div>
             </div>
           </div>
         </div>
@@ -125,7 +125,7 @@ export default function JobInfoCard({ job, client, staff, statusColors, onUpdate
             </div>
           </div>
           <div className="mt-4 text-right">
-            <button onClick={handleSaveDetails} className="px-4 py-2 bg-trellio-teal text-white rounded-md text-sm font-semibold hover:bg-trellio-teal/90">Save Changes</button>
+            <button onClick={handleSaveDetails} className="px-4 py-2 bg-scaffld-teal text-white rounded-md text-sm font-semibold hover:bg-scaffld-teal/90">Save Changes</button>
           </div>
         </div>
       )}

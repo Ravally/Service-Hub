@@ -13,6 +13,9 @@ import { createQuoteHandlers } from './quoteHandlers';
 import { createJobHandlers } from './jobHandlers';
 import { createInvoiceHandlers } from './invoiceHandlers';
 import { createSettingsHandlers } from './settingsHandlers';
+import { createBookingHandlers } from './bookingHandlers';
+import { createReviewHandlers } from './reviewHandlers';
+import { createCampaignHandlers } from './campaignHandlers';
 
 /**
  * Orchestrator hook that composes domain-specific handler modules.
@@ -37,7 +40,7 @@ export function useAppHandlers(userId, userProfile, appState) {
     invoiceCreateContext, setInvoiceCreateContext,
     setClientBeingEdited, setAutoAddProperty,
     publicQuoteContext, setPublicMessage, setPublicError,
-    notifications,
+    notifications, reviews, campaigns,
   } = appState;
 
   // --- Bound utilities ---
@@ -57,6 +60,9 @@ export function useAppHandlers(userId, userProfile, appState) {
     const outstandingInvoices = invoices.filter(inv => (inv.status === 'Unpaid' || inv.status === 'Sent') && !inv.isCreditNote);
     const outstandingAmount = outstandingInvoices.reduce((sum, inv) => sum + (inv.total || 0), 0);
     const revenueThisMonth = invoices.filter(inv => inv.status === 'Paid' && inv.paidAt).reduce((sum, inv) => sum + (inv.total || 0), 0);
+    const avgRating = reviews.length > 0
+      ? reviews.reduce((sum, r) => sum + (r.rating || 0), 0) / reviews.length
+      : 0;
     return {
       activeJobsCount: activeJobs.length,
       requiresSchedulingCount: unscheduledJobs.length,
@@ -64,8 +70,9 @@ export function useAppHandlers(userId, userProfile, appState) {
       upcomingJobs: activeJobs.slice(0, 5),
       jobsRequiringScheduling: unscheduledJobs.slice(0, 5),
       invoicesAwaitingPayment: outstandingInvoices.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt)).slice(0, 5),
+      reviewCount: reviews.length, avgRating,
     };
-  }, [jobs, invoices]);
+  }, [jobs, invoices, reviews]);
 
   // --- Filtered data ---
   const filteredClients = useMemo(() => {
@@ -148,7 +155,7 @@ export function useAppHandlers(userId, userProfile, appState) {
   });
 
   const settingsH = createSettingsHandlers({
-    userId, db, functions, clients, companySettings, setCompanySettings,
+    userId, db, functions, clients, notifications, companySettings, setCompanySettings,
     invoiceSettings, setInvoiceSettings, emailTemplates, setEmailTemplates,
     logoFile, setLogoFile, selectedQuote, setSelectedQuote,
     selectedInvoice, setSelectedInvoice,
@@ -169,11 +176,27 @@ export function useAppHandlers(userId, userProfile, appState) {
     sendQuoteText: settingsH.handleSendQuoteText,
   });
 
+  const reviewH = createReviewHandlers({
+    userId, functions, clients, companySettings,
+    logAudit: boundLogAudit, getClientById: boundGetClientById,
+  });
+
   const jobH = createJobHandlers({
     userId, db, storage, newJob, setNewJob, selectedJob, setSelectedJob, setShowJobForm,
     logAudit: boundLogAudit, findClientProperty: boundFindClientProperty,
     buildPropertySnapshot, getClientNameById: boundGetClientNameById,
     createInvoiceFromJob: invoiceH.handleCreateInvoiceFromJob,
+    triggerReviewRequest: reviewH.handleSendReviewRequest,
+  });
+
+  const bookingH = createBookingHandlers({
+    userId, clients, jobs, companySettings,
+    logAudit: boundLogAudit, setActiveView, setSelectedJob,
+  });
+
+  const campaignH = createCampaignHandlers({
+    userId, functions, clients, companySettings, jobs, invoices,
+    logAudit: boundLogAudit,
   });
 
   return {
@@ -187,7 +210,7 @@ export function useAppHandlers(userId, userProfile, appState) {
     buildPropertySnapshot,
     computeQuoteTotals, computeInvoiceDueDate,
     dashboardStats,
-    filteredClients, filteredQuotes, filteredJobs, filteredInvoices,
+    filteredClients, filteredQuotes, filteredJobs, filteredInvoices, campaigns,
 
     // Auth
     handleLogout,
@@ -198,5 +221,8 @@ export function useAppHandlers(userId, userProfile, appState) {
     ...jobH,
     ...invoiceH,
     ...settingsH,
+    ...bookingH,
+    ...reviewH,
+    ...campaignH,
   };
 }

@@ -16,7 +16,7 @@ export default function SchedulingNotificationsTab({ tab, companySettings, cs, c
                 return (
                   <button key={day} type="button" onClick={() => csn('workingDays', { [day]: !checked })}
                     className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors capitalize ${
-                      checked ? 'bg-trellio-teal/10 border-trellio-teal text-trellio-teal' : 'border-slate-700 text-slate-400 hover:border-slate-500'
+                      checked ? 'bg-scaffld-teal/10 border-scaffld-teal text-scaffld-teal' : 'border-slate-700 text-slate-400 hover:border-slate-500'
                     }`}
                   >{day.slice(0, 3)}</button>
                 );

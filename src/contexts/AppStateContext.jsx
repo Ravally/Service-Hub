@@ -21,6 +21,11 @@ export function AppStateProvider({ children }) {
   const [quoteTemplates, setQuoteTemplates] = useState([]);
   const [notifications, setNotifications] = useState([]);
   const [clientNotes, setClientNotes] = useState([]);
+  const [reviews, setReviews] = useState([]);
+  const [campaigns, setCampaigns] = useState([]);
+
+  // Campaign UI state
+  const [selectedCampaign, setSelectedCampaign] = useState(null);
 
   // Settings
   const [companySettings, setCompanySettings] = useState(initialCompanySettings);
@@ -53,6 +58,14 @@ export function AppStateProvider({ children }) {
     // Job completion templates
     jobCompletionSubject: 'Work Completed: {{jobTitle}}',
     jobCompletionBody: 'Hi {{clientName}},\n\nWe\'ve completed the work for: {{jobTitle}}\n\nThank you for choosing {{companyName}}! We hope you\'re satisfied with our service.\n\nThanks,\n{{companyName}}',
+
+    // Booking confirmation templates
+    bookingConfirmationSubject: 'Booking Confirmed: {{serviceName}} on {{appointmentDate}}',
+    bookingConfirmationBody: 'Hi {{customerName}},\n\nYour booking has been confirmed!\n\nService: {{serviceName}}\nDate: {{appointmentDate}}\nTime: {{appointmentTime}}\n\nWe look forward to seeing you.\n\nThanks,\n{{companyName}}',
+
+    // Review request templates
+    reviewRequestSubject: 'How was your experience? — {{companyName}}',
+    reviewRequestBody: 'Hi {{clientName}},\n\nWe recently completed {{jobTitle}} for you and would love to hear your feedback!\n\nPlease take a moment to leave us a review:\n{{reviewLink}}\n\nThank you for choosing {{companyName}}!\n\nBest regards,\n{{companyName}}',
   });
 
   // Form state
@@ -122,6 +135,9 @@ export function AppStateProvider({ children }) {
   const [publicMessage, setPublicMessage] = useState('');
   const [publicError, setPublicError] = useState('');
   const [publicPortalContext, setPublicPortalContext] = useState(null);
+  const [publicBookingContext, setPublicBookingContext] = useState(null);
+  const [publicReviewContext, setPublicReviewContext] = useState(null);
+  const [publicUnsubscribeContext, setPublicUnsubscribeContext] = useState(null);
 
   // Helper to persist schedule view settings
   const updateScheduleView = (view) => {
@@ -155,6 +171,9 @@ export function AppStateProvider({ children }) {
     quoteTemplates, setQuoteTemplates,
     notifications, setNotifications,
     clientNotes, setClientNotes,
+    reviews, setReviews,
+    campaigns, setCampaigns,
+    selectedCampaign, setSelectedCampaign,
 
     // Settings
     companySettings, setCompanySettings,
@@ -212,6 +231,9 @@ export function AppStateProvider({ children }) {
     publicMessage, setPublicMessage,
     publicError, setPublicError,
     publicPortalContext, setPublicPortalContext,
+    publicBookingContext, setPublicBookingContext,
+    publicReviewContext, setPublicReviewContext,
+    publicUnsubscribeContext, setPublicUnsubscribeContext,
 
     // Navigation helper
     navigateToView,

@@ -12,7 +12,7 @@ export default function InvoiceTotalsCard({ draft, totals, balanceDue, currencyC
         </div>
         <div className="flex items-center justify-between">
           <span>Discount</span>
-          <button type="button" onClick={() => setShowDiscount((v) => !v)} className="text-trellio-teal font-semibold underline" disabled={!canEdit}>
+          <button type="button" onClick={() => setShowDiscount((v) => !v)} className="text-scaffld-teal font-semibold underline" disabled={!canEdit}>
             {showDiscount ? 'Hide Discount' : 'Add Discount'}
           </button>
         </div>

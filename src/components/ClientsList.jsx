@@ -2,9 +2,13 @@
 import React, { useMemo, useState } from 'react';
 import { STATUS_COLORS } from '../constants/statusConstants';
 import { inRange } from '../utils/dateUtils';
+import { computeClientSegments, SEGMENT_DEFINITIONS, getSegmentDef } from '../utils';
+import { useBulkSelection } from '../hooks/ui';
 import KpiCard from './common/KpiCard';
+import BulkActionBar from './common/BulkActionBar';
 import Chip from './common/Chip';
 import Pill from './common/Pill';
+import TagPicker from './clients/TagPicker';
 
 const StatusPill = ({ label }) => {
   const cls = STATUS_COLORS[label] || 'bg-slate-700/30 text-slate-100';
@@ -41,6 +45,9 @@ export default function ClientsList({
   invoices = [],
   onSelectClient,
   onNewClientClick,
+  onBulkArchiveClients,
+  onBulkDeleteClients,
+  onBulkTagClients,
 }) {
   // Local state for filters/search/sort
   const [search, setSearch] = useState('');
@@ -48,6 +55,8 @@ export default function ClientsList({
   const [statusPopover, setStatusPopover] = useState(false);
   const [selectedTags, setSelectedTags] = useState([]); // array of tag strings
   const [tagSearch, setTagSearch] = useState('');
+  const [selectedSegments, setSelectedSegments] = useState([]);
+  const [segmentPopover, setSegmentPopover] = useState(false);
   // statusMode: 'all' | 'la' | 'lead' | 'active' | 'archived'
   const [statusMode, setStatusMode] = useState('all');
   const [sortBy, setSortBy] = useState('name'); // name | last
@@ -81,6 +90,8 @@ export default function ClientsList({
       return { ...c, _status: status, _last: last };
     });
   }, [clients, quotes, jobs, invoices]);
+
+  const clientSegments = useMemo(() => computeClientSegments(clients, jobs, invoices), [clients, jobs, invoices]);
 
   const { allTags, tagCounts } = useMemo(() => {
     const counts = new Map();
@@ -148,7 +159,8 @@ export default function ClientsList({
         (c.tags || []).some((t) => String(t).toLowerCase().includes(term));
       const tagOk = selectedTags.length === 0 || (c.tags || []).some((t) => selectedTags.includes(t));
       const statusOk = !statusAllowed || statusAllowed.includes(c._status);
-      return base && tagOk && statusOk;
+      const segOk = selectedSegments.length === 0 || (clientSegments.get(c.id) || []).some(s => selectedSegments.includes(s));
+      return base && tagOk && statusOk && segOk;
     };
     const arr = augmented.filter(match);
     const sorted = [...arr].sort((a, b) => {
@@ -165,12 +177,20 @@ export default function ClientsList({
       return 0;
     });
     return sorted;
-  }, [augmented, search, selectedTags, statusMode, sortBy, sortDir]);
+  }, [augmented, search, selectedTags, selectedSegments, clientSegments, statusMode, sortBy, sortDir]);
 
   const toggleSort = (key) => {
     if (sortBy === key) setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
     else { setSortBy(key); setSortDir('asc'); }
   };
+
+  const { selected, allChecked, toggleAll, toggleOne, clearSelection } = useBulkSelection(filtered);
+  const [showTagPicker, setShowTagPicker] = useState(false);
+  const bulkActions = [
+    { label: 'Add Tag', onClick: () => setShowTagPicker(true) },
+    { label: 'Archive', onClick: () => { onBulkArchiveClients?.(Array.from(selected)); clearSelection(); } },
+    { label: 'Delete', onClick: () => { onBulkDeleteClients?.(Array.from(selected)); clearSelection(); }, variant: 'danger' },
+  ];
 
   return (
     <div>
@@ -178,7 +198,7 @@ export default function ClientsList({
       <div className="mb-6 flex items-center justify-between">
         <h2 className="text-3xl font-bold font-display text-slate-100">Clients</h2>
         <div className="flex items-center gap-2">
-          <button onClick={onNewClientClick} className="px-4 py-2 rounded-md bg-trellio-teal text-white font-semibold hover:bg-trellio-teal-deep transition-colors">New Client</button>
+          <button onClick={onNewClientClick} className="px-4 py-2 rounded-md bg-scaffld-teal text-white font-semibold hover:bg-scaffld-teal-deep transition-colors">New Client</button>
           <button className="px-3 py-2 rounded-md bg-charcoal text-slate-300 border border-slate-700 hover:bg-slate-dark transition-colors">More Actions</button>
         </div>
       </div>
@@ -201,7 +221,7 @@ export default function ClientsList({
                   value={tagSearch}
                   onChange={(e)=>setTagSearch(e.target.value)}
                   placeholder="Search tags"
-                  className="w-full px-2 py-1 bg-midnight border border-slate-700 text-slate-100 placeholder-slate-500 rounded mb-2 text-sm focus:border-trellio-teal focus:ring-2 focus:ring-trellio-teal/20"
+                  className="w-full px-2 py-1 bg-midnight border border-slate-700 text-slate-100 placeholder-slate-500 rounded mb-2 text-sm focus:border-scaffld-teal focus:ring-2 focus:ring-scaffld-teal/20"
                 />
                 <div className="flex items-center justify-between px-2 py-1 text-xs text-slate-400">
                   <span>Select tags</span>
@@ -210,7 +230,7 @@ export default function ClientsList({
                       const visible = allTags.filter(t => t.toLowerCase().includes(tagSearch.trim().toLowerCase()));
                       setSelectedTags(visible);
                     }}
-                    className="text-trellio-teal font-semibold"
+                    className="text-scaffld-teal font-semibold"
                   >Select all</button>
                 </div>
                 <div className="max-h-64 overflow-y-auto">
@@ -234,7 +254,7 @@ export default function ClientsList({
             <Chip onClick={() => { setStatusPopover((s) => !s); setTagPopover(false); }}>Status | {statusMode === 'all' ? 'All' : statusMode === 'la' ? 'Leads and Active' : statusMode === 'lead' ? 'Leads' : statusMode === 'active' ? 'Active' : 'Archived'}</Chip>
             {statusPopover && (
               <div className="absolute z-10 mt-2 w-64 bg-charcoal border border-slate-700/30 rounded-md shadow p-2">
-                <input placeholder="Search status" className="w-full px-2 py-1 bg-midnight border border-slate-700 text-slate-100 placeholder-slate-500 rounded mb-2 text-sm focus:border-trellio-teal focus:ring-2 focus:ring-trellio-teal/20" />
+                <input placeholder="Search status" className="w-full px-2 py-1 bg-midnight border border-slate-700 text-slate-100 placeholder-slate-500 rounded mb-2 text-sm focus:border-scaffld-teal focus:ring-2 focus:ring-scaffld-teal/20" />
                 {[
                   { key: 'all', label: 'All' },
                   { key: 'la', label: 'Leads and Active' },
@@ -250,8 +270,27 @@ export default function ClientsList({
               </div>
             )}
           </div>
-          {(selectedTags.length > 0 || statusMode !== 'all') && (
-            <Chip onClick={() => { setSelectedTags([]); setStatusMode('all'); }} className="bg-midnight border-slate-700/30">Clear</Chip>
+          <div className="relative">
+            <Chip onClick={() => { setSegmentPopover((s) => !s); setTagPopover(false); setStatusPopover(false); }}>
+              Segments{selectedSegments.length > 0 ? ` (${selectedSegments.length})` : ' +'}
+            </Chip>
+            {segmentPopover && (
+              <div className="absolute z-10 mt-2 w-64 bg-charcoal border border-slate-700/30 rounded-md shadow p-2">
+                {SEGMENT_DEFINITIONS.map(seg => (
+                  <button
+                    key={seg.key} type="button"
+                    onClick={() => setSelectedSegments(prev => prev.includes(seg.key) ? prev.filter(s => s !== seg.key) : [...prev, seg.key])}
+                    className={`w-full text-left px-3 py-2 text-sm text-slate-100 hover:bg-slate-dark ${selectedSegments.includes(seg.key) ? 'bg-slate-dark' : ''}`}
+                  >
+                    <span className="inline-block mr-2 align-middle" style={{width:12}}>{selectedSegments.includes(seg.key) ? '✓' : ''}</span>
+                    {seg.label} <span className="text-slate-500 text-xs ml-1">{seg.description}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+          {(selectedTags.length > 0 || statusMode !== 'all' || selectedSegments.length > 0) && (
+            <Chip onClick={() => { setSelectedTags([]); setStatusMode('all'); setSelectedSegments([]); }} className="bg-midnight border-slate-700/30">Clear</Chip>
           )}
         </div>
         <div className="relative">
@@ -259,12 +298,23 @@ export default function ClientsList({
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search filtered clients..."
-            className="px-3 py-2 bg-midnight border border-slate-700 text-slate-100 placeholder-slate-500 rounded-md text-sm w-64 focus:border-trellio-teal focus:ring-2 focus:ring-trellio-teal/20"
+            className="px-3 py-2 bg-midnight border border-slate-700 text-slate-100 placeholder-slate-500 rounded-md text-sm w-64 focus:border-scaffld-teal focus:ring-2 focus:ring-scaffld-teal/20"
           />
         </div>
       </div>
 
       <div className="text-sm text-slate-400 mb-3">All clients ({filtered.length} results)</div>
+
+      <BulkActionBar selectedCount={selected.size} onDeselectAll={clearSelection} actions={bulkActions} />
+      {showTagPicker && (
+        <div className="mb-3">
+          <TagPicker
+            allTags={allTags}
+            onSelect={(tag) => { onBulkTagClients?.(Array.from(selected), tag); clearSelection(); setShowTagPicker(false); }}
+            onClose={() => setShowTagPicker(false)}
+          />
+        </div>
+      )}
 
       {/* Table */}
       <div className="bg-charcoal rounded-xl shadow-lg border border-slate-700/30 overflow-hidden min-h-[calc(100vh-26rem)]">
@@ -274,13 +324,14 @@ export default function ClientsList({
           <table className="w-full">
             <thead className="bg-midnight text-sm border-b border-slate-700">
               <tr>
-                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-trellio-teal transition-colors" onClick={() => toggleSort('name')}>
+                <th className="p-3 w-10"><input type="checkbox" checked={allChecked} onChange={toggleAll} className="accent-scaffld-teal" /></th>
+                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-scaffld-teal transition-colors" onClick={() => toggleSort('name')}>
                   <span className="inline-flex items-center gap-1">Name{sortBy==='name' && (sortDir==='asc' ? ' ▲' : ' ▼')}</span>
                 </th>
                 <th className="text-left font-semibold text-slate-300 p-3">Address</th>
                 <th className="text-left font-semibold text-slate-300 p-3">Tags</th>
                 <th className="text-left font-semibold text-slate-300 p-3">Status</th>
-                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-trellio-teal transition-colors" onClick={() => toggleSort('last')}>
+                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-scaffld-teal transition-colors" onClick={() => toggleSort('last')}>
                   <span className="inline-flex items-center gap-1">Last{sortBy==='last' && (sortDir==='asc' ? ' ▲' : ' ▼')}</span>
                 </th>
               </tr>
@@ -288,8 +339,9 @@ export default function ClientsList({
             <tbody className="text-sm">
               {filtered.map((c) => (
                 <tr key={c.id} className="border-t border-slate-700/30 hover:bg-slate-dark/50 transition-colors">
+                  <td className="p-3" onClick={(e) => e.stopPropagation()}><input type="checkbox" checked={selected.has(c.id)} onChange={() => toggleOne(c.id)} className="accent-scaffld-teal" /></td>
                   <td className="p-3">
-                    <button className="font-semibold text-trellio-teal hover:underline" onClick={() => onSelectClient && onSelectClient(c)}>{c.name}</button>
+                    <button className="font-semibold text-scaffld-teal hover:underline" onClick={() => onSelectClient && onSelectClient(c)}>{c.name}</button>
                     {c.company && <div className="text-xs text-slate-400">{c.company}</div>}
                   </td>
                   <td className="p-3 text-slate-100">
@@ -305,6 +357,12 @@ export default function ClientsList({
                       {(c.tags || []).length > 1 && (
                         <span className="text-xs text-slate-400">+{(c.tags || []).length - 1}</span>
                       )}
+                      {(clientSegments.get(c.id) || []).map(segKey => {
+                        const def = getSegmentDef(segKey);
+                        return def ? (
+                          <span key={segKey} className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${def.color}`}>{def.label}</span>
+                        ) : null;
+                      })}
                     </div>
                   </td>
                   <td className="p-3"><StatusPill label={c._status} /></td>

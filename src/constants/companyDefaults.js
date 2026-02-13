@@ -98,8 +98,32 @@ export const initialCompanySettings = {
   // Integrations
   integrations: {
     stripe: { enabled: false, publishableKey: '' },
-    xero: { enabled: false, connected: false },
-    myob: { enabled: false, connected: false },
+    quickbooks: {
+      connected: false,
+      companyName: '',
+      lastSyncAt: null,
+      autoSync: false,
+      syncSettings: {
+        syncInvoices: true,
+        syncPayments: true,
+        syncContacts: true,
+        revenueAccountCode: '',
+        taxAccountCode: '',
+      },
+    },
+    xero: {
+      connected: false,
+      organizationName: '',
+      lastSyncAt: null,
+      autoSync: false,
+      syncSettings: {
+        syncInvoices: true,
+        syncPayments: true,
+        syncContacts: true,
+        revenueAccountCode: '200',
+        taxAccountCode: '',
+      },
+    },
     googleCalendar: { enabled: false, connected: false },
     smsProvider: { provider: 'none', apiKey: '' },
   },
@@ -112,6 +136,32 @@ export const initialCompanySettings = {
     showJobStatus: true,
     showSchedule: false,
     allowOnlinePayments: true,
+  },
+
+  // Online Booking
+  onlineBooking: {
+    enabled: false,
+    services: [],
+    requireApproval: false,
+    allowSameDay: true,
+    maxAdvanceDays: 60,
+    bookingMessage: 'Thank you for booking with us!',
+    cancellationPolicy: '',
+  },
+
+  // Campaigns
+  campaignSettings: {
+    enabled: true,
+    defaultFromName: '',
+  },
+
+  // Reviews
+  reviewSettings: {
+    enabled: true,
+    autoRequest: true,
+    delayHours: 0,
+    googleReviewUrl: '',
+    facebookReviewUrl: '',
   },
 };
 

@@ -42,7 +42,7 @@ export default function JobVisitsCard({ job, staff, visits, onUpdate }) {
     <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-6">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-xl font-semibold text-slate-100">Visits</h3>
-        <button onClick={() => setShowForm((v) => !v)} className="px-3 py-1.5 rounded-md border border-slate-700/30 text-sm font-semibold text-trellio-teal hover:bg-green-50">
+        <button onClick={() => setShowForm((v) => !v)} className="px-3 py-1.5 rounded-md border border-slate-700/30 text-sm font-semibold text-scaffld-teal hover:bg-green-50">
           {showForm ? 'Cancel' : 'New Visit'}
         </button>
       </div>
@@ -70,7 +70,7 @@ export default function JobVisitsCard({ job, staff, visits, onUpdate }) {
           </div>
           <input value={draft.notes} onChange={(e) => setDraft({ ...draft, notes: e.target.value })} placeholder="Visit notes" className="md:col-span-4 px-3 py-2 border border-slate-700 rounded-md" />
           <div className="md:col-span-2 flex justify-end">
-            <button onClick={handleAdd} className="px-4 py-2 bg-trellio-teal text-white rounded-md text-sm font-semibold hover:bg-trellio-teal/90">Add Visit</button>
+            <button onClick={handleAdd} className="px-4 py-2 bg-scaffld-teal text-white rounded-md text-sm font-semibold hover:bg-scaffld-teal/90">Add Visit</button>
           </div>
         </div>
       )}
@@ -80,7 +80,7 @@ export default function JobVisitsCard({ job, staff, visits, onUpdate }) {
         <div className="space-y-4">
           {visitGroups.map((group) => (
             <div key={group.label}>
-              <div className="text-sm font-semibold text-trellio-teal mb-2">{group.label}</div>
+              <div className="text-sm font-semibold text-scaffld-teal mb-2">{group.label}</div>
               <div className="divide-y border border-slate-700/30 rounded-lg">
                 {group.items.map((visit) => {
                   const assignedNames = (visit.assignees || job.assignees || []).map((id) => staffMap[id]?.name).filter(Boolean);

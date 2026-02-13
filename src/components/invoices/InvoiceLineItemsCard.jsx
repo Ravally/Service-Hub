@@ -52,7 +52,7 @@ export default function InvoiceLineItemsCard({ draft, canEdit, updateLineItem, a
                     {canEdit && <button onClick={() => updateLineItem(idx, 'serviceDate', '')} className="text-xs text-slate-400 underline">Clear</button>}
                   </div>
                 ) : (
-                  <button onClick={() => updateLineItem(idx, 'serviceDate', new Date().toISOString())} className="text-trellio-teal underline text-sm" disabled={!canEdit}>Set Service Date</button>
+                  <button onClick={() => updateLineItem(idx, 'serviceDate', new Date().toISOString())} className="text-scaffld-teal underline text-sm" disabled={!canEdit}>Set Service Date</button>
                 )}
                 {item.isOptional && <span className="text-xs text-amber-700">Optional</span>}
               </div>

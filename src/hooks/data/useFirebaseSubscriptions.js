@@ -10,7 +10,7 @@ import { initialCompanySettings, initialInvoiceSettings } from '../../constants'
 export function useFirebaseSubscriptions(userId, appState) {
   const {
     setClients, setQuotes, setJobs, setInvoices, setStaff,
-    setQuoteTemplates, setNotifications,
+    setQuoteTemplates, setNotifications, setReviews, setCampaigns,
     setCompanySettings, setInvoiceSettings, setEmailTemplates,
     setIsLoading, setError,
   } = appState;
@@ -27,6 +27,8 @@ export function useFirebaseSubscriptions(userId, appState) {
       notifications: (data) => setNotifications(data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))),
       quoteTemplates: setQuoteTemplates,
       staff: setStaff,
+      reviews: (data) => setReviews(data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))),
+      campaigns: (data) => setCampaigns(data.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))),
     };
 
     const unsubscribes = Object.entries(collectionsConfig).map(([name, setter]) => {

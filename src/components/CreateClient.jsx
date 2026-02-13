@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { UsersIcon, MapPinIcon } from './icons';
 import Street1Input from './clients/Street1Input';
 import { CommSettingsModal, AddContactModal, PropContactModal } from './clients/CreateClientModals';
+import CustomFieldEditor from './common/CustomFieldEditor';
 
 export default function CreateClient({ onBack, onSave, initialClient = null, autoAddProperty = false }) {
   // Primary client fields
@@ -181,13 +182,6 @@ export default function CreateClient({ onBack, onSave, initialClient = null, aut
     return val ? { ...p, isBilling: false } : p;
   }));
 
-  const addPropertyCustomField = (idx) => setProperties(prev => prev.map((p,i)=> i===idx ? { ...p, customFields: [...(p.customFields||[]), { key:'', value:'' }] } : p));
-  const updatePropertyCustomField = (idx, cidx, field, value) => setProperties(prev => prev.map((p,i)=> {
-    if (i!==idx) return p; const list = [...(p.customFields||[])]; list[cidx] = { ...list[cidx], [field]: value }; return { ...p, customFields: list };
-  }));
-  const removePropertyCustomField = (idx, cidx) => setProperties(prev => prev.map((p,i)=> {
-    if (i!==idx) return p; const list = [...(p.customFields||[])]; list.splice(cidx,1); return { ...p, customFields: list };
-  }));
 
   const addPropertyContact = (idx, contact) => setProperties(prev => prev.map((p,i)=> {
     if (i !== idx) return p;
@@ -388,15 +382,8 @@ export default function CreateClient({ onBack, onSave, initialClient = null, aut
                 <div className="text-sm font-semibold text-slate-300">Additional client details</div>
                 <span className="text-slate-500">▼</span>
               </div>
-              <div className="mt-2 space-y-2">
-                <div className="text-xs text-slate-400">Custom fields</div>
-                {(customFields||[]).map((f, idx) => (
-                  <div key={idx} className="grid grid-cols-2 gap-2">
-                    <input value={f.key} onChange={(e)=>{ const next=[...customFields]; next[idx]={...next[idx], key:e.target.value}; setCustomFields(next); }} placeholder="Field name" className="px-2 py-1 border rounded"/>
-                    <input value={f.value} onChange={(e)=>{ const next=[...customFields]; next[idx]={...next[idx], value:e.target.value}; setCustomFields(next); }} placeholder="Value" className="px-2 py-1 border rounded"/>
-                  </div>
-                ))}
-                <button type="button" onClick={()=>setCustomFields([...(customFields||[]), { key:'', value:'' }])} className="text-xs text-emerald-700 font-semibold">Add custom field</button>
+              <div className="mt-2">
+                <CustomFieldEditor entityType="clients" customFields={customFields} onChange={setCustomFields} />
               </div>
             </div>
 
@@ -519,25 +506,12 @@ export default function CreateClient({ onBack, onSave, initialClient = null, aut
                     </label>
 
                     <div>
-                      <div className="flex items-center justify-between">
-                        <div className="text-sm font-semibold text-slate-300">Custom fields</div>
-                        <button type="button" onClick={()=>addPropertyCustomField(idx)} className="px-2 py-1 bg-midnight rounded-md text-xs font-medium text-slate-300 hover:bg-slate-700">Add custom field</button>
-                      </div>
-                      {(prop.customFields||[]).length === 0 ? (
-                        <p className="text-xs text-slate-400 mt-1">No custom fields.</p>
-                      ) : (
-                        <div className="mt-2 space-y-2">
-                          {(prop.customFields||[]).map((cf, cidx) => (
-                            <div key={cidx} className="grid grid-cols-2 gap-2 items-center">
-                              <input value={cf.key} onChange={(e)=>updatePropertyCustomField(idx,cidx,'key',e.target.value)} placeholder="Field name" className="px-2 py-1 border rounded"/>
-                              <div className="flex items-center gap-2">
-                                <input value={cf.value} onChange={(e)=>updatePropertyCustomField(idx,cidx,'value',e.target.value)} placeholder="Value" className="flex-1 px-2 py-1 border rounded"/>
-                                <button type="button" onClick={()=>removePropertyCustomField(idx,cidx)} className="text-xs text-red-600">Remove</button>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      )}
+                      <div className="text-sm font-semibold text-slate-300 mb-2">Custom fields</div>
+                      <CustomFieldEditor
+                        entityType="properties"
+                        customFields={prop.customFields || []}
+                        onChange={(updated) => setProperties(prev => prev.map((p, i) => i === idx ? { ...p, customFields: updated } : p))}
+                      />
                     </div>
                   </div>
                 </details>

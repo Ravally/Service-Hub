@@ -5,9 +5,12 @@ import { formatCurrency, formatDate, toDateInput, toIsoDate } from '../utils';
 import { rewriteText } from '../utils';
 import { computeDueDate, computeTotals } from '../utils';
 import { STATUS_COLORS } from '../constants';
+import { hasPermission } from '../utils';
 import InvoiceLineItemsCard from './invoices/InvoiceLineItemsCard';
 import InvoiceTotalsCard from './invoices/InvoiceTotalsCard';
 import { InvoiceDetailsCard, ClientViewCard, PaymentSettingsCard, InternalNotesCard } from './invoices/InvoiceSidebarCards';
+import PaymentPlanCard from './invoices/PaymentPlanCard';
+import CustomFieldEditor from './common/CustomFieldEditor';
 
 const buildLineItem = (opts = {}) => ({
   type: 'line_item',
@@ -36,12 +39,17 @@ export default function InvoiceDetailView({
   onRemoveAttachment,
   onApplyInvoiceDefaults,
   onOpenClient,
+  onSyncInvoice,
+  onSetupPaymentPlan,
+  onRecordInstallmentPayment,
+  onRemovePaymentPlan,
   userRole,
   defaultTaxRate,
   stripeEnabled,
+  accountingConnected,
   mode = 'view',
 }) {
-  const canEdit = userRole === 'admin' || userRole === 'manager';
+  const canEdit = hasPermission(userRole, 'edit.invoice');
   const isCreate = mode === 'create';
   const [draft, setDraft] = useState({ ...invoice, lineItems: invoice.lineItems || [] });
   const [showClientView, setShowClientView] = useState(false);
@@ -113,13 +121,6 @@ export default function InvoiceDetailView({
   };
 
   const customFields = Array.isArray(draft.customFields) ? draft.customFields : [];
-  const addCustomField = () => updateDraft({ customFields: [...customFields, { key: '', value: '' }] });
-  const updateCustomField = (idx, field, value) => {
-    const next = [...customFields];
-    next[idx] = { ...next[idx], [field]: value };
-    updateDraft({ customFields: next });
-  };
-  const removeCustomField = (idx) => updateDraft({ customFields: customFields.filter((_, i) => i !== idx) });
 
   const handleIssueDateChange = (value) => {
     const iso = toIsoDate(value);
@@ -159,8 +160,11 @@ export default function InvoiceDetailView({
       unitCost: Number(item.unitCost || 0),
     }));
     const sanitizedCustomFields = customFields
-      .filter((cf) => cf && (cf.key || cf.value))
-      .map((cf) => ({ key: (cf.key || '').trim(), value: (cf.value || '').trim() }));
+      .filter((cf) => cf && (cf.fieldId || cf.key || cf.value))
+      .map((cf) => cf.fieldId
+        ? { fieldId: cf.fieldId, fieldName: (cf.fieldName || '').trim(), fieldType: cf.fieldType || 'text', value: cf.value ?? '' }
+        : { key: (cf.key || '').trim(), value: (cf.value || '').trim() }
+      );
     const taxRate = Number.isFinite(Number(draft.taxRate)) ? Number(draft.taxRate) : 0;
     const computed = computeTotals({ ...draft, taxRate, lineItems: normalizedItems });
     const payload = {
@@ -219,7 +223,7 @@ export default function InvoiceDetailView({
             {!isCreate && canEdit && (
               <button
                 onClick={() => onSend && onSend(invoice)}
-                className="px-3 py-2 rounded-md bg-trellio-teal text-white text-sm font-semibold hover:bg-trellio-teal/90"
+                className="px-3 py-2 rounded-md bg-scaffld-teal text-white text-sm font-semibold hover:bg-scaffld-teal/90"
               >
                 Send Email
               </button>
@@ -258,7 +262,7 @@ export default function InvoiceDetailView({
                 <>
                   <span className="font-semibold">Invoice {invoiceNumber}</span>
                   {canEdit && (
-                    <button onClick={() => setEditingNumber(true)} className="text-trellio-teal font-semibold underline">
+                    <button onClick={() => setEditingNumber(true)} className="text-scaffld-teal font-semibold underline">
                       Change
                     </button>
                   )}
@@ -282,11 +286,35 @@ export default function InvoiceDetailView({
           <div className="mt-4 flex flex-wrap items-center gap-3 text-xs text-slate-400">
             {progressSteps.map((step, idx) => (
               <div key={step.label} className="flex items-center gap-2">
-                <span className={`h-2.5 w-2.5 rounded-full ${step.done ? 'bg-trellio-teal' : 'bg-slate-500'}`} />
-                <span className={step.done ? 'text-trellio-teal font-semibold' : 'text-slate-400'}>{step.label}</span>
+                <span className={`h-2.5 w-2.5 rounded-full ${step.done ? 'bg-scaffld-teal' : 'bg-slate-500'}`} />
+                <span className={step.done ? 'text-scaffld-teal font-semibold' : 'text-slate-400'}>{step.label}</span>
                 {idx < progressSteps.length - 1 && <span className="h-px w-6 bg-slate-700" />}
               </div>
             ))}
+          </div>
+        )}
+        {!isCreate && (
+          <div className="mt-3 flex items-center gap-2 text-xs">
+            {draft.accountingSync?.provider ? (
+              draft.accountingSync.syncError ? (
+                <span className="inline-flex items-center gap-1 px-2 py-1 rounded bg-signal-coral/10 text-signal-coral font-medium">
+                  Sync error ({draft.accountingSync.provider})
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1 px-2 py-1 rounded bg-scaffld-teal/10 text-scaffld-teal font-medium">
+                  Synced to {draft.accountingSync.provider === 'quickbooks' ? 'QuickBooks' : 'Xero'}
+                  {draft.accountingSync.syncedAt && ` \u2022 ${new Date(draft.accountingSync.syncedAt).toLocaleDateString()}`}
+                </span>
+              )
+            ) : accountingConnected && canEdit ? (
+              <button
+                type="button"
+                onClick={() => onSyncInvoice && onSyncInvoice(invoice.id)}
+                className="inline-flex items-center gap-1 px-2 py-1 rounded border border-slate-700 text-slate-300 hover:bg-midnight transition-colors font-medium"
+              >
+                Sync to accounting
+              </button>
+            ) : null}
           </div>
         )}
 
@@ -318,13 +346,13 @@ export default function InvoiceDetailView({
                     </button>
                     <button
                       onClick={finishContactEdit}
-                      className="px-3 py-1.5 rounded-md bg-trellio-teal text-white text-xs font-semibold"
+                      className="px-3 py-1.5 rounded-md bg-scaffld-teal text-white text-xs font-semibold"
                     >
                       Done
                     </button>
                   </div>
                 ) : (
-                  <button onClick={startContactEdit} className="text-sm font-semibold text-trellio-teal underline">
+                  <button onClick={startContactEdit} className="text-sm font-semibold text-scaffld-teal underline">
                     Edit
                   </button>
                 )
@@ -374,7 +402,7 @@ export default function InvoiceDetailView({
                   {onOpenClient && (
                     <button
                       onClick={() => onOpenClient(invoice.clientId)}
-                      className="text-sm font-semibold text-trellio-teal underline"
+                      className="text-sm font-semibold text-scaffld-teal underline"
                     >
                       View client
                     </button>
@@ -442,10 +470,21 @@ export default function InvoiceDetailView({
         </div>
 
         <div className="space-y-6">
-          <InvoiceDetailsCard draft={draft} canEdit={canEdit} customFields={customFields} handleIssueDateChange={handleIssueDateChange} handleDueTermChange={handleDueTermChange} addCustomField={addCustomField} updateCustomField={updateCustomField} removeCustomField={removeCustomField} updateDraft={updateDraft} />
+          <InvoiceDetailsCard draft={draft} canEdit={canEdit} handleIssueDateChange={handleIssueDateChange} handleDueTermChange={handleDueTermChange} updateDraft={updateDraft}
+            customFieldsNode={<CustomFieldEditor entityType="invoices" customFields={customFields} onChange={(updated) => updateDraft({ customFields: updated })} disabled={!canEdit} />}
+          />
           <InvoiceTotalsCard draft={draft} totals={totals} balanceDue={balanceDue} currencyCode={currencyCode} canEdit={canEdit} showDiscount={showDiscount} setShowDiscount={setShowDiscount} updateDraft={updateDraft} />
           <ClientViewCard draft={draft} canEdit={canEdit} showClientView={showClientView} setShowClientView={setShowClientView} updateDraft={updateDraft} />
           <PaymentSettingsCard draft={draft} canEdit={canEdit} updateDraft={updateDraft} />
+          {!isCreate && (
+            <PaymentPlanCard
+              invoice={draft} balanceDue={balanceDue} currencyCode={currencyCode}
+              canEdit={canEdit}
+              onSetupPlan={(config) => onSetupPaymentPlan && onSetupPaymentPlan(invoice.id, config)}
+              onRecordInstallment={(idx, details) => onRecordInstallmentPayment && onRecordInstallmentPayment(invoice.id, idx, details)}
+              onRemovePlan={() => onRemovePaymentPlan && onRemovePaymentPlan(invoice.id)}
+            />
+          )}
           <InternalNotesCard draft={draft} canEdit={canEdit} updateDraft={updateDraft} onUploadAttachment={onUploadAttachment} onRemoveAttachment={onRemoveAttachment} />
 
           {canEdit && (

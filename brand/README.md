@@ -1,4 +1,4 @@
-# 🔺 Trellio Brand Kit
+# 🔺 Scaffld Brand Kit
 
 ```
          ╱ ▲ ╲
@@ -9,7 +9,7 @@
        │        │
 
      t r e l l i o
-   Structure your growth.
+   Build on Scaffld.
 ```
 
 ---
@@ -18,10 +18,10 @@
 
 | Property        | Value                              |
 |-----------------|------------------------------------|
-| **Name**        | Trellio (always lowercase)         |
-| **Domain**      | trellio.app                        |
-| **Tagline**     | "Structure your growth."           |
-| **Primary**     | Trellio Teal `#0EA5A0`             |
+| **Name**        | Scaffld (always lowercase)         |
+| **Domain**      | scaffld.app                        |
+| **Tagline**     | "Build on Scaffld."           |
+| **Primary**     | Scaffld Teal `#0EA5A0`             |
 | **Accent 1**    | Signal Coral `#F7845E`             |
 | **Accent 2**    | Harvest Amber `#FFAA5C`            |
 | **Dark BG**     | Midnight `#0C1220`                 |
@@ -38,7 +38,7 @@
 
 ```
 brand/
-├── TRELLIO_BRAND.md           ← Complete brand spec (tell Claude Code to reference this)
+├── SCAFFLD_BRAND.md           ← Complete brand spec (tell Claude Code to reference this)
 ├── README.md                  ← You are here
 ├── tokens.css                 ← CSS custom properties (import into any project)
 ├── tokens.json                ← JSON tokens (for JS/TS/Node consumption)
@@ -50,12 +50,12 @@ brand/
 Add this line to your existing `CLAUDE.md` in the project root:
 
 ```
-For all UI, design, and frontend work, follow the brand system defined in brand/TRELLIO_BRAND.md
+For all UI, design, and frontend work, follow the brand system defined in brand/SCAFFLD_BRAND.md
 ```
 
 Or when prompting Claude Code, just say:
 
-> "Reference brand/TRELLIO_BRAND.md and build me a..."
+> "Reference brand/SCAFFLD_BRAND.md and build me a..."
 
 ---
 
@@ -64,7 +64,7 @@ Or when prompting Claude Code, just say:
 ### Primary
 ```
   ┌─────────────────────────┐
-  │   TRELLIO TEAL          │
+  │   SCAFFLD TEAL          │
   │   #0EA5A0               │  ← CTAs, links, identity
   └─────────────────────────┘
   ┌─────────────────────────┐
@@ -154,10 +154,10 @@ Label:    0.65rem  / tracking: 0.2em   / leading: 1.2  / UPPERCASE
 |-----------------|----------------|----------------------------|
 | Dark (Midnight) | White           | Teal + Coral + Amber nodes |
 | Light (Cream)   | Midnight        | Teal + Coral + Amber nodes |
-| Trellio Teal    | White           | All white                  |
+| Scaffld Teal    | White           | All white                  |
 
 ### Rules
-- Wordmark is always **lowercase**: `trellio`
+- Wordmark is always **lowercase**: `scaffld`
 - Icon always appears **left** of wordmark
 - Minimum clear space = height of the letter "t"
 - Never rotate, distort, or recolor the icon beyond defined variations
@@ -201,13 +201,13 @@ A sharp, experienced business partner who's been in the field.
 ### In Tailwind Projects
 ```js
 // tailwind.config.js
-const trellioTheme = require('./brand/tailwind.config.js');
+const scaffldTheme = require('./brand/tailwind.config.js');
 
 module.exports = {
   content: ['./src/**/*.{js,ts,jsx,tsx,html}'],
   theme: {
     extend: {
-      ...trellioTheme.theme.extend,
+      ...scaffldTheme.theme.extend,
     },
   },
 };
@@ -228,18 +228,18 @@ const fontPrimary = tokens.typography.fonts.primary; // 'DM Sans, ...'
 Add this line to your existing `CLAUDE.md` in the project root:
 
 ```markdown
-For all UI, design, and frontend work, follow the brand system defined in brand/TRELLIO_BRAND.md
+For all UI, design, and frontend work, follow the brand system defined in brand/SCAFFLD_BRAND.md
 ```
 
 Or reference it directly when prompting:
 
 ```
-> Reference brand/TRELLIO_BRAND.md and build me a dashboard page
-> Using the Trellio brand in brand/TRELLIO_BRAND.md, create a login component
+> Reference brand/SCAFFLD_BRAND.md and build me a dashboard page
+> Using the Scaffld brand in brand/SCAFFLD_BRAND.md, create a login component
 ```
 
-The `TRELLIO_BRAND.md` file contains the complete brand specification — colors, typography, logo, voice, component patterns — so Claude Code will generate on-brand UI every time.
+The `SCAFFLD_BRAND.md` file contains the complete brand specification — colors, typography, logo, voice, component patterns — so Claude Code will generate on-brand UI every time.
 
 ---
 
-*Trellio Brand Kit — 2026 — Confidential*
+*Scaffld Brand Kit — 2026 — Confidential*

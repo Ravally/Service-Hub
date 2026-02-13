@@ -25,3 +25,6 @@ export { default as ClockIcon } from './ClockIcon';
 export { default as LinkIcon } from './LinkIcon';
 export { default as CreditCardIcon } from './CreditCardIcon';
 export { default as GlobeIcon } from './GlobeIcon';
+export { default as StarIcon } from './StarIcon';
+export { default as MailIcon } from './MailIcon';
+export { default as ShieldIcon } from './ShieldIcon';

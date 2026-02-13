@@ -12,8 +12,8 @@ const KpiCard = ({ title, sub, value, money, delta, deltaText, positive, deltaPo
       <div className="text-3xl font-bold text-slate-100">{value}</div>
       {typeof money === 'string' && <div className="text-xs text-slate-400">{money}</div>}
       {showDelta && (
-        <div className={`inline-flex items-center mt-2 text-xs font-medium ${isPositive ? 'text-trellio-teal' : 'text-signal-coral'}`}>
-          <span className={`inline-block h-2 w-2 rounded-full mr-1 ${isPositive ? 'bg-trellio-teal' : 'bg-signal-coral'}`} />
+        <div className={`inline-flex items-center mt-2 text-xs font-medium ${isPositive ? 'text-scaffld-teal' : 'text-signal-coral'}`}>
+          <span className={`inline-block h-2 w-2 rounded-full mr-1 ${isPositive ? 'bg-scaffld-teal' : 'bg-signal-coral'}`} />
           {deltaLabel}
         </div>
       )}

@@ -29,14 +29,14 @@ export default function JobBillingCard({ job, invoices, statusColors, onCreateIn
         <div className="flex items-center gap-6">
           <h3 className="text-xl font-semibold text-slate-100">Billing</h3>
           <div className="flex items-center gap-4 text-sm font-semibold">
-            <button className={`${billingTab === 'billing' ? 'text-trellio-teal border-b-2 border-green-700' : 'text-slate-400'} pb-1`} onClick={() => setBillingTab('billing')}>Billing</button>
-            <button className={`${billingTab === 'reminders' ? 'text-trellio-teal border-b-2 border-green-700' : 'text-slate-400'} pb-1`} onClick={() => setBillingTab('reminders')}>Invoicing Reminders</button>
+            <button className={`${billingTab === 'billing' ? 'text-scaffld-teal border-b-2 border-green-700' : 'text-slate-400'} pb-1`} onClick={() => setBillingTab('billing')}>Billing</button>
+            <button className={`${billingTab === 'reminders' ? 'text-scaffld-teal border-b-2 border-green-700' : 'text-slate-400'} pb-1`} onClick={() => setBillingTab('reminders')}>Invoicing Reminders</button>
           </div>
         </div>
         {billingTab === 'billing' ? (
-          <button onClick={() => onCreateInvoice && onCreateInvoice(job)} className="px-3 py-1.5 rounded-md border border-slate-700/30 text-sm font-semibold text-trellio-teal hover:bg-green-50">New Invoice</button>
+          <button onClick={() => onCreateInvoice && onCreateInvoice(job)} className="px-3 py-1.5 rounded-md border border-slate-700/30 text-sm font-semibold text-scaffld-teal hover:bg-green-50">New Invoice</button>
         ) : (
-          <button onClick={() => setShowReminderForm((v) => !v)} className="px-3 py-1.5 rounded-md border border-slate-700/30 text-sm font-semibold text-trellio-teal hover:bg-green-50">{showReminderForm ? 'Cancel' : 'New Reminder'}</button>
+          <button onClick={() => setShowReminderForm((v) => !v)} className="px-3 py-1.5 rounded-md border border-slate-700/30 text-sm font-semibold text-scaffld-teal hover:bg-green-50">{showReminderForm ? 'Cancel' : 'New Reminder'}</button>
         )}
       </div>
 
@@ -48,7 +48,7 @@ export default function JobBillingCard({ job, invoices, statusColors, onCreateIn
               <input value={reminderDraft.rule} onChange={(e) => setReminderDraft({ ...reminderDraft, rule: e.target.value })} placeholder="Rule (e.g., every 2 visits)" className="px-3 py-2 border border-slate-700 rounded-md" />
               <input type="date" value={reminderDraft.nextDate} onChange={(e) => setReminderDraft({ ...reminderDraft, nextDate: e.target.value })} className="px-3 py-2 border border-slate-700 rounded-md" />
               <div className="flex justify-end">
-                <button onClick={handleAddReminder} className="px-4 py-2 bg-trellio-teal text-white rounded-md text-sm font-semibold hover:bg-trellio-teal/90">Add Reminder</button>
+                <button onClick={handleAddReminder} className="px-4 py-2 bg-scaffld-teal text-white rounded-md text-sm font-semibold hover:bg-scaffld-teal/90">Add Reminder</button>
               </div>
             </div>
           )}

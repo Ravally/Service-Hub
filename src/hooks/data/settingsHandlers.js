@@ -38,7 +38,7 @@ import { generateQuoteSMSLink } from '../../utils';
 export function createSettingsHandlers(deps) {
   const {
     userId,
-    clients,
+    clients, notifications,
     companySettings, setCompanySettings,
     invoiceSettings, setInvoiceSettings,
     emailTemplates, setEmailTemplates,
@@ -73,7 +73,10 @@ export function createSettingsHandlers(deps) {
       await addDoc(collection(db, `users/${userId}/notifications`), {
         message: `Sent invoice ${invoice.invoiceNumber || invoice.id.substring(0,8)} to ${client.email}`,
         createdAt: new Date().toISOString(),
-        read: false
+        read: false,
+        type: 'invoice_sent',
+        invoiceId: invoice.id,
+        clientId: invoice.clientId,
       });
 
       // Log audit
@@ -122,7 +125,10 @@ export function createSettingsHandlers(deps) {
       await addDoc(collection(db, `users/${userId}/notifications`), {
         message: `Sent quote ${quote.quoteNumber || quote.id.substring(0,8)} to ${client.email}`,
         createdAt: new Date().toISOString(),
-        read: false
+        read: false,
+        type: 'quote_sent',
+        quoteId: quote.id,
+        clientId: quote.clientId,
       });
 
       // Log audit
@@ -180,7 +186,10 @@ export function createSettingsHandlers(deps) {
       await addDoc(collection(db, `users/${userId}/notifications`), {
         message: `Opened SMS to send quote ${quote.quoteNumber || quote.id.substring(0,8)} to ${client.phone}`,
         createdAt: new Date().toISOString(),
-        read: false
+        read: false,
+        type: 'quote_sms',
+        quoteId: quote.id,
+        clientId: quote.clientId,
       });
 
       // Open SMS app
@@ -194,6 +203,30 @@ export function createSettingsHandlers(deps) {
   const handleMarkNotificationAsRead = async (id) => {
     if (!db || !userId) return;
     await updateDoc(doc(db, `users/${userId}/notifications`, id), { read: true });
+  };
+
+  const handleMarkAllNotificationsRead = async () => {
+    if (!db || !userId) return;
+    try {
+      const unread = (notifications || []).filter(n => !n.read);
+      await Promise.all(
+        unread.map(n => updateDoc(doc(db, `users/${userId}/notifications`, n.id), { read: true }))
+      );
+    } catch (error) {
+      console.error('Failed to mark all notifications as read:', error);
+    }
+  };
+
+  const handleClearReadNotifications = async () => {
+    if (!db || !userId) return;
+    try {
+      const read = (notifications || []).filter(n => n.read);
+      await Promise.all(
+        read.map(n => deleteDoc(doc(db, `users/${userId}/notifications`, n.id)))
+      );
+    } catch (error) {
+      console.error('Failed to clear notifications:', error);
+    }
   };
 
   // --- Settings Handlers ---
@@ -255,12 +288,76 @@ export function createSettingsHandlers(deps) {
     alert('Email templates saved');
   };
 
+  // --- Accounting Integration Handlers ---
+
+  const handleConnectAccounting = async (provider) => {
+    try {
+      const initOAuth = httpsCallable(functions, 'initiateAccountingOAuth');
+      const { data } = await initOAuth({ provider });
+      window.open(data.url, '_blank', 'width=600,height=700');
+    } catch (error) {
+      console.error('Failed to initiate OAuth:', error);
+      alert(`Failed to connect to ${provider}: ${error.message}`);
+    }
+  };
+
+  const handleDisconnectAccounting = async (provider) => {
+    if (!window.confirm(`Disconnect ${provider}? Sync history will be preserved.`)) return;
+    try {
+      const disconnect = httpsCallable(functions, 'disconnectAccounting');
+      await disconnect({ provider });
+      setCompanySettings(prev => ({
+        ...prev,
+        integrations: {
+          ...prev.integrations,
+          [provider]: { ...(prev.integrations?.[provider] || {}), connected: false, companyName: '', organizationName: '' },
+        },
+      }));
+      alert(`Disconnected from ${provider} successfully.`);
+    } catch (error) {
+      console.error('Failed to disconnect:', error);
+      alert(`Failed to disconnect: ${error.message}`);
+    }
+  };
+
+  const handleSyncNow = async (provider) => {
+    try {
+      alert(`Syncing with ${provider}...`);
+      const syncAll = httpsCallable(functions, 'syncAllToAccounting');
+      const { data } = await syncAll({ provider });
+      setCompanySettings(prev => ({
+        ...prev,
+        integrations: {
+          ...prev.integrations,
+          [provider]: { ...(prev.integrations?.[provider] || {}), lastSyncAt: new Date().toISOString() },
+        },
+      }));
+      alert(`Sync complete: ${data.synced} invoice(s) synced, ${data.errors} error(s).`);
+    } catch (error) {
+      console.error('Sync failed:', error);
+      alert(`Sync failed: ${error.message}`);
+    }
+  };
+
+  const handleSyncInvoice = async (invoiceId) => {
+    try {
+      const syncOne = httpsCallable(functions, 'syncToAccounting');
+      await syncOne({ invoiceId });
+      alert('Invoice synced to accounting successfully.');
+    } catch (error) {
+      console.error('Invoice sync failed:', error);
+      alert(`Sync failed: ${error.message}`);
+    }
+  };
+
   return {
     // Email/Notification handlers
     handleSendInvoice,
     handleSendQuote,
     handleSendQuoteText,
     handleMarkNotificationAsRead,
+    handleMarkAllNotificationsRead,
+    handleClearReadNotifications,
 
     // Settings handlers
     handleInviteUser,
@@ -269,5 +366,11 @@ export function createSettingsHandlers(deps) {
     handleSaveSettings,
     handleSaveInvoiceSettings,
     handleSaveEmailTemplates,
+
+    // Accounting integration handlers
+    handleConnectAccounting,
+    handleDisconnectAccounting,
+    handleSyncNow,
+    handleSyncInvoice,
   };
 }

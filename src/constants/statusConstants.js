@@ -35,21 +35,21 @@ export const CLIENT_STATUSES = [
 ];
 
 /**
- * Status color mappings for consistent UI - Trellio Dark Mode
+ * Status color mappings for consistent UI - Scaffld Dark Mode
  */
 export const STATUS_COLORS = {
   // Quote statuses
   Draft: 'bg-charcoal text-harvest-amber border border-harvest-amber/20',
   Sent: 'bg-charcoal text-blue-400 border border-blue-400/20',
   'Awaiting Approval': 'bg-charcoal text-harvest-amber border border-harvest-amber/30',
-  Approved: 'bg-trellio-teal/10 text-trellio-teal border border-trellio-teal/30',
+  Approved: 'bg-scaffld-teal/10 text-scaffld-teal border border-scaffld-teal/30',
   Converted: 'bg-purple-500/10 text-purple-400 border border-purple-400/20',
   Archived: 'bg-charcoal text-slate-500 border border-slate-700/30',
 
   // Invoice statuses
   Unpaid: 'bg-charcoal text-harvest-amber border border-harvest-amber/30',
   'Partially Paid': 'bg-blue-500/10 text-blue-400 border border-blue-400/20',
-  Paid: 'bg-trellio-teal/10 text-trellio-teal border border-trellio-teal/30',
+  Paid: 'bg-scaffld-teal/10 text-scaffld-teal border border-scaffld-teal/30',
   Overdue: 'bg-signal-coral/10 text-signal-coral border border-signal-coral/30',
   Void: 'bg-charcoal text-slate-500 border border-slate-700/30',
 
@@ -57,12 +57,19 @@ export const STATUS_COLORS = {
   Unscheduled: 'bg-charcoal text-slate-400 border border-slate-700/30',
   Scheduled: 'bg-blue-500/10 text-blue-400 border border-blue-400/20',
   'In Progress': 'bg-harvest-amber/10 text-harvest-amber border border-harvest-amber/30',
-  Completed: 'bg-trellio-teal/10 text-trellio-teal border border-trellio-teal/30',
+  Completed: 'bg-scaffld-teal/10 text-scaffld-teal border border-scaffld-teal/30',
 
   // Client statuses
-  Active: 'bg-trellio-teal/10 text-trellio-teal border border-trellio-teal/30',
+  Active: 'bg-scaffld-teal/10 text-scaffld-teal border border-scaffld-teal/30',
   Inactive: 'bg-charcoal text-slate-500 border border-slate-700/30',
   Lead: 'bg-blue-500/10 text-blue-400 border border-blue-400/20',
+
+  // Booking statuses
+  'Pending Approval': 'bg-harvest-amber/10 text-harvest-amber border border-harvest-amber/30',
+
+  // Campaign statuses
+  Sending: 'bg-harvest-amber/10 text-harvest-amber border border-harvest-amber/30',
+  Failed: 'bg-signal-coral/10 text-signal-coral border border-signal-coral/30',
 
   // Payment method statuses
   'Awaiting Payment: Past Due': 'bg-signal-coral/10 text-signal-coral border border-signal-coral/30',

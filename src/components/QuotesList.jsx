@@ -3,8 +3,10 @@ import React, { useMemo, useState } from 'react';
 import { STATUS_COLORS } from '../constants/statusConstants';
 import { formatCurrency } from '../utils';
 import { periodRange, getPreviousRange, rangeLabel } from '../utils/dateUtils';
+import { useBulkSelection } from '../hooks/ui';
 
 import KpiCard from './common/KpiCard';
+import BulkActionBar from './common/BulkActionBar';
 import Pill from './common/Pill';
 
 const Menu = ({ open, onClose, children }) => (
@@ -240,16 +242,11 @@ export default function QuotesList({
   }, [enhanced, jobs, period, custom]);
 
   // Selection / bulk actions
-  const [selected, setSelected] = useState(new Set());
-  const allChecked = filtered.length>0 && selected.size === filtered.length;
-  const toggleAll = () => {
-    if (allChecked) setSelected(new Set()); else setSelected(new Set(filtered.map(q=>q.id)));
-  };
-  const toggleOne = (id) => setSelected(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
-  const clearSel = () => setSelected(new Set());
-
-  const bulkArchive = () => { if (onArchiveQuotes) onArchiveQuotes(Array.from(selected)); clearSel(); };
-  const bulkDelete = () => { if (onDeleteQuotes) onDeleteQuotes(Array.from(selected)); clearSel(); };
+  const { selected, allChecked, toggleAll, toggleOne, clearSelection } = useBulkSelection(filtered);
+  const bulkActions = [
+    { label: 'Archive', onClick: () => { onArchiveQuotes?.(Array.from(selected)); clearSelection(); } },
+    { label: 'Delete', onClick: () => { onDeleteQuotes?.(Array.from(selected)); clearSelection(); }, variant: 'danger' },
+  ];
 
   const toggleSort = (key) => { if (sortBy === key) setSortDir(d => d==='asc'?'desc':'asc'); else { setSortBy(key); setSortDir('asc'); } };
 
@@ -266,7 +263,7 @@ export default function QuotesList({
       {/* Header */}
       <div className="mb-6 flex items-center justify-between">
         <h2 className="text-3xl font-bold font-display text-slate-100">Quotes</h2>
-        <button onClick={onNewQuoteClick} className="px-4 py-2 rounded-md bg-trellio-teal text-white font-semibold hover:bg-trellio-teal-deep transition-colors">New Quote</button>
+        <button onClick={onNewQuoteClick} className="px-4 py-2 rounded-md bg-scaffld-teal text-white font-semibold hover:bg-scaffld-teal-deep transition-colors">New Quote</button>
       </div>
 
       {/* KPI cards */}
@@ -276,7 +273,7 @@ export default function QuotesList({
           <div className="space-y-2 text-sm text-slate-100">
             {statuses.slice(0,4).map(s => (
               <div key={s} className="flex items-center justify-between">
-                <div className="flex items-center gap-2"><span className={`h-2 w-2 rounded-full ${s==='Draft'?'bg-harvest-amber': s==='Awaiting Response'?'bg-yellow-500': s==='Changes Requested'?'bg-amber-600': s==='Approved'?'bg-trellio-teal':'bg-slate-500'}`}></span>{s}</div>
+                <div className="flex items-center gap-2"><span className={`h-2 w-2 rounded-full ${s==='Draft'?'bg-harvest-amber': s==='Awaiting Response'?'bg-yellow-500': s==='Changes Requested'?'bg-amber-600': s==='Approved'?'bg-scaffld-teal':'bg-slate-500'}`}></span>{s}</div>
                 <div className="text-slate-100 font-semibold">{kpis.counts[s]||0}</div>
               </div>
             ))}
@@ -298,7 +295,7 @@ export default function QuotesList({
                   value={statusSearch}
                   onChange={(e)=>setStatusSearch(e.target.value)}
                   placeholder="Search status"
-                  className="w-full px-2 py-1 bg-midnight border border-slate-700 text-slate-100 placeholder-slate-500 rounded mb-2 text-sm focus:border-trellio-teal focus:ring-2 focus:ring-trellio-teal/20"
+                  className="w-full px-2 py-1 bg-midnight border border-slate-700 text-slate-100 placeholder-slate-500 rounded mb-2 text-sm focus:border-scaffld-teal focus:ring-2 focus:ring-scaffld-teal/20"
                 />
                 <button
                   type="button"
@@ -326,7 +323,7 @@ export default function QuotesList({
             )}
           </div>
           {/* Simplified popovers: small inline controls for now */}
-          <select value={period} onChange={(e)=>setPeriod(e.target.value)} className="px-3 py-1.5 rounded-full bg-charcoal text-slate-100 text-sm border border-slate-700 focus:border-trellio-teal focus:ring-2 focus:ring-trellio-teal/20">
+          <select value={period} onChange={(e)=>setPeriod(e.target.value)} className="px-3 py-1.5 rounded-full bg-charcoal text-slate-100 text-sm border border-slate-700 focus:border-scaffld-teal focus:ring-2 focus:ring-scaffld-teal/20">
             <option value="all">All</option>
             <option value="last_week">Last week</option>
             <option value="last_30">Last 30 days</option>
@@ -337,28 +334,21 @@ export default function QuotesList({
           </select>
           {period==='custom' && (
             <span className="text-xs text-slate-400">
-              <input type="date" className="bg-midnight border border-slate-700 text-slate-100 px-2 py-1 rounded mr-1 focus:border-trellio-teal focus:ring-2 focus:ring-trellio-teal/20" value={custom.start} onChange={(e)=>setCustom(c=>({...c,start:e.target.value}))}/>
-              <input type="date" className="bg-midnight border border-slate-700 text-slate-100 px-2 py-1 rounded focus:border-trellio-teal focus:ring-2 focus:ring-trellio-teal/20" value={custom.end} onChange={(e)=>setCustom(c=>({...c,end:e.target.value}))}/>
+              <input type="date" className="bg-midnight border border-slate-700 text-slate-100 px-2 py-1 rounded mr-1 focus:border-scaffld-teal focus:ring-2 focus:ring-scaffld-teal/20" value={custom.start} onChange={(e)=>setCustom(c=>({...c,start:e.target.value}))}/>
+              <input type="date" className="bg-midnight border border-slate-700 text-slate-100 px-2 py-1 rounded focus:border-scaffld-teal focus:ring-2 focus:ring-scaffld-teal/20" value={custom.end} onChange={(e)=>setCustom(c=>({...c,end:e.target.value}))}/>
             </span>
           )}
-          <select value={sales} onChange={(e)=>setSales(e.target.value)} className="px-3 py-1.5 rounded-full bg-charcoal text-slate-100 text-sm border border-slate-700 focus:border-trellio-teal focus:ring-2 focus:ring-trellio-teal/20">
+          <select value={sales} onChange={(e)=>setSales(e.target.value)} className="px-3 py-1.5 rounded-full bg-charcoal text-slate-100 text-sm border border-slate-700 focus:border-scaffld-teal focus:ring-2 focus:ring-scaffld-teal/20">
             <option value="">Salesperson | All</option>
             {salesOptions.map(s => <option key={s} value={s}>{s}</option>)}
           </select>
         </div>
-        <input value={search} onChange={(e)=>setSearch(e.target.value)} placeholder="Search quotes..." className="px-3 py-2 bg-midnight border border-slate-700 text-slate-100 placeholder-slate-500 rounded-md text-sm w-72 focus:border-trellio-teal focus:ring-2 focus:ring-trellio-teal/20"/>
+        <input value={search} onChange={(e)=>setSearch(e.target.value)} placeholder="Search quotes..." className="px-3 py-2 bg-midnight border border-slate-700 text-slate-100 placeholder-slate-500 rounded-md text-sm w-72 focus:border-scaffld-teal focus:ring-2 focus:ring-scaffld-teal/20"/>
       </div>
 
       <div className="text-sm text-slate-100 mb-2">{(statusFilter.length || sales || (period !== 'all') || search) ? 'Filtered quotes' : 'All quotes'} ({filtered.length} results)</div>
 
-      {selected.size > 0 && (
-        <div className="mb-2 flex items-center gap-3 text-sm">
-          <span className="text-trellio-teal font-semibold">{selected.size} selected</span>
-          <button className="text-trellio-teal hover:underline" onClick={clearSel}>Deselect All</button>
-          <button title="Bulk Archive" className="px-2 py-1 rounded-md border border-slate-700 bg-charcoal text-slate-100 hover:bg-slate-dark transition-colors" onClick={bulkArchive}>Bulk Archive</button>
-          <button title="Bulk Delete" className="px-2 py-1 rounded-md border border-signal-coral bg-charcoal text-signal-coral hover:bg-signal-coral hover:text-white transition-colors" onClick={bulkDelete}>Bulk Delete</button>
-        </div>
-      )}
+      <BulkActionBar selectedCount={selected.size} onDeselectAll={clearSelection} actions={bulkActions} />
 
       {/* Table */}
       <div className="bg-charcoal rounded-xl shadow-lg border border-slate-700/30 overflow-visible min-h-[calc(100vh-26rem)]">
@@ -368,23 +358,23 @@ export default function QuotesList({
           <table className="w-full">
             <thead className="bg-midnight text-sm border-b border-slate-700">
               <tr>
-                <th className="p-3 w-10 text-center align-middle"><input className="h-4 w-4 align-middle" type="checkbox" checked={allChecked} onChange={toggleAll} /></th>
-                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-trellio-teal transition-colors" onClick={()=>toggleSort('client')}>Client{sortBy==='client' && (sortDir==='asc'?' ▲':' ▼')}</th>
-                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-trellio-teal transition-colors" onClick={()=>toggleSort('quoteNumber')}>Quote number{sortBy==='quoteNumber' && (sortDir==='asc'?' ▲':' ▼')}</th>
-                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-trellio-teal transition-colors" onClick={()=>toggleSort('property')}>Property{sortBy==='property' && (sortDir==='asc'?' ▲':' ▼')}</th>
-                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-trellio-teal transition-colors" onClick={()=>toggleSort('createdAt')}>Created{sortBy==='createdAt' && (sortDir==='asc'?' ▲':' ▼')}</th>
-                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-trellio-teal transition-colors" onClick={()=>toggleSort('status')}>Status{sortBy==='status' && (sortDir==='asc'?' ▲':' ▼')}</th>
-                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-trellio-teal transition-colors" onClick={()=>toggleSort('total')}>Total{sortBy==='total' && (sortDir==='asc'?' ▲':' ▼')}</th>
+                <th className="p-3 w-10"><input type="checkbox" checked={allChecked} onChange={toggleAll} className="accent-scaffld-teal" /></th>
+                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-scaffld-teal transition-colors" onClick={()=>toggleSort('client')}>Client{sortBy==='client' && (sortDir==='asc'?' ▲':' ▼')}</th>
+                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-scaffld-teal transition-colors" onClick={()=>toggleSort('quoteNumber')}>Quote number{sortBy==='quoteNumber' && (sortDir==='asc'?' ▲':' ▼')}</th>
+                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-scaffld-teal transition-colors" onClick={()=>toggleSort('property')}>Property{sortBy==='property' && (sortDir==='asc'?' ▲':' ▼')}</th>
+                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-scaffld-teal transition-colors" onClick={()=>toggleSort('createdAt')}>Created{sortBy==='createdAt' && (sortDir==='asc'?' ▲':' ▼')}</th>
+                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-scaffld-teal transition-colors" onClick={()=>toggleSort('status')}>Status{sortBy==='status' && (sortDir==='asc'?' ▲':' ▼')}</th>
+                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-scaffld-teal transition-colors" onClick={()=>toggleSort('total')}>Total{sortBy==='total' && (sortDir==='asc'?' ▲':' ▼')}</th>
                 <th className="p-3 w-12"></th>
               </tr>
             </thead>
             <tbody className="text-sm">
               {filtered.map(q => (
                 <tr key={q.id} className="border-t border-slate-700/30 hover:bg-slate-dark/50 transition-colors">
-                  <td className="p-3 w-10 text-center align-middle"><input className="h-4 w-4 align-middle" type="checkbox" checked={selected.has(q.id)} onChange={()=>toggleOne(q.id)} /></td>
-                  <td className="p-3"><button onClick={()=>onOpenQuote && onOpenQuote(q)} className="font-semibold text-trellio-teal hover:underline">{q._clientName}</button></td>
+                  <td className="p-3" onClick={(e) => e.stopPropagation()}><input type="checkbox" checked={selected.has(q.id)} onChange={() => toggleOne(q.id)} className="accent-scaffld-teal" /></td>
+                  <td className="p-3"><button onClick={()=>onOpenQuote && onOpenQuote(q)} className="font-semibold text-scaffld-teal hover:underline">{q._clientName}</button></td>
                   <td className="p-3">
-                    <button onClick={()=>onOpenQuote && onOpenQuote(q)} className="font-semibold text-trellio-teal hover:underline">
+                    <button onClick={()=>onOpenQuote && onOpenQuote(q)} className="font-semibold text-scaffld-teal hover:underline">
                       {q.quoteNumber || `#${(q.id||'').slice(0,6)}`}
                     </button>
                     {q.title ? <div className="text-xs text-slate-400">{q.title}</div> : null}

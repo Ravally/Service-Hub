@@ -1,8 +1,9 @@
-import { collection, addDoc, doc, updateDoc, runTransaction } from 'firebase/firestore';
+import { collection, addDoc, doc, updateDoc, deleteDoc, runTransaction } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../../firebase/config';
 import { initialJobState, initialInvoiceSettings } from '../../constants';
 import { padNumber } from './handlerUtils';
+import { computeJobTotalValue } from '../../utils/calculations';
 
 /**
  * Creates job-related handler functions.
@@ -33,6 +34,7 @@ export function createJobHandlers(deps) {
     buildPropertySnapshot,
     getClientNameById,
     createInvoiceFromJob,
+    triggerReviewRequest,
   } = deps;
 
   const handleAddJob = async (e) => {
@@ -66,11 +68,17 @@ export function createJobHandlers(deps) {
     if (!db || !userId) return;
     await updateDoc(doc(db, `users/${userId}/jobs`, job.id), { status: newStatus });
     await logAudit('status_change', 'job', job.id, { from: job.status, to: newStatus });
-    if (newStatus === 'Completed') createInvoiceFromJob(job);
+    if (newStatus === 'Completed') {
+      createInvoiceFromJob(job);
+      if (triggerReviewRequest) triggerReviewRequest(job);
+    }
   };
 
   const handleUpdateJobDetails = async (jobId, details) => {
     if (!db || !userId) return;
+    if (details.lineItems) {
+      details.totalValue = computeJobTotalValue({ lineItems: details.lineItems });
+    }
     await updateDoc(doc(db, `users/${userId}/jobs`, jobId), details);
   };
 
@@ -108,6 +116,32 @@ export function createJobHandlers(deps) {
     });
   };
 
+  const handleBulkUpdateJobStatus = async (ids = [], newStatus) => {
+    if (!db || !userId || !Array.isArray(ids) || ids.length === 0 || !newStatus) return;
+    try {
+      await Promise.all(ids.map(id =>
+        updateDoc(doc(db, `users/${userId}/jobs`, id), { status: newStatus })
+      ));
+    } catch (e) { console.error('Bulk update job status error', e); }
+  };
+
+  const handleBulkArchiveJobs = async (ids = []) => {
+    if (!db || !userId || !Array.isArray(ids) || ids.length === 0) return;
+    try {
+      await Promise.all(ids.map(id =>
+        updateDoc(doc(db, `users/${userId}/jobs`, id), { archived: true, status: 'Archived' })
+      ));
+    } catch (e) { console.error('Bulk archive jobs error', e); }
+  };
+
+  const handleBulkDeleteJobs = async (ids = []) => {
+    if (!db || !userId || !Array.isArray(ids) || ids.length === 0) return;
+    if (!window.confirm(`Delete ${ids.length} job(s)? This cannot be undone.`)) return;
+    try {
+      await Promise.all(ids.map(id => deleteDoc(doc(db, `users/${userId}/jobs`, id))));
+    } catch (e) { console.error('Bulk delete jobs error', e); }
+  };
+
   return {
     handleAddJob,
     handleUpdateJobStatus,
@@ -115,5 +149,8 @@ export function createJobHandlers(deps) {
     handleUploadJobAttachment,
     handleRemoveJobAttachment,
     toggleNewJobAssignee,
+    handleBulkUpdateJobStatus,
+    handleBulkArchiveJobs,
+    handleBulkDeleteJobs,
   };
 }

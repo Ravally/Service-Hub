@@ -456,8 +456,8 @@ See [Phase 2 Documentation](PHASE_2_IN_PROGRESS.md) for current development stat
 ## References
 
 - Full feature documentation: `../PHASE1-FEATURES.md` (archived)
-- Architecture guide: `../TRELLIO_ARCHITECTURE.md`
-- Master roadmap: `../TRELLIO_MASTER_ROADMAP.md`
+- Architecture guide: `../SCAFFLD_ARCHITECTURE.md`
+- Master roadmap: `../SCAFFLD_MASTER_ROADMAP.md`
 
 ---
 

@@ -1,5 +1,6 @@
 // src/components/JobsBoard.jsx
 import React, { useMemo, useState, useEffect } from 'react';
+import { hasPermission } from '../utils';
 
 const JobsBoard = ({ jobs = [], clients = [], staff = [], onOpenJob, onStatusChange, userRole }) => {
   const [search, setSearch] = useState('');
@@ -144,7 +145,7 @@ const JobsBoard = ({ jobs = [], clients = [], staff = [], onOpenJob, onStatusCha
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                       job.status === 'Scheduled' ? 'bg-indigo-100 text-indigo-800' : job.status === 'In Progress' ? 'bg-yellow-100 text-yellow-800' : job.status === 'Completed' ? 'bg-green-100 text-green-800' : 'bg-midnight text-slate-200'
                     }`}>{job.status}</span>
-                    <select value={job.status} onChange={(e) => onStatusChange && onStatusChange(job, e.target.value)} disabled={!(userRole === 'admin' || userRole === 'manager')} className={`p-1 border rounded-md shadow-sm text-xs ${ (userRole === 'admin' || userRole === 'manager') ? 'border-slate-700' : 'border-slate-700/30 bg-midnight/60 text-slate-500 cursor-not-allowed' }`}>
+                    <select value={job.status} onChange={(e) => onStatusChange && onStatusChange(job, e.target.value)} disabled={!hasPermission(userRole, 'edit.job.status')} className={`p-1 border rounded-md shadow-sm text-xs ${ hasPermission(userRole, 'edit.job.status') ? 'border-slate-700' : 'border-slate-700/30 bg-midnight/60 text-slate-500 cursor-not-allowed' }`}>
                       <option disabled>Change status...</option>
                       {['Unscheduled','Scheduled','In Progress','Completed'].map(s => <option key={s} value={s}>{s}</option>)}
                     </select>

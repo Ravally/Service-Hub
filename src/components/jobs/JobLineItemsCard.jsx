@@ -29,7 +29,7 @@ export default function JobLineItemsCard({ job, quote, lineItems, totalPrice, ca
             <div className="text-xs text-slate-400 mt-1">
               From{" "}
               {onOpenQuote ? (
-                <button onClick={() => onOpenQuote(quote)} className="text-trellio-teal font-semibold hover:underline">{quote.quoteNumber}</button>
+                <button onClick={() => onOpenQuote(quote)} className="text-scaffld-teal font-semibold hover:underline">{quote.quoteNumber}</button>
               ) : (
                 <span className="text-slate-100 font-semibold">{quote.quoteNumber}</span>
               )}
@@ -37,7 +37,7 @@ export default function JobLineItemsCard({ job, quote, lineItems, totalPrice, ca
           )}
         </div>
         {canEditLineItems && (
-          <button onClick={() => setShowForm((v) => !v)} className="px-3 py-1.5 rounded-md border border-slate-700/30 text-sm font-semibold text-trellio-teal hover:bg-green-50">
+          <button onClick={() => setShowForm((v) => !v)} className="px-3 py-1.5 rounded-md border border-slate-700/30 text-sm font-semibold text-scaffld-teal hover:bg-green-50">
             {showForm ? 'Cancel' : 'New Line Item'}
           </button>
         )}
@@ -50,7 +50,7 @@ export default function JobLineItemsCard({ job, quote, lineItems, totalPrice, ca
           <input type="number" min="0" value={draft.unitCost} onChange={(e) => setDraft({ ...draft, unitCost: e.target.value })} placeholder="Unit cost" className="px-3 py-2 border border-slate-700 rounded-md" />
           <input value={draft.note} onChange={(e) => setDraft({ ...draft, note: e.target.value })} placeholder="Notes" className="md:col-span-3 px-3 py-2 border border-slate-700 rounded-md" />
           <div className="md:col-span-2 flex justify-end">
-            <button onClick={handleAdd} className="px-4 py-2 bg-trellio-teal text-white rounded-md text-sm font-semibold hover:bg-trellio-teal/90">Add Line Item</button>
+            <button onClick={handleAdd} className="px-4 py-2 bg-scaffld-teal text-white rounded-md text-sm font-semibold hover:bg-scaffld-teal/90">Add Line Item</button>
           </div>
         </div>
       )}
@@ -70,7 +70,7 @@ export default function JobLineItemsCard({ job, quote, lineItems, totalPrice, ca
             {lineItems.map((item, idx) => (
               <tr key={`${item.description}-${idx}`} className="border-b last:border-b-0">
                 <td className="py-3">
-                  <div className="font-semibold text-trellio-teal">{item.description || 'Line item'}</div>
+                  <div className="font-semibold text-scaffld-teal">{item.description || 'Line item'}</div>
                   {item.note && <div className="text-xs text-slate-400">{item.note}</div>}
                 </td>
                 <td className="py-3 text-right">{item.qty || 0}</td>

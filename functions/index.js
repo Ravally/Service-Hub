@@ -15,6 +15,8 @@ const Stripe = require('stripe');
 require('dotenv').config();
 
 const emailService = require('./src/services/emailService');
+const quickbooksService = require('./src/services/quickbooksService');
+const xeroService = require('./src/services/xeroService');
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -78,6 +80,79 @@ app.post('/createCheckoutSession', async (req, res) => {
   }
 });
 
+// HTTPS function: POST /createDepositCheckoutSession { uid, quoteId, depositAmount, successUrl, cancelUrl, currency }
+app.post('/createDepositCheckoutSession', async (req, res) => {
+  try {
+    const { uid, quoteId, depositAmount, successUrl, cancelUrl, currency = 'usd' } = req.body || {};
+    if (!uid || !quoteId) return res.status(400).json({ error: 'uid and quoteId are required' });
+    if (!depositAmount || depositAmount <= 0) return res.status(400).json({ error: 'depositAmount must be positive' });
+
+    const quoteSnap = await db.doc(`users/${uid}/quotes/${quoteId}`).get();
+    if (!quoteSnap.exists) return res.status(404).json({ error: 'Quote not found' });
+    const quote = quoteSnap.data();
+
+    const session = await stripe.checkout.sessions.create({
+      mode: 'payment',
+      currency,
+      line_items: [
+        {
+          quantity: 1,
+          price_data: {
+            currency,
+            unit_amount: depositAmount,
+            product_data: {
+              name: `Deposit for Quote ${quote.quoteNumber || quoteId.substring(0, 8)}`,
+              description: `Deposit payment for quote ${quote.quoteNumber || quoteId}`,
+            },
+          },
+        },
+      ],
+      metadata: { uid, quoteId, type: 'deposit' },
+      success_url: successUrl || 'https://example.com/success',
+      cancel_url: cancelUrl || 'https://example.com/cancel',
+    });
+
+    await db.doc(`users/${uid}/quotes/${quoteId}`).set(
+      { depositStripeSessionId: session.id, depositAmount },
+      { merge: true }
+    );
+
+    return res.json({ url: session.url, id: session.id });
+  } catch (err) {
+    console.error('createDepositCheckoutSession error', err);
+    return res.status(500).json({ error: err.message || 'Internal error' });
+  }
+});
+
+// OAuth callbacks for accounting integrations
+app.get('/quickbooks/callback', async (req, res) => {
+  try {
+    const url = req.url;
+    const state = req.query.state; // userId
+    if (!state) return res.status(400).send('Missing state parameter');
+    await quickbooksService.exchangeCodeForTokens(url, state);
+    const frontendUrl = process.env.FRONTEND_URL || 'https://scaffld.app';
+    res.redirect(`${frontendUrl}?view=settings&connected=quickbooks`);
+  } catch (err) {
+    console.error('QuickBooks OAuth callback error:', err);
+    res.status(500).send('OAuth failed. Please try again.');
+  }
+});
+
+app.get('/xero/callback', async (req, res) => {
+  try {
+    const code = req.query.code;
+    const state = req.query.state; // userId
+    if (!state || !code) return res.status(400).send('Missing parameters');
+    await xeroService.exchangeCodeForTokens(code, state);
+    const frontendUrl = process.env.FRONTEND_URL || 'https://scaffld.app';
+    res.redirect(`${frontendUrl}?view=settings&connected=xero`);
+  } catch (err) {
+    console.error('Xero OAuth callback error:', err);
+    res.status(500).send('OAuth failed. Please try again.');
+  }
+});
+
 // Stripe webhook handler
 const webhookApp = express();
 webhookApp.use(express.raw({ type: 'application/json' }));
@@ -97,8 +172,35 @@ webhookApp.post('/', async (req, res) => {
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object;
       const uid = session.metadata?.uid;
-      const invoiceId = session.metadata?.invoiceId;
       const paidAt = new Date().toISOString();
+
+      // Handle deposit payments
+      if (session.metadata?.type === 'deposit') {
+        const quoteId = session.metadata.quoteId;
+        if (uid && quoteId) {
+          await db.doc(`users/${uid}/quotes/${quoteId}`).set({
+            depositCollected: true,
+            depositCollectedAt: paidAt,
+            depositStripeSessionId: session.id,
+            depositMethod: 'stripe',
+            depositAmount: session.amount_total || 0,
+          }, { merge: true });
+
+          // Create notification for business owner
+          await db.collection(`users/${uid}/notifications`).add({
+            type: 'deposit_collected',
+            title: 'Deposit Collected',
+            message: `Deposit of $${((session.amount_total || 0) / 100).toFixed(2)} collected via Stripe`,
+            quoteId,
+            read: false,
+            createdAt: paidAt,
+          });
+        }
+        return res.json({ received: true });
+      }
+
+      // Handle invoice payments
+      const invoiceId = session.metadata?.invoiceId;
       if (uid && invoiceId) {
         const invRef = db.doc(`users/${uid}/invoices/${invoiceId}`);
         const snap = await invRef.get();
@@ -506,4 +608,430 @@ exports.sendInvoiceEmail = functions
     throw new functions.https.HttpsError('internal', error.message);
   }
 });
+
+/**
+ * Send Booking Confirmation Email
+ * Callable function to send a confirmation email when a booking is created.
+ */
+exports.sendBookingConfirmation = functions
+  .runWith({
+    secrets: ['RESEND_API_KEY', 'SENDGRID_FROM_EMAIL']
+  })
+  .https.onCall(async (data, context) => {
+  try {
+    const { uid, jobId } = data;
+
+    if (!uid || !jobId) {
+      throw new functions.https.HttpsError('invalid-argument', 'Missing required parameters');
+    }
+
+    const jobSnap = await db.doc(`users/${uid}/jobs/${jobId}`).get();
+    if (!jobSnap.exists) {
+      throw new functions.https.HttpsError('not-found', 'Job not found');
+    }
+    const job = { id: jobSnap.id, ...jobSnap.data() };
+    const details = job.bookingDetails || {};
+
+    if (!details.customerEmail) {
+      throw new functions.https.HttpsError('failed-precondition', 'No customer email on booking');
+    }
+
+    const companySnap = await db.doc(`users/${uid}/settings/companyDetails`).get();
+    const company = companySnap.exists ? companySnap.data() : {};
+    const companyName = company.name || 'Our Company';
+
+    const startDate = job.start ? new Date(job.start) : null;
+    const dateStr = startDate
+      ? startDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })
+      : 'TBD';
+    const timeStr = startDate
+      ? startDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
+      : 'TBD';
+
+    // Send confirmation to customer
+    await emailService.sendEmail({
+      to: details.customerEmail,
+      subject: `Booking Confirmed: ${details.serviceName || job.title} on ${dateStr}`,
+      html: `
+        <h2>Hi ${details.customerName || 'there'},</h2>
+        <p>Your booking has been confirmed!</p>
+        <p><strong>Service:</strong> ${details.serviceName || job.title}<br>
+        <strong>Date:</strong> ${dateStr}<br>
+        <strong>Time:</strong> ${timeStr}</p>
+        <p>${company.onlineBooking?.bookingMessage || 'Thank you for booking with us!'}</p>
+        <p>Best regards,<br>${companyName}</p>
+      `,
+    });
+
+    // Notify business owner
+    const ownerSnap = await db.doc(`users/${uid}`).get();
+    const ownerEmail = ownerSnap.exists ? ownerSnap.data().email : null;
+    if (ownerEmail) {
+      await emailService.sendEmail({
+        to: ownerEmail,
+        subject: `New Booking: ${details.serviceName || job.title} from ${details.customerName}`,
+        html: `
+          <h2>New Online Booking</h2>
+          <p><strong>Customer:</strong> ${details.customerName} (${details.customerEmail})</p>
+          <p><strong>Service:</strong> ${details.serviceName || job.title}<br>
+          <strong>Date:</strong> ${dateStr}<br>
+          <strong>Time:</strong> ${timeStr}</p>
+          <p>Job #${job.jobNumber} has been created in your account.</p>
+        `,
+      });
+    }
+
+    return { success: true, message: 'Booking confirmation sent' };
+  } catch (error) {
+    console.error('sendBookingConfirmation error:', error);
+    throw new functions.https.HttpsError('internal', error.message);
+  }
+});
+
+/**
+ * Send Review Request Email
+ * Callable function to send a review request email after job completion.
+ */
+exports.sendReviewRequest = functions
+  .runWith({
+    secrets: ['RESEND_API_KEY', 'SENDGRID_FROM_EMAIL']
+  })
+  .https.onCall(async (data, context) => {
+  try {
+    const { uid, jobId, reviewToken } = data;
+
+    if (!uid || !jobId) {
+      throw new functions.https.HttpsError('invalid-argument', 'Missing uid or jobId');
+    }
+
+    const jobSnap = await db.doc(`users/${uid}/jobs/${jobId}`).get();
+    if (!jobSnap.exists) {
+      throw new functions.https.HttpsError('not-found', 'Job not found');
+    }
+    const job = { id: jobSnap.id, ...jobSnap.data() };
+
+    const clientSnap = job.clientId
+      ? await db.doc(`users/${uid}/clients/${job.clientId}`).get()
+      : null;
+    if (!clientSnap || !clientSnap.exists || !clientSnap.data().email) {
+      throw new functions.https.HttpsError('failed-precondition', 'Client has no email');
+    }
+    const client = clientSnap.data();
+
+    const companySnap = await db.doc(`users/${uid}/settings/companyDetails`).get();
+    const company = companySnap.exists ? companySnap.data() : {};
+    const companyName = company.name || 'Our Company';
+
+    const tplSnap = await db.doc(`users/${uid}/settings/emailTemplates`).get();
+    const templates = tplSnap.exists ? tplSnap.data() : {};
+
+    const token = reviewToken || job.reviewToken || '';
+    const reviewLink = token
+      ? `${company.websiteUrl || 'https://scaffld.app'}?reviewToken=${token}`
+      : '';
+
+    const subject = (templates.reviewRequestSubject || 'How was your experience? — {{companyName}}')
+      .replace(/\{\{companyName\}\}/g, companyName)
+      .replace(/\{\{jobTitle\}\}/g, job.title || 'your service');
+
+    const bodyText = (templates.reviewRequestBody || 'Hi {{clientName}},\n\nPlease leave us a review:\n{{reviewLink}}\n\nThank you!\n{{companyName}}')
+      .replace(/\{\{clientName\}\}/g, client.name || 'there')
+      .replace(/\{\{companyName\}\}/g, companyName)
+      .replace(/\{\{jobTitle\}\}/g, job.title || 'your service')
+      .replace(/\{\{reviewLink\}\}/g, reviewLink);
+
+    const htmlBody = bodyText.split('\n').map(line => line ? `<p>${line}</p>` : '<br>').join('\n');
+
+    await emailService.sendEmail({
+      to: client.email,
+      subject,
+      html: htmlBody,
+    });
+
+    return { success: true, message: 'Review request email sent' };
+  } catch (error) {
+    console.error('sendReviewRequest error:', error);
+    throw new functions.https.HttpsError('internal', error.message);
+  }
+});
+
+/**
+ * Send Email Campaign
+ * Callable function to send a marketing campaign to segmented recipients.
+ */
+exports.sendEmailCampaign = functions
+  .runWith({
+    secrets: ['RESEND_API_KEY', 'SENDGRID_FROM_EMAIL'],
+    timeoutSeconds: 540,
+  })
+  .https.onCall(async (data, context) => {
+  try {
+    const { uid, campaignId } = data;
+    if (!uid || !campaignId) {
+      throw new functions.https.HttpsError('invalid-argument', 'Missing uid or campaignId');
+    }
+
+    const campaignSnap = await db.doc(`users/${uid}/campaigns/${campaignId}`).get();
+    if (!campaignSnap.exists) {
+      throw new functions.https.HttpsError('not-found', 'Campaign not found');
+    }
+    const campaign = { id: campaignSnap.id, ...campaignSnap.data() };
+
+    const companySnap = await db.doc(`users/${uid}/settings/companyDetails`).get();
+    const company = companySnap.exists ? companySnap.data() : {};
+    const companyName = company.name || 'Our Company';
+    const baseUrl = company.websiteUrl || 'https://scaffld.app';
+
+    // Fetch all clients
+    const clientsSnap = await db.collection(`users/${uid}/clients`).get();
+    const allClients = clientsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+    // Filter recipients
+    let recipients = allClients.filter(c => c.email && !c.commPrefs?.marketingOptOut);
+    const { recipientType, statusFilter, tagFilter, customRecipientIds } = campaign;
+
+    if (recipientType === 'byStatus' && statusFilter?.length) {
+      recipients = recipients.filter(c => statusFilter.includes(c.status));
+    } else if (recipientType === 'byTag' && tagFilter?.length) {
+      recipients = recipients.filter(c => c.tags?.some(t => tagFilter.includes(t)));
+    } else if (recipientType === 'custom' && customRecipientIds?.length) {
+      recipients = recipients.filter(c => customRecipientIds.includes(c.id));
+    }
+
+    // Mark as Sending
+    await campaignSnap.ref.update({ status: 'Sending', updatedAt: new Date().toISOString() });
+
+    let sentCount = 0;
+    let failedCount = 0;
+
+    for (const client of recipients) {
+      try {
+        const unsubscribeLink = `${baseUrl}?unsubscribe=${uid}.${client.id}`;
+        const subject = (campaign.subject || '')
+          .replace(/\{\{clientName\}\}/g, client.name || 'there')
+          .replace(/\{\{companyName\}\}/g, companyName)
+          .replace(/\{\{clientEmail\}\}/g, client.email || '');
+
+        const bodyText = (campaign.body || '')
+          .replace(/\{\{clientName\}\}/g, client.name || 'there')
+          .replace(/\{\{companyName\}\}/g, companyName)
+          .replace(/\{\{clientEmail\}\}/g, client.email || '');
+
+        const htmlBody = bodyText.split('\n').map(l => l ? `<p>${l}</p>` : '<br>').join('\n')
+          + `<br><hr style="border:none;border-top:1px solid #eee;margin:20px 0"><p style="font-size:12px;color:#999;">You received this because you are a client of ${companyName}. <a href="${unsubscribeLink}">Unsubscribe</a></p>`;
+
+        await emailService.sendEmail({ to: client.email, subject, html: htmlBody });
+        sentCount++;
+      } catch (err) {
+        console.error(`Campaign email failed for ${client.email}:`, err);
+        failedCount++;
+      }
+    }
+
+    const now = new Date().toISOString();
+    await campaignSnap.ref.update({
+      status: 'Sent',
+      sentAt: now,
+      sentCount,
+      failedCount,
+      recipientCount: recipients.length,
+      updatedAt: now,
+    });
+
+    // Notification
+    await db.collection(`users/${uid}/notifications`).add({
+      type: 'campaign_sent',
+      title: 'Campaign Sent',
+      message: `"${campaign.name}" sent to ${sentCount} recipient${sentCount !== 1 ? 's' : ''}`,
+      campaignId,
+      read: false,
+      createdAt: now,
+    });
+
+    return { success: true, sentCount, failedCount };
+  } catch (error) {
+    console.error('sendEmailCampaign error:', error);
+    throw new functions.https.HttpsError('internal', error.message);
+  }
+});
+
+// ── Accounting Integration Functions ──
+
+/**
+ * Initiate OAuth flow for QuickBooks or Xero
+ */
+exports.initiateAccountingOAuth = functions.https.onCall(async (data, context) => {
+  if (!context.auth) throw new functions.https.HttpsError('unauthenticated', 'Must be authenticated');
+  const { provider } = data;
+  if (!['quickbooks', 'xero'].includes(provider)) {
+    throw new functions.https.HttpsError('invalid-argument', 'Provider must be quickbooks or xero');
+  }
+  try {
+    const service = provider === 'quickbooks' ? quickbooksService : xeroService;
+    const url = await service.getAuthorizationUrl(context.auth.uid);
+    return { url };
+  } catch (error) {
+    console.error('initiateAccountingOAuth error:', error);
+    throw new functions.https.HttpsError('internal', error.message);
+  }
+});
+
+/**
+ * Disconnect an accounting provider
+ */
+exports.disconnectAccounting = functions.https.onCall(async (data, context) => {
+  if (!context.auth) throw new functions.https.HttpsError('unauthenticated', 'Must be authenticated');
+  const { provider } = data;
+  try {
+    const service = provider === 'quickbooks' ? quickbooksService : xeroService;
+    await service.disconnect(context.auth.uid);
+    return { success: true };
+  } catch (error) {
+    console.error('disconnectAccounting error:', error);
+    throw new functions.https.HttpsError('internal', error.message);
+  }
+});
+
+/**
+ * Sync a single invoice to the connected accounting provider
+ */
+exports.syncToAccounting = functions
+  .runWith({ timeoutSeconds: 60 })
+  .https.onCall(async (data, context) => {
+  if (!context.auth) throw new functions.https.HttpsError('unauthenticated', 'Must be authenticated');
+  const uid = context.auth.uid;
+  const { invoiceId } = data;
+  if (!invoiceId) throw new functions.https.HttpsError('invalid-argument', 'invoiceId required');
+
+  try {
+    const settingsSnap = await db.doc(`users/${uid}/settings/companyDetails`).get();
+    const settings = settingsSnap.exists ? settingsSnap.data() : {};
+    const qbConnected = settings.integrations?.quickbooks?.connected;
+    const xeroConnected = settings.integrations?.xero?.connected;
+    if (!qbConnected && !xeroConnected) {
+      throw new functions.https.HttpsError('failed-precondition', 'No accounting provider connected');
+    }
+
+    const invSnap = await db.doc(`users/${uid}/invoices/${invoiceId}`).get();
+    if (!invSnap.exists) throw new functions.https.HttpsError('not-found', 'Invoice not found');
+    const invoice = { id: invSnap.id, ...invSnap.data() };
+
+    const clientSnap = invoice.clientId ? await db.doc(`users/${uid}/clients/${invoice.clientId}`).get() : null;
+    const client = clientSnap?.exists ? { id: clientSnap.id, ...clientSnap.data() } : { name: 'Unknown' };
+
+    const service = qbConnected ? quickbooksService : xeroService;
+    const result = await service.syncInvoice(uid, invoice, client);
+
+    // Sync payments if any
+    if (Array.isArray(invoice.payments) && invoice.payments.length > 0 && result.externalId) {
+      for (const payment of invoice.payments) {
+        try { await service.syncPayment(uid, result.externalId, payment); } catch (e) { console.error('Payment sync error:', e); }
+      }
+    }
+
+    return { success: true, externalId: result.externalId };
+  } catch (error) {
+    console.error('syncToAccounting error:', error);
+    // Record sync error on invoice
+    if (invoiceId) {
+      await db.doc(`users/${uid}/invoices/${invoiceId}`).set({
+        accountingSync: { syncError: error.message, syncedAt: null },
+      }, { merge: true });
+    }
+    throw new functions.https.HttpsError('internal', error.message);
+  }
+});
+
+/**
+ * Sync all unsynced invoices to the connected accounting provider
+ */
+exports.syncAllToAccounting = functions
+  .runWith({ timeoutSeconds: 540 })
+  .https.onCall(async (data, context) => {
+  if (!context.auth) throw new functions.https.HttpsError('unauthenticated', 'Must be authenticated');
+  const uid = context.auth.uid;
+
+  try {
+    const settingsSnap = await db.doc(`users/${uid}/settings/companyDetails`).get();
+    const settings = settingsSnap.exists ? settingsSnap.data() : {};
+    const qbConnected = settings.integrations?.quickbooks?.connected;
+    const xeroConnected = settings.integrations?.xero?.connected;
+    const provider = qbConnected ? 'quickbooks' : xeroConnected ? 'xero' : null;
+    if (!provider) throw new functions.https.HttpsError('failed-precondition', 'No accounting provider connected');
+
+    const service = provider === 'quickbooks' ? quickbooksService : xeroService;
+
+    // Get invoices without accountingSync or with syncError
+    const invoicesSnap = await db.collection(`users/${uid}/invoices`).get();
+    const unsynced = invoicesSnap.docs
+      .map(d => ({ id: d.id, ...d.data() }))
+      .filter(inv => !inv.accountingSync?.externalId && !inv.archived && inv.status !== 'Draft');
+
+    let synced = 0;
+    let errors = 0;
+    for (const invoice of unsynced) {
+      try {
+        const clientSnap = invoice.clientId ? await db.doc(`users/${uid}/clients/${invoice.clientId}`).get() : null;
+        const client = clientSnap?.exists ? { id: clientSnap.id, ...clientSnap.data() } : { name: 'Unknown' };
+        await service.syncInvoice(uid, invoice, client);
+        synced++;
+      } catch (e) {
+        console.error(`Sync error for invoice ${invoice.id}:`, e);
+        errors++;
+      }
+    }
+
+    // Update last sync timestamp
+    const providerKey = provider;
+    const integrations = settings.integrations || {};
+    await db.doc(`users/${uid}/settings/companyDetails`).set({
+      integrations: {
+        ...integrations,
+        [providerKey]: { ...integrations[providerKey], lastSyncAt: new Date().toISOString() },
+      },
+    }, { merge: true });
+
+    return { success: true, synced, errors, total: unsynced.length };
+  } catch (error) {
+    console.error('syncAllToAccounting error:', error);
+    throw new functions.https.HttpsError('internal', error.message);
+  }
+});
+
+/**
+ * Auto-sync: When an invoice status changes to Sent or Paid, push to accounting
+ */
+exports.onInvoiceStatusChange = functions.firestore
+  .document('users/{uid}/invoices/{invoiceId}')
+  .onUpdate(async (change, context) => {
+    const before = change.before.data();
+    const after = change.after.data();
+    const { uid, invoiceId } = context.params;
+
+    // Only trigger on status transitions to Sent or Paid
+    if (before.status === after.status) return;
+    if (!['Sent', 'Paid'].includes(after.status)) return;
+    if (after.accountingSync?.externalId) return; // Already synced
+
+    try {
+      const settingsSnap = await db.doc(`users/${uid}/settings/companyDetails`).get();
+      const settings = settingsSnap.exists ? settingsSnap.data() : {};
+      const qb = settings.integrations?.quickbooks;
+      const xero = settings.integrations?.xero;
+
+      // Check if auto-sync is enabled for either provider
+      const provider = (qb?.connected && qb?.autoSync) ? 'quickbooks' : (xero?.connected && xero?.autoSync) ? 'xero' : null;
+      if (!provider) return;
+
+      const service = provider === 'quickbooks' ? quickbooksService : xeroService;
+      const invoice = { id: invoiceId, ...after };
+      const clientSnap = after.clientId ? await db.doc(`users/${uid}/clients/${after.clientId}`).get() : null;
+      const client = clientSnap?.exists ? { id: clientSnap.id, ...clientSnap.data() } : { name: 'Unknown' };
+
+      await service.syncInvoice(uid, invoice, client);
+      console.log(`Auto-synced invoice ${invoiceId} to ${provider}`);
+    } catch (error) {
+      console.error(`Auto-sync error for invoice ${invoiceId}:`, error);
+    }
+  });
 

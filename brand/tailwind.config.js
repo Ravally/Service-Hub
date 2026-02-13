@@ -1,22 +1,22 @@
 /** @type {import('tailwindcss').Config} */
 
 // ============================================
-// TRELLIO — Tailwind CSS Theme Extension
+// SCAFFLD — Tailwind CSS Theme Extension
 // brand/tailwind.config.js
 //
 // Usage: Merge into your project's tailwind.config.js
-//   const trellioTheme = require('./brand/tailwind.config.js');
-//   module.exports = { ...trellioTheme, content: [...] };
+//   const scaffldTheme = require('./brand/tailwind.config.js');
+//   module.exports = { ...scaffldTheme, content: [...] };
 //
 // Or spread into your existing theme:
-//   theme: { extend: { ...trellioTheme.theme.extend } }
+//   theme: { extend: { ...scaffldTheme.theme.extend } }
 // ============================================
 
 module.exports = {
   theme: {
     extend: {
       colors: {
-        trellio: {
+        scaffld: {
           DEFAULT: '#0EA5A0',
           deep: '#087F7A',
           light: '#B2F0ED',

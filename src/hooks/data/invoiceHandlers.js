@@ -1,8 +1,9 @@
-import { collection, addDoc, doc, updateDoc, setDoc, getDoc, runTransaction } from 'firebase/firestore';
+import { collection, addDoc, doc, updateDoc, deleteDoc, setDoc, getDoc, runTransaction } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../../firebase/config';
 import { initialInvoiceSettings } from '../../constants';
 import { padNumber, computeInvoiceDueDate } from './handlerUtils';
+import { buildPaymentSchedule } from '../../utils/calculations';
 
 /**
  * Creates invoice-related handler functions.
@@ -84,7 +85,11 @@ export function createInvoiceHandlers(deps) {
         acceptCard: true, acceptBank: false, allowPartialPayments: true,
       },
       askForReview: !!(client?.commPrefs && client.commPrefs.askForReview),
-      depositApplied: 0,
+      depositApplied: relatedQuote?.depositCollected
+        ? (relatedQuote.depositAmount
+          ? relatedQuote.depositAmount / 100
+          : (relatedQuote.depositRequiredAmount || 0))
+        : 0,
       taxRate: invTaxRate, quoteDiscountType: invDiscType, quoteDiscountValue: invDiscValue,
       subtotalBeforeDiscount: calc.subtotalBeforeDiscount, lineDiscountTotal: calc.lineDiscountTotal,
       quoteDiscountAmount: calc.quoteDiscountAmount, taxAmount: calc.taxAmount,
@@ -233,6 +238,116 @@ export function createInvoiceHandlers(deps) {
     setCompanySettings(next);
   };
 
+  const handleBulkMarkPaid = async (ids = []) => {
+    if (!db || !userId || !Array.isArray(ids) || ids.length === 0) return;
+    try {
+      const now = new Date().toISOString();
+      await Promise.all(ids.map(id =>
+        updateDoc(doc(db, `users/${userId}/invoices`, id), { status: 'Paid', paidAt: now })
+      ));
+    } catch (e) { console.error('Bulk mark paid error', e); }
+  };
+
+  const handleBulkArchiveInvoices = async (ids = []) => {
+    if (!db || !userId || !Array.isArray(ids) || ids.length === 0) return;
+    try {
+      const now = new Date().toISOString();
+      await Promise.all(ids.map(id =>
+        updateDoc(doc(db, `users/${userId}/invoices`, id), { status: 'Archived', archived: true, archivedAt: now })
+      ));
+    } catch (e) { console.error('Bulk archive invoices error', e); }
+  };
+
+  const handleBulkDeleteInvoices = async (ids = []) => {
+    if (!db || !userId || !Array.isArray(ids) || ids.length === 0) return;
+    if (!window.confirm(`Delete ${ids.length} invoice(s)? This cannot be undone.`)) return;
+    try {
+      await Promise.all(ids.map(id => deleteDoc(doc(db, `users/${userId}/invoices`, id))));
+    } catch (e) { console.error('Bulk delete invoices error', e); }
+  };
+
+  const handleSetupPaymentPlan = async (invoiceId, planConfig) => {
+    if (!db || !userId || !invoiceId) return;
+    try {
+      const { installments, frequency, startDate, planTotal } = planConfig;
+      const schedule = buildPaymentSchedule(planTotal, installments, frequency, startDate);
+      const now = new Date().toISOString();
+      const paymentPlan = {
+        enabled: true, frequency, installments, startDate, planTotal, schedule,
+        createdAt: now,
+        nextPaymentDate: schedule.length > 0 ? schedule[0].dueDate : '',
+      };
+      await updateDoc(doc(db, `users/${userId}/invoices`, invoiceId), { paymentPlan });
+      await logAudit('setup_payment_plan', 'invoice', invoiceId, { installments, frequency });
+      if (selectedInvoice?.id === invoiceId) {
+        setSelectedInvoice(prev => ({ ...prev, paymentPlan }));
+      }
+    } catch (err) {
+      console.error('Setup payment plan failed:', err);
+      alert(`Failed to set up payment plan: ${err.message}`);
+    }
+  };
+
+  const handleRecordInstallmentPayment = async (invoiceId, installmentIndex, paymentDetails) => {
+    if (!db || !userId || !invoiceId) return;
+    try {
+      const invoice = selectedInvoice?.id === invoiceId ? selectedInvoice : null;
+      if (!invoice?.paymentPlan) return;
+      const plan = { ...invoice.paymentPlan };
+      const schedule = [...plan.schedule];
+      const inst = { ...schedule[installmentIndex] };
+      const now = new Date().toISOString();
+      const amount = paymentDetails.amount || inst.amount;
+
+      inst.status = 'paid';
+      inst.paidAt = now;
+      inst.paidAmount = amount;
+      inst.paymentMethod = paymentDetails.method || 'Recorded';
+      schedule[installmentIndex] = inst;
+
+      const nextPending = schedule
+        .filter(s => s.status === 'pending' || s.status === 'overdue')
+        .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+      plan.schedule = schedule;
+      plan.nextPaymentDate = nextPending.length > 0 ? nextPending[0].dueDate : '';
+
+      const payments = [...(invoice.payments || [])];
+      payments.push({ amount, tip: 0, method: paymentDetails.method || 'Recorded', createdAt: now, installmentIndex });
+
+      const totalPaid = payments.reduce((s, p) => s + Number(p.amount || 0), 0);
+      const newStatus = totalPaid >= Number(invoice.total || 0) ? 'Paid' : 'Partially Paid';
+      const updateData = { paymentPlan: plan, payments, status: newStatus };
+      if (newStatus === 'Paid') updateData.paidAt = now;
+
+      await updateDoc(doc(db, `users/${userId}/invoices`, invoiceId), updateData);
+      await logAudit('record_installment', 'invoice', invoiceId, { installmentIndex, amount });
+      if (selectedInvoice?.id === invoiceId) {
+        setSelectedInvoice(prev => ({ ...prev, ...updateData }));
+      }
+    } catch (err) {
+      console.error('Record installment payment failed:', err);
+      alert(`Failed to record payment: ${err.message}`);
+    }
+  };
+
+  const handleRemovePaymentPlan = async (invoiceId) => {
+    if (!db || !userId || !invoiceId) return;
+    try {
+      const paymentPlan = {
+        enabled: false, frequency: 'monthly', installments: 2,
+        startDate: '', planTotal: 0, schedule: [], createdAt: '', nextPaymentDate: '',
+      };
+      await updateDoc(doc(db, `users/${userId}/invoices`, invoiceId), { paymentPlan });
+      await logAudit('remove_payment_plan', 'invoice', invoiceId, {});
+      if (selectedInvoice?.id === invoiceId) {
+        setSelectedInvoice(prev => ({ ...prev, paymentPlan }));
+      }
+    } catch (err) {
+      console.error('Remove payment plan failed:', err);
+      alert(`Failed to remove payment plan: ${err.message}`);
+    }
+  };
+
   return {
     handleCreateInvoiceFromJob,
     handleCreateInvoiceFromDraft,
@@ -242,5 +357,11 @@ export function createInvoiceHandlers(deps) {
     handleRemoveInvoiceAttachment,
     handleGeneratePaymentLink,
     handleApplyInvoiceDefaults,
+    handleBulkMarkPaid,
+    handleBulkArchiveInvoices,
+    handleBulkDeleteInvoices,
+    handleSetupPaymentPlan,
+    handleRecordInstallmentPayment,
+    handleRemovePaymentPlan,
   };
 }

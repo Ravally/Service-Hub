@@ -1,5 +1,5 @@
 /* ============================================
-   TRELLIO DESIGN TOKENS
+   SCAFFLD DESIGN TOKENS
    brand/tokens.css
    
    Import into your project:
@@ -8,40 +8,40 @@
 
 :root {
   /* ---- PRIMARY ---- */
-  --trellio-primary:          #0EA5A0;
-  --trellio-primary-deep:     #087F7A;
-  --trellio-primary-light:    #B2F0ED;
-  --trellio-primary-glow:     rgba(14, 165, 160, 0.2);
-  --trellio-primary-subtle:   rgba(14, 165, 160, 0.08);
+  --scaffld-primary:          #0EA5A0;
+  --scaffld-primary-deep:     #087F7A;
+  --scaffld-primary-light:    #B2F0ED;
+  --scaffld-primary-glow:     rgba(14, 165, 160, 0.2);
+  --scaffld-primary-subtle:   rgba(14, 165, 160, 0.08);
 
   /* ---- ACCENT ---- */
-  --trellio-coral:            #F7845E;
-  --trellio-coral-deep:       #E56840;
-  --trellio-coral-light:      #FFDCC8;
-  --trellio-coral-glow:       rgba(247, 132, 94, 0.2);
-  --trellio-amber:            #FFAA5C;
-  --trellio-amber-deep:       #FF9633;
-  --trellio-amber-light:      #FFE8CC;
-  --trellio-amber-glow:       rgba(255, 170, 92, 0.2);
+  --scaffld-coral:            #F7845E;
+  --scaffld-coral-deep:       #E56840;
+  --scaffld-coral-light:      #FFDCC8;
+  --scaffld-coral-glow:       rgba(247, 132, 94, 0.2);
+  --scaffld-amber:            #FFAA5C;
+  --scaffld-amber-deep:       #FF9633;
+  --scaffld-amber-light:      #FFE8CC;
+  --scaffld-amber-glow:       rgba(255, 170, 92, 0.2);
 
   /* ---- NEUTRALS ---- */
-  --trellio-midnight:         #0C1220;
-  --trellio-charcoal:         #1A2332;
-  --trellio-slate:            #2D3B4E;
-  --trellio-muted:            #6B7F96;
-  --trellio-silver:           #A3B4C8;
-  --trellio-cream:            #FFF9F5;
-  --trellio-white:            #FFFFFF;
+  --scaffld-midnight:         #0C1220;
+  --scaffld-charcoal:         #1A2332;
+  --scaffld-slate:            #2D3B4E;
+  --scaffld-muted:            #6B7F96;
+  --scaffld-silver:           #A3B4C8;
+  --scaffld-cream:            #FFF9F5;
+  --scaffld-white:            #FFFFFF;
 
   /* ---- SEMANTIC ---- */
-  --trellio-success:          #0EA5A0;
-  --trellio-success-bg:       rgba(14, 165, 160, 0.08);
-  --trellio-warning:          #FFAA5C;
-  --trellio-warning-bg:       rgba(255, 170, 92, 0.08);
-  --trellio-error:            #F7845E;
-  --trellio-error-bg:         rgba(247, 132, 94, 0.08);
-  --trellio-info:             #B2F0ED;
-  --trellio-info-bg:          rgba(178, 240, 237, 0.08);
+  --scaffld-success:          #0EA5A0;
+  --scaffld-success-bg:       rgba(14, 165, 160, 0.08);
+  --scaffld-warning:          #FFAA5C;
+  --scaffld-warning-bg:       rgba(255, 170, 92, 0.08);
+  --scaffld-error:            #F7845E;
+  --scaffld-error-bg:         rgba(247, 132, 94, 0.08);
+  --scaffld-info:             #B2F0ED;
+  --scaffld-info-bg:          rgba(178, 240, 237, 0.08);
 
   /* ---- TYPOGRAPHY ---- */
   --font-primary:             'DM Sans', system-ui, -apple-system, sans-serif;
@@ -135,12 +135,12 @@
    DARK MODE (Default)
    ============================================ */
 [data-theme="dark"], :root {
-  --bg-primary:               var(--trellio-midnight);
-  --bg-secondary:             var(--trellio-charcoal);
-  --bg-tertiary:              var(--trellio-slate);
-  --text-primary:             var(--trellio-white);
-  --text-secondary:           var(--trellio-silver);
-  --text-muted:               var(--trellio-muted);
+  --bg-primary:               var(--scaffld-midnight);
+  --bg-secondary:             var(--scaffld-charcoal);
+  --bg-tertiary:              var(--scaffld-slate);
+  --text-primary:             var(--scaffld-white);
+  --text-secondary:           var(--scaffld-silver);
+  --text-muted:               var(--scaffld-muted);
   --border-color:             rgba(255, 255, 255, 0.06);
 }
 
@@ -148,11 +148,11 @@
    LIGHT MODE
    ============================================ */
 [data-theme="light"] {
-  --bg-primary:               var(--trellio-cream);
-  --bg-secondary:             var(--trellio-white);
+  --bg-primary:               var(--scaffld-cream);
+  --bg-secondary:             var(--scaffld-white);
   --bg-tertiary:              #F0EDE8;
-  --text-primary:             var(--trellio-midnight);
-  --text-secondary:           var(--trellio-slate);
-  --text-muted:               var(--trellio-muted);
+  --text-primary:             var(--scaffld-midnight);
+  --text-secondary:           var(--scaffld-slate);
+  --text-muted:               var(--scaffld-muted);
   --border-color:             rgba(0, 0, 0, 0.08);
 }

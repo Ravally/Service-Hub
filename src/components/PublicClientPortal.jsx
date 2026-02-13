@@ -208,6 +208,31 @@ const PublicClientPortal = ({ uid, clientId, company }) => {
     } catch (e) { setError('Payment failed.'); }
   };
 
+  const portalPayInstallment = async (inv, installmentIndex) => {
+    try {
+      const schedule = inv.paymentPlan?.schedule;
+      if (!schedule?.[installmentIndex]) return;
+      const inst = schedule[installmentIndex];
+      const now = new Date().toISOString();
+      const invRef = doc(db, `users/${uid}/invoices`, inv.id);
+      const payments = Array.isArray(inv.payments) ? inv.payments : [];
+      const newSchedule = schedule.map((s, idx) =>
+        idx === installmentIndex ? { ...s, status: 'paid', paidAt: now, paidAmount: s.amount, paymentMethod: 'Card (test)' } : s
+      );
+      const allPaid = newSchedule.every(s => s.status === 'paid');
+      const nextUnpaid = newSchedule.find(s => s.status !== 'paid');
+      await updateDoc(invRef, {
+        'paymentPlan.schedule': newSchedule,
+        'paymentPlan.nextPaymentDate': nextUnpaid?.dueDate || '',
+        status: allPaid ? 'Paid' : 'Partially Paid',
+        ...(allPaid ? { paidAt: now } : {}),
+        payments: [...payments, { amount: inst.amount, tip: 0, method: 'Card (test)', createdAt: now, installmentIndex }],
+      });
+      setMessage('Installment payment recorded. Thank you!');
+      setTimeout(() => setMessage(''), 2000);
+    } catch (e) { setError('Installment payment failed.'); }
+  };
+
   const handleDownloadInvoice = (invoice) => {
     try {
       downloadInvoicePDF(invoice, client, company);
@@ -247,7 +272,7 @@ const PublicClientPortal = ({ uid, clientId, company }) => {
           </button>
         </div>
 
-        {(message) && <div className="mb-4 p-3 rounded bg-green-50 text-trellio-teal border border-green-200 text-sm sm:text-base">{message}</div>}
+        {(message) && <div className="mb-4 p-3 rounded bg-green-50 text-scaffld-teal border border-green-200 text-sm sm:text-base">{message}</div>}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Contact Details */}
@@ -279,11 +304,11 @@ const PublicClientPortal = ({ uid, clientId, company }) => {
                       <div className="flex gap-2">
                         {(q.status === 'Draft' || q.status === 'Sent' || q.status === 'Awaiting Response') && (
                           <>
-                            <button onClick={() => { const n = window.prompt('Please type your full name to approve:'); if (!n) return; portalApproveQuote(q, n); }} className="px-3 py-1 text-sm bg-trellio-teal text-white rounded-md">Approve</button>
+                            <button onClick={() => { const n = window.prompt('Please type your full name to approve:'); if (!n) return; portalApproveQuote(q, n); }} className="px-3 py-1 text-sm bg-scaffld-teal text-white rounded-md">Approve</button>
                             <button onClick={() => { const n = window.prompt('Please type your full name to decline:'); if (!n) return; portalDeclineQuote(q, n); }} className="px-3 py-1 text-sm bg-midnight text-slate-100 rounded-md">Decline</button>
                           </>
                         )}
-                        {(q.status === 'Approved' || q.status === 'Accepted') && <span className="px-2 py-0.5 rounded-full text-xs bg-green-100 text-trellio-teal">Approved</span>}
+                        {(q.status === 'Approved' || q.status === 'Accepted') && <span className="px-2 py-0.5 rounded-full text-xs bg-green-100 text-scaffld-teal">Approved</span>}
                       </div>
                     </div>
                   </li>
@@ -390,7 +415,7 @@ const PublicClientPortal = ({ uid, clientId, company }) => {
                               <button onClick={() => portalPayInvoice(i)} className="inline-block mt-1 px-3 py-1 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700">Pay Now (test)</button>
                             )
                           ) : (
-                            <span className="inline-block mt-1 px-2 py-0.5 rounded-full text-xs bg-green-100 text-trellio-teal">Paid</span>
+                            <span className="inline-block mt-1 px-2 py-0.5 rounded-full text-xs bg-green-100 text-scaffld-teal">Paid</span>
                           )}
                         </div>
                         <button
@@ -402,6 +427,32 @@ const PublicClientPortal = ({ uid, clientId, company }) => {
                         </button>
                       </div>
                     </div>
+                    {i.paymentPlan?.enabled && i.paymentPlan.schedule?.length > 0 && (
+                      <div className="mt-3 border-t border-slate-700/30 pt-3">
+                        <p className="text-xs font-semibold text-slate-300 mb-2">Payment Schedule</p>
+                        <div className="space-y-1.5">
+                          {i.paymentPlan.schedule.map((inst, idx) => {
+                            const isOverdue = inst.status === 'pending' && new Date(inst.dueDate) < new Date();
+                            const isPaid = inst.status === 'paid';
+                            const isNext = idx === i.paymentPlan.schedule.findIndex(s => s.status !== 'paid');
+                            return (
+                              <div key={idx} className="flex items-center justify-between text-xs gap-2">
+                                <span className="text-slate-400">#{idx + 1} — {formatDate(inst.dueDate)}</span>
+                                <span className={isPaid ? 'text-scaffld-teal' : isOverdue ? 'text-signal-coral' : 'text-slate-400'}>
+                                  {isPaid ? 'Paid' : isOverdue ? 'Overdue' : 'Pending'}
+                                </span>
+                                <span className="font-semibold text-slate-200">{formatCurrency(inst.amount)}</span>
+                                {!isPaid && isNext && i.status !== 'Paid' && (
+                                  <button onClick={() => portalPayInstallment(i, idx)} className="px-2 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 min-h-[44px]">
+                                    Pay #{idx + 1}
+                                  </button>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
                   </li>
                 );
               })}

@@ -57,17 +57,31 @@ export function computeTotals(doc) {
 }
 
 /**
+ * Compute total value from job line items (qty * price for billable items)
+ * @param {Object} job - Job document with lineItems
+ * @returns {number} Total value
+ */
+export function computeJobTotalValue(job) {
+  const items = job?.lineItems || [];
+  return items.reduce((sum, it) => {
+    if (it?.type === 'text' || it?.isOptional) return sum;
+    const qty = parseFloat(it.qty || 0);
+    const price = parseFloat(it.price || 0);
+    return sum + (qty * price);
+  }, 0);
+}
+
+/**
  * Calculate job profitability
  * @param {Object} job - Job document
  * @returns {Object} Profitability metrics
  */
 export function calculateJobProfitability(job) {
-  const revenue = parseFloat(job.totalValue || 0);
+  const revenue = parseFloat(job.totalValue || 0) || computeJobTotalValue(job);
   const laborCost = Array.isArray(job.laborEntries)
     ? job.laborEntries.reduce((sum, entry) => {
-        const hours = parseFloat(entry.hours || 0);
-        const rate = parseFloat(entry.rate || 0);
-        return sum + (hours * rate);
+        const cost = parseFloat(entry.cost || entry.amount || 0);
+        return sum + (cost || (parseFloat(entry.hours || 0) * parseFloat(entry.rate || 0)));
       }, 0)
     : 0;
 
@@ -142,4 +156,62 @@ export function calculateInvoiceBalance(invoice) {
     : 0;
 
   return Math.max(0, total - paidSoFar);
+}
+
+/**
+ * Compute the due date for installment N given frequency and start date.
+ * @param {string} startDate - ISO string
+ * @param {string} frequency - 'weekly' | 'bi-weekly' | 'monthly'
+ * @param {number} index - 0-based installment index
+ * @returns {string} ISO date string
+ */
+export function computeInstallmentDate(startDate, frequency, index) {
+  const d = new Date(startDate);
+  if (frequency === 'weekly') d.setDate(d.getDate() + index * 7);
+  else if (frequency === 'bi-weekly') d.setDate(d.getDate() + index * 14);
+  else d.setMonth(d.getMonth() + index);
+  return d.toISOString();
+}
+
+/**
+ * Build a payment plan schedule from plan parameters.
+ * @param {number} planTotal - Total amount (float, dollar amount) to split
+ * @param {number} installments - Number of installments (2-12)
+ * @param {string} frequency - 'weekly' | 'bi-weekly' | 'monthly'
+ * @param {string} startDate - ISO string of first installment due date
+ * @returns {Array} Schedule array of installment objects
+ */
+export function buildPaymentSchedule(planTotal, installments, frequency, startDate) {
+  if (!planTotal || !installments || installments < 2 || !startDate) return [];
+  const baseAmount = Math.floor((planTotal / installments) * 100) / 100;
+  const allocated = baseAmount * (installments - 1);
+  const lastAmount = Math.round((planTotal - allocated) * 100) / 100;
+  const schedule = [];
+  for (let i = 0; i < installments; i++) {
+    schedule.push({
+      index: i,
+      dueDate: computeInstallmentDate(startDate, frequency, i),
+      amount: i === installments - 1 ? lastAmount : baseAmount,
+      status: 'pending',
+      paidAt: null,
+      paidAmount: 0,
+      paymentMethod: null,
+    });
+  }
+  return schedule;
+}
+
+/**
+ * Refresh overdue statuses on a payment plan schedule (pure, no mutation).
+ * @param {Array} schedule - The current schedule array
+ * @returns {Array} Updated schedule with overdue statuses
+ */
+export function refreshInstallmentStatuses(schedule) {
+  if (!Array.isArray(schedule)) return [];
+  const now = new Date();
+  return schedule.map(inst =>
+    inst.status === 'pending' && new Date(inst.dueDate) < now
+      ? { ...inst, status: 'overdue' }
+      : inst
+  );
 }

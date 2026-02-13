@@ -1,8 +1,8 @@
-# 🔺 Trellio
+# 🔺 Scaffld
 
-**Structure your growth.**
+**Build on Scaffld.**
 
-A modern, AI-powered field service management platform built with React, Firebase, and cutting-edge technology. Trellio helps service businesses manage clients, quotes, jobs, invoices, and field operations with intelligent automation.
+A modern, AI-powered field service management platform built with React, Firebase, and cutting-edge technology. Scaffld helps service businesses manage clients, quotes, jobs, invoices, and field operations with intelligent automation.
 
 [![Status](https://img.shields.io/badge/status-active%20development-brightgreen)]()
 [![Phase](https://img.shields.io/badge/phase-2%20(mobile)-blue)]()
@@ -34,9 +34,9 @@ npm run dev
 
 ---
 
-## 📋 What is Trellio?
+## 📋 What is Scaffld?
 
-Trellio (formerly Service Hub) is a comprehensive field service management platform designed for service businesses like:
+Scaffld (formerly Service Hub) is a comprehensive field service management platform designed for service businesses like:
 
 - 🏊 Pool Service & Maintenance
 - ❄️ HVAC Installation & Repair
@@ -76,7 +76,7 @@ Trellio (formerly Service Hub) is a comprehensive field service management platf
 
 ## 🏗️ Architecture
 
-Trellio features a **clean, modular architecture** with complete separation of concerns:
+Scaffld features a **clean, modular architecture** with complete separation of concerns:
 
 ```
 src/
@@ -97,7 +97,7 @@ src/
 - **21 focused modules** for maintainability
 - **100% functionality** preserved through refactoring
 
-**Read more**: [docs/TRELLIO_ARCHITECTURE.md](docs/TRELLIO_ARCHITECTURE.md)
+**Read more**: [docs/SCAFFLD_ARCHITECTURE.md](docs/SCAFFLD_ARCHITECTURE.md)
 
 ---
 
@@ -128,8 +128,8 @@ src/
 
 | Document | Purpose |
 |----------|---------|
-| **[docs/TRELLIO_ARCHITECTURE.md](docs/TRELLIO_ARCHITECTURE.md)** | Technical architecture, patterns, conventions |
-| **[docs/TRELLIO_MASTER_ROADMAP.md](docs/TRELLIO_MASTER_ROADMAP.md)** | Product roadmap, timeline, features |
+| **[docs/SCAFFLD_ARCHITECTURE.md](docs/SCAFFLD_ARCHITECTURE.md)** | Technical architecture, patterns, conventions |
+| **[docs/SCAFFLD_MASTER_ROADMAP.md](docs/SCAFFLD_MASTER_ROADMAP.md)** | Product roadmap, timeline, features |
 | **[docs/guides/SETUP.md](docs/guides/SETUP.md)** | Development environment setup |
 | **[docs/guides/DEPLOYMENT.md](docs/guides/DEPLOYMENT.md)** | Build & deployment process |
 
@@ -145,7 +145,7 @@ src/
 
 | Document | Purpose |
 |----------|---------|
-| **[brand/TRELLIO_BRAND.md](brand/TRELLIO_BRAND.md)** | Complete brand system (colors, fonts, voice) |
+| **[brand/SCAFFLD_BRAND.md](brand/SCAFFLD_BRAND.md)** | Complete brand system (colors, fonts, voice) |
 | **[brand/README.md](brand/README.md)** | Brand quick reference |
 | **[brand/tokens.css](brand/tokens.css)** | CSS custom properties |
 | **[brand/tailwind.config.js](brand/tailwind.config.js)** | Tailwind theme extension |
@@ -157,7 +157,7 @@ src/
 ### Colors
 
 ```
-Primary:   Trellio Teal    #0EA5A0  (Links, CTAs, identity)
+Primary:   Scaffld Teal    #0EA5A0  (Links, CTAs, identity)
 Accent 1:  Signal Coral    #F7845E  (Urgency, alerts)
 Accent 2:  Harvest Amber   #FFAA5C  (Rewards, notifications)
 
@@ -261,7 +261,7 @@ firebase emulators:start # Start local emulators
 - ❌ Mix concerns (separate UI, logic, data)
 - ❌ Create god components (break into smaller pieces)
 
-**Read more**: [docs/TRELLIO_ARCHITECTURE.md#coding-conventions](docs/TRELLIO_ARCHITECTURE.md#coding-conventions)
+**Read more**: [docs/SCAFFLD_ARCHITECTURE.md#coding-conventions](docs/SCAFFLD_ARCHITECTURE.md#coding-conventions)
 
 ---
 
@@ -340,7 +340,7 @@ eas submit --platform android
 - 📋 AI Features: Intelligent scheduling, churn prediction, automated quotes
 - 📋 Market Leadership: Top 10 in "Field Service Management"
 
-**See**: [docs/TRELLIO_MASTER_ROADMAP.md](docs/TRELLIO_MASTER_ROADMAP.md) for complete roadmap
+**See**: [docs/SCAFFLD_MASTER_ROADMAP.md](docs/SCAFFLD_MASTER_ROADMAP.md) for complete roadmap
 
 ---
 
@@ -383,7 +383,7 @@ docs: update API documentation
 
 Proprietary - All Rights Reserved
 
-Copyright (c) 2026 Trellio
+Copyright (c) 2026 Scaffld
 
 ---
 
@@ -396,7 +396,7 @@ Copyright (c) 2026 Trellio
 ### Questions
 - **Setup**: See [docs/guides/SETUP.md](docs/guides/SETUP.md)
 - **Deployment**: See [docs/guides/DEPLOYMENT.md](docs/guides/DEPLOYMENT.md)
-- **Architecture**: See [docs/TRELLIO_ARCHITECTURE.md](docs/TRELLIO_ARCHITECTURE.md)
+- **Architecture**: See [docs/SCAFFLD_ARCHITECTURE.md](docs/SCAFFLD_ARCHITECTURE.md)
 
 ### Resources
 - [Firebase Documentation](https://firebase.google.com/docs)
@@ -431,7 +431,7 @@ Copyright (c) 2026 Trellio
 
 ## 🔮 Future Vision
 
-Trellio aims to be the **leading AI-first field service platform**, surpassing Jobber with:
+Scaffld aims to be the **leading AI-first field service platform**, surpassing Jobber with:
 
 - **40% reduction** in admin time through automation
 - **20% increase** in jobs per day via intelligent scheduling
@@ -452,7 +452,7 @@ Trellio aims to be the **leading AI-first field service platform**, surpassing J
        │        │
 
      t r e l l i o
-   Structure your growth.
+   Build on Scaffld.
 ```
 
 ---

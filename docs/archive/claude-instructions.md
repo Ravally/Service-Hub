@@ -1,4 +1,4 @@
-# Trellio - Claude Code Instructions
+# Scaffld - Claude Code Instructions
 
 **Auto-Loaded Project Context**
 
@@ -6,7 +6,7 @@
 
 ## Project Overview
 
-**Trellio** is a Jobber-level field service management platform built with React 18, Firebase, and Tailwind CSS. The codebase has been completely refactored from a monolithic 2,718-line App.jsx to a clean, modular architecture with zero duplicate code.
+**Scaffld** is a Jobber-level field service management platform built with React 18, Firebase, and Tailwind CSS. The codebase has been completely refactored from a monolithic 2,718-line App.jsx to a clean, modular architecture with zero duplicate code.
 
 **Current Status**:
 - ✅ Phase 1: Client Hub & Security (Complete)
@@ -19,8 +19,8 @@
 
 **READ THESE FIRST** when starting any task:
 
-1. **[docs/TRELLIO_ARCHITECTURE.md](docs/TRELLIO_ARCHITECTURE.md)** - Architecture, patterns, conventions
-2. **[docs/TRELLIO_MASTER_ROADMAP.md](docs/TRELLIO_MASTER_ROADMAP.md)** - Product roadmap & timeline
+1. **[docs/SCAFFLD_ARCHITECTURE.md](docs/SCAFFLD_ARCHITECTURE.md)** - Architecture, patterns, conventions
+2. **[docs/SCAFFLD_MASTER_ROADMAP.md](docs/SCAFFLD_MASTER_ROADMAP.md)** - Product roadmap & timeline
 3. **[docs/phases/PHASE_2_IN_PROGRESS.md](docs/phases/PHASE_2_IN_PROGRESS.md)** - Current work details
 
 **Setup & Development**:
@@ -28,7 +28,7 @@
 - **[docs/guides/DEPLOYMENT.md](docs/guides/DEPLOYMENT.md)** - Build & deployment process
 
 **Brand & Design**:
-- **[brand/TRELLIO_BRAND.md](brand/TRELLIO_BRAND.md)** - Complete brand system (colors, fonts, voice)
+- **[brand/SCAFFLD_BRAND.md](brand/SCAFFLD_BRAND.md)** - Complete brand system (colors, fonts, voice)
 
 ---
 
@@ -146,10 +146,10 @@ try {
 
 ---
 
-## Brand System (Trellio)
+## Brand System (Scaffld)
 
-**Colors** (from [brand/TRELLIO_BRAND.md](brand/TRELLIO_BRAND.md)):
-- **Primary**: Trellio Teal `#0EA5A0`
+**Colors** (from [brand/SCAFFLD_BRAND.md](brand/SCAFFLD_BRAND.md)):
+- **Primary**: Scaffld Teal `#0EA5A0`
 - **Accent 1**: Signal Coral `#F7845E`
 - **Accent 2**: Harvest Amber `#FFAA5C`
 - **Dark BG**: Midnight `#0C1220`
@@ -193,7 +193,7 @@ try {
 4. **Keep components focused** - Under 200 lines
 5. **Use existing hooks** - Don't write Firebase queries directly
 6. **Handle errors comprehensively** - Try/catch + user feedback
-7. **Follow brand guidelines** - Trellio colors, fonts, voice
+7. **Follow brand guidelines** - Scaffld colors, fonts, voice
 
 ### ❌ DON'T
 
@@ -240,14 +240,14 @@ npm run build       # Must succeed
 ## Quick Reference Links
 
 **Documentation**:
-- [Architecture](docs/TRELLIO_ARCHITECTURE.md) - Technical patterns
-- [Master Roadmap](docs/TRELLIO_MASTER_ROADMAP.md) - Product direction
+- [Architecture](docs/SCAFFLD_ARCHITECTURE.md) - Technical patterns
+- [Master Roadmap](docs/SCAFFLD_MASTER_ROADMAP.md) - Product direction
 - [Phase 2](docs/phases/PHASE_2_IN_PROGRESS.md) - Current work
 - [Setup](docs/guides/SETUP.md) - Dev environment
 - [Deployment](docs/guides/DEPLOYMENT.md) - Build & release
 
 **Brand**:
-- [Complete Brand Guide](brand/TRELLIO_BRAND.md) - Colors, fonts, voice
+- [Complete Brand Guide](brand/SCAFFLD_BRAND.md) - Colors, fonts, voice
 - [Brand Quick Reference](brand/README.md) - Cheat sheet
 
 **Code**:
@@ -264,21 +264,21 @@ npm run build       # Must succeed
 1. Check if utility/constant exists first (import from `src/utils/` or `src/constants/`)
 2. Follow existing patterns in similar files
 3. Keep components under 200 lines
-4. **Use Trellio brand colors** (trellio-teal, signal-coral, harvest-amber, midnight, charcoal)
+4. **Use Scaffld brand colors** (scaffld-teal, signal-coral, harvest-amber, midnight, charcoal)
 5. **Follow dark mode patterns** (bg-midnight/charcoal, text-slate-100/400, border-slate-700/30)
 6. Import hooks from `src/hooks/data/`
 7. Handle errors with try/catch
 8. Add JSDoc comments for new functions
 
-**Trellio Brand Guidelines**:
-- ✅ Primary actions: `btn-primary` (trellio-teal)
+**Scaffld Brand Guidelines**:
+- ✅ Primary actions: `btn-primary` (scaffld-teal)
 - ✅ Secondary actions: `btn-secondary` (charcoal/slate)
 - ✅ Warning/Delete: `btn-accent-coral` (signal-coral)
 - ✅ Cards: `bg-charcoal`, borders: `border-slate-700/30`
-- ✅ Inputs: `bg-midnight border-slate-700 focus:border-trellio-teal`
+- ✅ Inputs: `bg-midnight border-slate-700 focus:border-scaffld-teal`
 - ❌ NO gray-* colors (use midnight/charcoal/slate-*)
 - ❌ NO hardcoded hex colors (use Tailwind classes)
-- See [docs/TRELLIO_ARCHITECTURE.md#trellio-brand-system](docs/TRELLIO_ARCHITECTURE.md#trellio-brand-system) for full guidelines
+- See [docs/SCAFFLD_ARCHITECTURE.md#scaffld-brand-system](docs/SCAFFLD_ARCHITECTURE.md#scaffld-brand-system) for full guidelines
 
 **When refactoring**:
 1. Maintain zero duplicate code
@@ -300,7 +300,7 @@ npm run build       # Must succeed
 
 - **Technical Issues**: See [docs/guides/SETUP.md#troubleshooting](docs/guides/SETUP.md#troubleshooting)
 - **Deployment Issues**: See [docs/guides/DEPLOYMENT.md#troubleshooting](docs/guides/DEPLOYMENT.md#troubleshooting)
-- **Architecture Questions**: Read [docs/TRELLIO_ARCHITECTURE.md](docs/TRELLIO_ARCHITECTURE.md)
+- **Architecture Questions**: Read [docs/SCAFFLD_ARCHITECTURE.md](docs/SCAFFLD_ARCHITECTURE.md)
 
 ---
 

@@ -9,7 +9,7 @@
 
 ## Executive Summary
 
-Phases 3-5 complete Trellio's transformation into a full-featured field service management platform with capabilities matching or exceeding Jobber. These phases add sales & marketing automation, advanced operations, third-party integrations, and AI-powered intelligence.
+Phases 3-5 complete Scaffld's transformation into a full-featured field service management platform with capabilities matching or exceeding Jobber. These phases add sales & marketing automation, advanced operations, third-party integrations, and AI-powered intelligence.
 
 **Timeline Overview**:
 - **Phase 3**: Sales & Marketing Features (2 months)
@@ -174,7 +174,7 @@ users/{userId}/reviews/{reviewId}
   clientId: string,
   clientName: string,
   jobId: string,
-  platform: 'google' | 'facebook' | 'yelp' | 'trellio',
+  platform: 'google' | 'facebook' | 'yelp' | 'scaffld',
   rating: number,  // 1-5
   comment: string,
   sentiment: 'positive' | 'neutral' | 'negative',  // AI-analyzed
@@ -1159,8 +1159,8 @@ functions/src/ai/
 ## References
 
 - Full Jobber parity analysis: `../../JOBBER-PARITY-ROADMAP.md` (archived)
-- Master roadmap: `../TRELLIO_MASTER_ROADMAP.md`
-- Architecture guide: `../TRELLIO_ARCHITECTURE.md`
+- Master roadmap: `../SCAFFLD_MASTER_ROADMAP.md`
+- Architecture guide: `../SCAFFLD_ARCHITECTURE.md`
 - Current progress: `PHASE_2_IN_PROGRESS.md`
 
 ---

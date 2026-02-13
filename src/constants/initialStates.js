@@ -32,6 +32,11 @@ export const initialQuoteState = {
     acceptBank: false,
     requireMethodOnFile: false,
   },
+  depositCollected: false,
+  depositCollectedAt: null,
+  depositAmount: 0,
+  depositStripeSessionId: null,
+  depositMethod: null,
   contractTerms: '',
   disclaimers: '',
   internalNotes: '',
@@ -69,6 +74,7 @@ export const initialJobState = {
   chemicalTreatments: [],
   billingReminders: [],
   lineItems: [],
+  customFields: [],
 };
 
 export const initialClientState = {
@@ -117,6 +123,16 @@ export const initialInvoiceState = {
   payments: [],
   notes: '',
   internalNotes: '',
+  paymentPlan: {
+    enabled: false,
+    frequency: 'monthly',
+    installments: 2,
+    startDate: '',
+    planTotal: 0,
+    schedule: [],
+    createdAt: '',
+    nextPaymentDate: '',
+  },
 };
 
 export const initialLineItem = {

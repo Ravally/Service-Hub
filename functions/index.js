@@ -14,11 +14,11 @@ const cors = require('cors');
 const Stripe = require('stripe');
 require('dotenv').config();
 
+admin.initializeApp();
+
 const emailService = require('./src/services/emailService');
 const quickbooksService = require('./src/services/quickbooksService');
 const xeroService = require('./src/services/xeroService');
-
-admin.initializeApp();
 const db = admin.firestore();
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || functions.config().stripe?.secret_key, { apiVersion: '2024-06-20' });
 
@@ -124,6 +124,45 @@ app.post('/createDepositCheckoutSession', async (req, res) => {
   }
 });
 
+// HTTPS function: POST /createPaymentIntent { uid, invoiceId, amount }
+// Used by mobile Tap to Pay (Stripe Terminal) — creates a PaymentIntent for in-person collection
+app.post('/createPaymentIntent', async (req, res) => {
+  try {
+    const { uid, invoiceId, amount, currency = 'usd' } = req.body || {};
+    if (!uid || !invoiceId) return res.status(400).json({ error: 'uid and invoiceId are required' });
+
+    const { invoice, netDue } = await computeNetDue(uid, invoiceId);
+    const collectAmount = amount ? Math.round(amount) : Math.round(netDue * 100);
+    if (collectAmount <= 0) return res.status(400).json({ error: 'Nothing due for this invoice' });
+
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: collectAmount,
+      currency,
+      payment_method_types: ['card_present'],
+      capture_method: 'automatic',
+      metadata: { uid, invoiceId },
+      description: `Invoice ${invoice.invoiceNumber || invoiceId.substring(0, 8)}`,
+    });
+
+    return res.json({ clientSecret: paymentIntent.client_secret, id: paymentIntent.id });
+  } catch (err) {
+    console.error('createPaymentIntent error', err);
+    return res.status(500).json({ error: err.message || 'Internal error' });
+  }
+});
+
+// HTTPS function: POST /createConnectionToken
+// Used by mobile Stripe Terminal SDK to authenticate the reader
+app.post('/createConnectionToken', async (req, res) => {
+  try {
+    const connectionToken = await stripe.terminal.connectionTokens.create();
+    return res.json({ secret: connectionToken.secret });
+  } catch (err) {
+    console.error('createConnectionToken error', err);
+    return res.status(500).json({ error: err.message || 'Internal error' });
+  }
+});
+
 // OAuth callbacks for accounting integrations
 app.get('/quickbooks/callback', async (req, res) => {
   try {
@@ -217,6 +256,36 @@ webhookApp.post('/', async (req, res) => {
         await invRef.set({ status: 'Paid', paidAt, payments }, { merge: true });
       }
     }
+
+    // Handle Tap to Pay (Terminal) payments via PaymentIntent
+    if (event.type === 'payment_intent.succeeded') {
+      const pi = event.data.object;
+      const uid = pi.metadata?.uid;
+      const invoiceId = pi.metadata?.invoiceId;
+      const paidAt = new Date().toISOString();
+
+      if (uid && invoiceId) {
+        const invRef = db.doc(`users/${uid}/invoices/${invoiceId}`);
+        const snap = await invRef.get();
+        const inv = snap.exists ? snap.data() : {};
+        const payments = Array.isArray(inv.payments) ? inv.payments : [];
+        const amount = (pi.amount || 0) / 100;
+        payments.push({
+          amount,
+          tip: 0,
+          method: 'Card Present',
+          paymentIntentId: pi.id,
+          createdAt: paidAt,
+        });
+        const totalPaid = payments.reduce((s, p) => s + Number(p.amount || 0), 0);
+        const invoiceTotal = Number(inv.total || 0);
+        const newStatus = totalPaid >= invoiceTotal ? 'Paid' : 'Partially Paid';
+        const updates = { status: newStatus, payments };
+        if (newStatus === 'Paid') updates.paidAt = paidAt;
+        await invRef.set(updates, { merge: true });
+      }
+    }
+
     res.json({ received: true });
   } catch (err) {
     console.error('Webhook handling error', err);

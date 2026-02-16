@@ -1,48 +1,149 @@
-import React from 'react';
-import { inputCls, labelCls, saveBtnCls, sectionCls } from './settingsShared';
+import React, { useState } from 'react';
+import { inputCls, labelCls, saveBtnCls, sectionCls, sectionTitle } from './settingsShared';
+
+const TEMPLATE_GROUPS = [
+  { label: 'Invoice Emails', templates: [
+    { key: 'invoice', name: 'Invoice', subjectKey: 'invoiceSubject', bodyKey: 'invoiceBody' },
+    { key: 'invoiceReminder', name: 'Reminder', subjectKey: 'invoiceReminderSubject', bodyKey: 'invoiceReminderBody' },
+    { key: 'overdueInvoice', name: 'Overdue', subjectKey: 'overdueInvoiceSubject', bodyKey: 'overdueInvoiceBody' },
+  ]},
+  { label: 'Quote Emails', templates: [
+    { key: 'quote', name: 'Quote', subjectKey: 'quoteSubject', bodyKey: 'quoteBody' },
+    { key: 'quoteFollowup', name: 'Follow-up', subjectKey: 'quoteFollowupSubject', bodyKey: 'quoteFollowupBody' },
+  ]},
+  { label: 'Other Templates', templates: [
+    { key: 'appointmentReminder', name: 'Appointment Reminder', subjectKey: 'appointmentReminderSubject', bodyKey: 'appointmentReminderBody' },
+    { key: 'jobCompletion', name: 'Job Completion', subjectKey: 'jobCompletionSubject', bodyKey: 'jobCompletionBody' },
+    { key: 'bookingConfirmation', name: 'Booking Confirmation', subjectKey: 'bookingConfirmationSubject', bodyKey: 'bookingConfirmationBody' },
+    { key: 'reviewRequest', name: 'Review Request', subjectKey: 'reviewRequestSubject', bodyKey: 'reviewRequestBody' },
+  ]},
+];
+
+const PLACEHOLDERS = [
+  { tag: '{{clientName}}', desc: 'Client name' },
+  { tag: '{{companyName}}', desc: 'Your company' },
+  { tag: '{{documentNumber}}', desc: 'Doc number' },
+  { tag: '{{total}}', desc: 'Total amount' },
+  { tag: '{{amountDue}}', desc: 'Amount due' },
+  { tag: '{{dueDate}}', desc: 'Due date' },
+  { tag: '{{daysOverdue}}', desc: 'Days overdue' },
+  { tag: '{{paymentLink}}', desc: 'Payment link' },
+  { tag: '{{approvalLink}}', desc: 'Approval link' },
+  { tag: '{{appointmentDate}}', desc: 'Appointment date' },
+  { tag: '{{appointmentTime}}', desc: 'Appointment time' },
+  { tag: '{{jobTitle}}', desc: 'Job title' },
+];
+
+function TemplateCard({ name, subject, body, expanded, onToggle, onChangeSubject, onChangeBody }) {
+  return (
+    <div className="border border-slate-700/30 rounded-lg mb-2 overflow-hidden">
+      <button
+        type="button"
+        onClick={onToggle}
+        className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-midnight/40 transition-colors"
+      >
+        <svg className={`w-4 h-4 text-slate-400 flex-shrink-0 transition-transform ${expanded ? 'rotate-90' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+        </svg>
+        <span className="text-sm font-medium text-slate-100">{name}</span>
+        {!expanded && (
+          <span className="text-sm text-slate-500 truncate ml-auto">{subject}</span>
+        )}
+      </button>
+      {expanded && (
+        <div className="px-4 pb-4 space-y-3 border-t border-slate-700/20">
+          <div className="pt-3">
+            <label className={labelCls}>Subject</label>
+            <input type="text" value={subject} onChange={onChangeSubject} className={inputCls} />
+          </div>
+          <div>
+            <label className={labelCls}>Body</label>
+            <textarea rows={6} value={body} onChange={onChangeBody} className={inputCls} />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function EmailTemplatesTab({ emailTemplates, setEmailTemplates, handleSaveEmailTemplates }) {
+  const [expanded, setExpanded] = useState(null);
+  const [showPlaceholders, setShowPlaceholders] = useState(false);
+  const [copiedTag, setCopiedTag] = useState(null);
+
   const set = (updates) => setEmailTemplates({ ...emailTemplates, ...updates });
+
+  const toggle = (key) => setExpanded((prev) => (prev === key ? null : key));
+
+  const copyPlaceholder = async (tag) => {
+    try {
+      await navigator.clipboard.writeText(tag);
+      setCopiedTag(tag);
+      setTimeout(() => setCopiedTag(null), 1200);
+    } catch { /* clipboard not available */ }
+  };
 
   return (
     <div>
       <h3 className="text-xl font-semibold text-slate-100 mb-6">Email Templates</h3>
-      <form onSubmit={handleSaveEmailTemplates} className={sectionCls}>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div>
-            <h4 className="font-semibold mb-3 text-scaffld-teal">Invoice Emails</h4>
-            <div className="mb-4"><label className={labelCls}>Invoice Subject</label><input type="text" value={emailTemplates.invoiceSubject} onChange={e => set({ invoiceSubject: e.target.value })} className={inputCls} /></div>
-            <div className="mb-4"><label className={labelCls}>Invoice Body</label><textarea rows={5} value={emailTemplates.invoiceBody} onChange={e => set({ invoiceBody: e.target.value })} className={inputCls} /></div>
-            <div className="mb-4"><label className={labelCls}>Reminder Subject</label><input type="text" value={emailTemplates.invoiceReminderSubject} onChange={e => set({ invoiceReminderSubject: e.target.value })} className={inputCls} /></div>
-            <div className="mb-4"><label className={labelCls}>Reminder Body</label><textarea rows={5} value={emailTemplates.invoiceReminderBody} onChange={e => set({ invoiceReminderBody: e.target.value })} className={inputCls} /></div>
-            <div className="mb-4"><label className={labelCls}>Overdue Subject</label><input type="text" value={emailTemplates.overdueInvoiceSubject} onChange={e => set({ overdueInvoiceSubject: e.target.value })} className={inputCls} /></div>
-            <div className="mb-4"><label className={labelCls}>Overdue Body</label><textarea rows={5} value={emailTemplates.overdueInvoiceBody} onChange={e => set({ overdueInvoiceBody: e.target.value })} className={inputCls} /></div>
+
+      <div className="mb-4">
+        <button
+          type="button"
+          onClick={() => setShowPlaceholders((p) => !p)}
+          className="flex items-center gap-2 text-sm text-scaffld-teal hover:text-scaffld-teal/80 transition-colors"
+        >
+          <svg className={`w-4 h-4 transition-transform ${showPlaceholders ? 'rotate-90' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+          </svg>
+          Available Placeholders
+        </button>
+        {showPlaceholders && (
+          <div className="mt-2 p-3 bg-midnight/60 rounded-lg border border-slate-700/20">
+            <p className="text-xs text-slate-400 mb-2">Click to copy a placeholder to your clipboard.</p>
+            <div className="flex flex-wrap gap-2">
+              {PLACEHOLDERS.map(({ tag, desc }) => (
+                <button
+                  key={tag}
+                  type="button"
+                  onClick={() => copyPlaceholder(tag)}
+                  title={desc}
+                  className={`px-2 py-1 rounded text-xs border transition-all cursor-pointer ${
+                    copiedTag === tag
+                      ? 'bg-scaffld-teal/20 border-scaffld-teal text-scaffld-teal'
+                      : 'bg-midnight border-slate-700 text-slate-300 hover:border-scaffld-teal hover:text-scaffld-teal'
+                  }`}
+                >
+                  {copiedTag === tag ? 'Copied!' : tag}
+                </button>
+              ))}
+            </div>
           </div>
-          <div>
-            <h4 className="font-semibold mb-3 text-scaffld-teal">Quote Emails</h4>
-            <div className="mb-4"><label className={labelCls}>Quote Subject</label><input type="text" value={emailTemplates.quoteSubject} onChange={e => set({ quoteSubject: e.target.value })} className={inputCls} /></div>
-            <div className="mb-4"><label className={labelCls}>Quote Body</label><textarea rows={5} value={emailTemplates.quoteBody} onChange={e => set({ quoteBody: e.target.value })} className={inputCls} /></div>
-            <div className="mb-4"><label className={labelCls}>Follow-up Subject</label><input type="text" value={emailTemplates.quoteFollowupSubject} onChange={e => set({ quoteFollowupSubject: e.target.value })} className={inputCls} /></div>
-            <div className="mb-4"><label className={labelCls}>Follow-up Body</label><textarea rows={5} value={emailTemplates.quoteFollowupBody} onChange={e => set({ quoteFollowupBody: e.target.value })} className={inputCls} /></div>
-            <h4 className="font-semibold mb-3 mt-6 text-scaffld-teal">Other Templates</h4>
-            <div className="mb-4"><label className={labelCls}>Appointment Reminder Subject</label><input type="text" value={emailTemplates.appointmentReminderSubject} onChange={e => set({ appointmentReminderSubject: e.target.value })} className={inputCls} /></div>
-            <div className="mb-4"><label className={labelCls}>Appointment Reminder Body</label><textarea rows={5} value={emailTemplates.appointmentReminderBody} onChange={e => set({ appointmentReminderBody: e.target.value })} className={inputCls} /></div>
-            <div className="mb-4"><label className={labelCls}>Job Completion Subject</label><input type="text" value={emailTemplates.jobCompletionSubject} onChange={e => set({ jobCompletionSubject: e.target.value })} className={inputCls} /></div>
-            <div className="mb-4"><label className={labelCls}>Job Completion Body</label><textarea rows={5} value={emailTemplates.jobCompletionBody} onChange={e => set({ jobCompletionBody: e.target.value })} className={inputCls} /></div>
+        )}
+      </div>
+
+      <form onSubmit={handleSaveEmailTemplates}>
+        {TEMPLATE_GROUPS.map((group) => (
+          <div key={group.label} className={sectionCls}>
+            <h4 className={sectionTitle}>{group.label}</h4>
+            {group.templates.map((tpl) => (
+              <TemplateCard
+                key={tpl.key}
+                name={tpl.name}
+                subject={emailTemplates[tpl.subjectKey] || ''}
+                body={emailTemplates[tpl.bodyKey] || ''}
+                expanded={expanded === tpl.key}
+                onToggle={() => toggle(tpl.key)}
+                onChangeSubject={(e) => set({ [tpl.subjectKey]: e.target.value })}
+                onChangeBody={(e) => set({ [tpl.bodyKey]: e.target.value })}
+              />
+            ))}
           </div>
+        ))}
+
+        <div className="text-right">
+          <button type="submit" className={saveBtnCls}>Save All Email Templates</button>
         </div>
-        <div className="mt-4 p-3 bg-midnight/60 rounded-lg border border-slate-700/20">
-          <p className="text-sm font-semibold text-slate-200 mb-2">Available Placeholders:</p>
-          <div className="grid grid-cols-2 gap-2 text-sm text-slate-300">
-            <div>{'{{clientName}}'} - Client name</div><div>{'{{companyName}}'} - Your company</div>
-            <div>{'{{documentNumber}}'} - Doc number</div><div>{'{{total}}'} - Total amount</div>
-            <div>{'{{amountDue}}'} - Amount due</div><div>{'{{dueDate}}'} - Due date</div>
-            <div>{'{{daysOverdue}}'} - Days overdue</div><div>{'{{paymentLink}}'} - Payment link</div>
-            <div>{'{{approvalLink}}'} - Approval link</div><div>{'{{appointmentDate}}'} - Appointment date</div>
-            <div>{'{{appointmentTime}}'} - Appointment time</div><div>{'{{jobTitle}}'} - Job title</div>
-          </div>
-        </div>
-        <div className="mt-4 text-right"><button type="submit" className={saveBtnCls}>Save All Email Templates</button></div>
       </form>
     </div>
   );

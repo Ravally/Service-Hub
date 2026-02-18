@@ -4,14 +4,20 @@ Clamp is Scaffld's AI assistant. Every AI-powered feature in the platform lives 
 
 ## Icon
 
-The Clamp icon is a stylised bracket/clamp. On web, use the `ClampIcon` SVG component. On mobile, use `react-native-svg`.
+The Clamp icon is **The Engineering Mark** — a scaffold coupler abstracted into a clean mark (cross tubes, two opposing jaws, hex bolt). On web, use the `ClampIcon` SVG component. On mobile, use `react-native-svg`.
 
 ```svg
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-  <path d="M7 4V20" />
-  <path d="M7 4H11C13.2091 4 15 5.79086 15 8V8C15 10.2091 13.2091 12 11 12H7" />
-  <path d="M17 4V20" />
-  <path d="M17 12H13" />
+<svg viewBox="0 0 24 24" fill="none">
+  <!-- Cross tubes -->
+  <line x1="1" y1="12" x2="23" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.4" />
+  <line x1="12" y1="1" x2="12" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.4" />
+  <!-- Right jaw -->
+  <path d="M16.5 7 A6.5 6.5 0 0 1 16.5 17" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" fill="none" />
+  <!-- Left jaw -->
+  <path d="M7.5 17 A6.5 6.5 0 0 1 7.5 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" fill="none" />
+  <!-- Center bolt -->
+  <circle cx="12" cy="12" r="2.5" stroke="currentColor" stroke-width="1.5" fill="none" />
+  <circle cx="12" cy="12" r="1" fill="currentColor" />
 </svg>
 ```
 

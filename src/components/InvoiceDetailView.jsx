@@ -2,7 +2,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { ChevronLeftIcon, InvoiceIcon, PrinterIcon } from './icons';
 import { formatCurrency, formatDate, toDateInput, toIsoDate } from '../utils';
-import { rewriteText } from '../utils';
 import { computeDueDate, computeTotals } from '../utils';
 import { STATUS_COLORS } from '../constants';
 import { hasPermission } from '../utils';
@@ -11,6 +10,7 @@ import InvoiceTotalsCard from './invoices/InvoiceTotalsCard';
 import { InvoiceDetailsCard, ClientViewCard, PaymentSettingsCard, InternalNotesCard } from './invoices/InvoiceSidebarCards';
 import PaymentPlanCard from './invoices/PaymentPlanCard';
 import CustomFieldEditor from './common/CustomFieldEditor';
+import AIRewriteButtons from './common/AIRewriteButtons';
 
 const buildLineItem = (opts = {}) => ({
   type: 'line_item',
@@ -423,19 +423,9 @@ export default function InvoiceDetailView({
               rows={4}
               disabled={!canEdit}
             />
-            <div className="flex flex-wrap gap-2 mt-2 text-xs">
-              {['Cheerful','Casual','Professional','Shorter'].map((persona) => (
-                <button
-                  key={persona}
-                  type="button"
-                  onClick={() => updateDraft({ clientMessage: rewriteText(draft.clientMessage || '', persona) })}
-                  className="px-2 py-1 rounded-full border border-slate-700/30 text-slate-400 hover:text-slate-100"
-                  disabled={!canEdit}
-                >
-                  Rewrite {persona}
-                </button>
-              ))}
-            </div>
+            {canEdit && (
+              <AIRewriteButtons text={draft.clientMessage} onApply={(text) => updateDraft({ clientMessage: text })} disabled={!canEdit} />
+            )}
           </div>
 
           <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-6 space-y-3">

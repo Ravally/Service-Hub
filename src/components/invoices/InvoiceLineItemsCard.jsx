@@ -1,15 +1,80 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { toDateInput, toIsoDate } from '../../utils';
+import AIAssistButton from '../common/AIAssistButton';
+import AIResultPreview from '../common/AIResultPreview';
+import { aiService } from '../../services/aiService';
 
 export default function InvoiceLineItemsCard({ draft, canEdit, updateLineItem, addLineItem, removeLineItem }) {
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiResults, setAiResults] = useState(null);
+  const [aiError, setAiError] = useState(null);
+
+  const handleImproveDescriptions = async () => {
+    const items = (draft.lineItems || []).filter(i => i.type !== 'text' && i.description);
+    if (items.length === 0) return;
+    setAiLoading(true);
+    setAiError(null);
+    setAiResults(null);
+    try {
+      const descriptions = items.map(i => i.description);
+      const improved = await aiService.improveInvoiceDescriptions(descriptions);
+      setAiResults(improved);
+    } catch (err) {
+      setAiError(err.message);
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
+  const applyImproved = () => {
+    if (!aiResults) return;
+    let resultIdx = 0;
+    (draft.lineItems || []).forEach((item, idx) => {
+      if (item.type !== 'text' && item.description && resultIdx < aiResults.length) {
+        updateLineItem(idx, 'description', aiResults[resultIdx]);
+        resultIdx++;
+      }
+    });
+    setAiResults(null);
+  };
+
+  const hasDescriptions = (draft.lineItems || []).some(i => i.type !== 'text' && i.description);
+
   return (
     <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-6">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-2xl font-bold text-slate-100">Product / Service</h3>
-        <button type="button" onClick={() => addLineItem()} className="px-4 py-2 rounded-full bg-green-700 text-white text-sm font-semibold" disabled={!canEdit}>
-          Add Line Item
-        </button>
+        <div className="flex items-center gap-2">
+          {canEdit && hasDescriptions && (
+            <AIAssistButton label="Improve descriptions" onClick={handleImproveDescriptions} loading={aiLoading} />
+          )}
+          <button type="button" onClick={() => addLineItem()} className="px-4 py-2 rounded-full bg-green-700 text-white text-sm font-semibold" disabled={!canEdit}>
+            Add Line Item
+          </button>
+        </div>
       </div>
+
+      {aiError && <div className="mb-3 text-xs text-signal-coral">{aiError}</div>}
+      {aiResults && (
+        <div className="mb-4 border border-purple-500/30 rounded-xl bg-purple-900/10 p-4 space-y-3 animate-fade-in">
+          <div className="text-xs font-semibold text-purple-300 flex items-center gap-1.5">
+            <span>✨</span> Improved Descriptions
+          </div>
+          <div className="space-y-2">
+            {aiResults.map((desc, i) => (
+              <div key={i} className="text-sm text-slate-200 bg-midnight/40 rounded-lg p-3 border border-slate-700/30">{desc}</div>
+            ))}
+          </div>
+          <div className="flex items-center gap-2">
+            <button type="button" onClick={applyImproved} className="px-3 py-1.5 rounded-full bg-scaffld-teal/20 text-scaffld-teal text-xs font-semibold border border-scaffld-teal/30 hover:bg-scaffld-teal/30">
+              Accept All
+            </button>
+            <button type="button" onClick={() => setAiResults(null)} className="px-3 py-1.5 rounded-full text-slate-400 text-xs font-semibold hover:text-slate-200">
+              Keep originals
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="space-y-4">
         {(draft.lineItems || []).map((item, idx) => {

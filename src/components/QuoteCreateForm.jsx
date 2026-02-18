@@ -2,9 +2,11 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { FileTextIcon } from './icons';
 import { formatCurrency } from '../utils';
 import { computeTotals } from '../utils/calculations';
-import { rewriteText } from '../utils/textUtils';
 import { MAX_LINE_ITEMS, initialLineItem } from '../constants';
 import CustomFieldEditor from './common/CustomFieldEditor';
+import AIAssistButton from './common/AIAssistButton';
+import AIRewriteButtons from './common/AIRewriteButtons';
+import { aiService } from '../services/aiService';
 
 const buildLineItem = (opts = {}) => ({
   ...initialLineItem,
@@ -71,12 +73,42 @@ export default function QuoteCreateForm({
     setTemplateId('');
   };
 
-  const applyRewriteToItem = (idx, persona) => {
-    const current = quote.lineItems?.[idx]?.description || '';
-    updateLineItem(idx, 'description', rewriteText(current, persona));
+  // AI Quote Writer state
+  const [aiPrompt, setAiPrompt] = useState('');
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiResults, setAiResults] = useState(null);
+  const [aiError, setAiError] = useState(null);
+  const [showAiPanel, setShowAiPanel] = useState(false);
+
+  const handleAiGenerate = async () => {
+    if (!aiPrompt.trim()) return;
+    setAiLoading(true);
+    setAiError(null);
+    setAiResults(null);
+    try {
+      const items = await aiService.generateQuote(aiPrompt, {
+        clientName: activeClient?.name || '',
+        businessType: companySettings?.industry || '',
+      });
+      setAiResults(items);
+    } catch (err) {
+      setAiError(err.message);
+    } finally {
+      setAiLoading(false);
+    }
   };
-  const applyRewriteToClientMessage = (persona) => {
-    updateQuote({ clientMessage: rewriteText(quote.clientMessage || '', persona) });
+
+  const addAiLineItem = (item) => {
+    if (!canAddItems) return;
+    addLineItem({ name: item.description, description: item.description, qty: item.quantity || 1, price: item.unitPrice || 0 });
+  };
+
+  const addAllAiItems = () => {
+    if (!aiResults) return;
+    aiResults.forEach((item) => addAiLineItem(item));
+    setAiResults(null);
+    setShowAiPanel(false);
+    setAiPrompt('');
   };
 
   const customFields = Array.isArray(quote.customFields) ? quote.customFields : [];
@@ -166,6 +198,7 @@ export default function QuoteCreateForm({
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-2xl font-bold text-slate-100">Product / Service</h3>
               <div className="flex items-center gap-2">
+                <AIAssistButton label="Generate line items" onClick={() => setShowAiPanel(v => !v)} loading={aiLoading} />
                 <select value={templateId} onChange={(e) => setTemplateId(e.target.value)} className="px-3 py-2 border border-slate-700/30 rounded-full text-sm shadow-sm">
                   <option value="">Templates</option>
                   {quoteTemplates.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
@@ -173,6 +206,45 @@ export default function QuoteCreateForm({
                 <button type="button" onClick={addFromTemplate} className="px-3 py-2 rounded-full border border-slate-700/30 text-sm shadow-sm">Add</button>
               </div>
             </div>
+
+            {showAiPanel && (
+              <div className="mb-6 border border-purple-500/30 rounded-xl bg-purple-900/10 p-4 space-y-3 animate-fade-in">
+                <div className="text-sm font-semibold text-purple-300 flex items-center gap-1.5">
+                  <span>✨</span> AI Quote Writer
+                </div>
+                <textarea
+                  value={aiPrompt}
+                  onChange={(e) => setAiPrompt(e.target.value)}
+                  placeholder="Describe the work (e.g., '3-bedroom house, full interior repaint, including prep and two coats')"
+                  className="w-full px-3 py-2 border border-slate-700/30 rounded-xl text-sm bg-midnight/40"
+                  rows={3}
+                />
+                <div className="flex items-center gap-2">
+                  <AIAssistButton label="Generate" onClick={handleAiGenerate} loading={aiLoading} disabled={!aiPrompt.trim()} size="md" />
+                  <button type="button" onClick={() => { setShowAiPanel(false); setAiResults(null); setAiError(null); }} className="text-xs text-slate-400 hover:text-slate-200">Cancel</button>
+                </div>
+                {aiError && <div className="text-xs text-signal-coral">{aiError}</div>}
+                {aiResults && (
+                  <div className="space-y-2">
+                    <div className="text-xs text-slate-400">Review and add items to your quote:</div>
+                    {aiResults.map((item, i) => (
+                      <div key={i} className="flex items-start justify-between gap-3 p-3 bg-midnight/40 rounded-lg border border-slate-700/30">
+                        <div className="flex-1 text-sm">
+                          <div className="font-medium text-slate-200">{item.description}</div>
+                          <div className="text-slate-400 mt-1">{item.quantity || 1} × {item.unit || 'each'} @ ${item.unitPrice?.toFixed(2) || '0.00'}</div>
+                        </div>
+                        <button type="button" onClick={() => addAiLineItem(item)} disabled={!canAddItems} className="px-3 py-1.5 rounded-full bg-scaffld-teal/20 text-scaffld-teal text-xs font-semibold border border-scaffld-teal/30 hover:bg-scaffld-teal/30 disabled:opacity-40">
+                          Add
+                        </button>
+                      </div>
+                    ))}
+                    <button type="button" onClick={addAllAiItems} disabled={!canAddItems} className="px-4 py-2 rounded-full bg-scaffld-teal text-white text-sm font-semibold hover:bg-scaffld-teal/90 disabled:opacity-40">
+                      Add All to Quote
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
 
             <div className="space-y-4">
               {(quote.lineItems || []).map((item, idx) => {
@@ -250,18 +322,7 @@ export default function QuoteCreateForm({
                           className="w-full px-4 py-3 border border-slate-700/30 rounded-2xl shadow-sm"
                           rows={3}
                         />
-                        <div className="flex flex-wrap gap-2 mt-2 text-xs">
-                          {['Cheerful','Casual','Professional','Shorter'].map(persona => (
-                            <button
-                              key={persona}
-                              type="button"
-                              onClick={() => applyRewriteToItem(idx, persona)}
-                              className="px-2 py-1 rounded-full border border-slate-700/30 text-slate-400 hover:text-slate-100"
-                            >
-                              Rewrite {persona}
-                            </button>
-                          ))}
-                        </div>
+                        <AIRewriteButtons text={item.description} onApply={(text) => updateLineItem(idx, 'description', text)} />
                       </div>
                       <div className="border-2 border-dashed border-slate-700/30 rounded-2xl flex items-center justify-center text-slate-500 text-sm">
                         <input
@@ -339,18 +400,7 @@ export default function QuoteCreateForm({
               className="w-full px-3 py-2 border border-slate-700 rounded-md"
               rows={4}
             />
-            <div className="flex flex-wrap gap-2 text-xs">
-              {['Cheerful','Casual','Professional','Shorter'].map(persona => (
-                <button
-                  key={persona}
-                  type="button"
-                  onClick={() => applyRewriteToClientMessage(persona)}
-                  className="px-2 py-1 rounded-full border border-slate-700/30 text-slate-400 hover:text-slate-100"
-                >
-                  Rewrite {persona}
-                </button>
-              ))}
-            </div>
+            <AIRewriteButtons text={quote.clientMessage} onApply={(text) => updateQuote({ clientMessage: text })} />
           </div>
 
           <div className="border border-slate-700/30 rounded-2xl p-4 space-y-3">

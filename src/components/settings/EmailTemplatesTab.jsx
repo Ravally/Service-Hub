@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { inputCls, labelCls, saveBtnCls, sectionCls, sectionTitle } from './settingsShared';
+import AIAssistButton from '../common/AIAssistButton';
+import { aiService } from '../../services/aiService';
 
 const TEMPLATE_GROUPS = [
   { label: 'Invoice Emails', templates: [
@@ -34,7 +36,7 @@ const PLACEHOLDERS = [
   { tag: '{{jobTitle}}', desc: 'Job title' },
 ];
 
-function TemplateCard({ name, subject, body, expanded, onToggle, onChangeSubject, onChangeBody }) {
+function TemplateCard({ name, subject, body, expanded, onToggle, onChangeSubject, onChangeBody, onAiGenerate, aiLoading }) {
   return (
     <div className="border border-slate-700/30 rounded-lg mb-2 overflow-hidden">
       <button
@@ -57,7 +59,10 @@ function TemplateCard({ name, subject, body, expanded, onToggle, onChangeSubject
             <input type="text" value={subject} onChange={onChangeSubject} className={inputCls} />
           </div>
           <div>
-            <label className={labelCls}>Body</label>
+            <div className="flex items-center justify-between mb-1">
+              <label className={`${labelCls} mb-0`}>Body</label>
+              <AIAssistButton label="Generate with AI" onClick={onAiGenerate} loading={aiLoading} />
+            </div>
             <textarea rows={6} value={body} onChange={onChangeBody} className={inputCls} />
           </div>
         </div>
@@ -70,6 +75,7 @@ export default function EmailTemplatesTab({ emailTemplates, setEmailTemplates, h
   const [expanded, setExpanded] = useState(null);
   const [showPlaceholders, setShowPlaceholders] = useState(false);
   const [copiedTag, setCopiedTag] = useState(null);
+  const [aiLoadingKey, setAiLoadingKey] = useState(null);
 
   const set = (updates) => setEmailTemplates({ ...emailTemplates, ...updates });
 
@@ -81,6 +87,19 @@ export default function EmailTemplatesTab({ emailTemplates, setEmailTemplates, h
       setCopiedTag(tag);
       setTimeout(() => setCopiedTag(null), 1200);
     } catch { /* clipboard not available */ }
+  };
+
+  const handleAiGenerate = async (tpl) => {
+    setAiLoadingKey(tpl.key);
+    try {
+      const prompt = `Write a ${tpl.name.toLowerCase()} email template for a field service business. Use these placeholders where appropriate: {{clientName}}, {{companyName}}, {{documentNumber}}, {{total}}, {{dueDate}}, {{paymentLink}}, {{approvalLink}}, {{jobTitle}}. Keep it warm but professional, 3-4 short paragraphs.`;
+      const result = await aiService.draftEmail(prompt, { templateType: tpl.name });
+      set({ [tpl.bodyKey]: result });
+    } catch {
+      // Silently fail — user can try again
+    } finally {
+      setAiLoadingKey(null);
+    }
   };
 
   return (
@@ -136,6 +155,8 @@ export default function EmailTemplatesTab({ emailTemplates, setEmailTemplates, h
                 onToggle={() => toggle(tpl.key)}
                 onChangeSubject={(e) => set({ [tpl.subjectKey]: e.target.value })}
                 onChangeBody={(e) => set({ [tpl.bodyKey]: e.target.value })}
+                onAiGenerate={() => handleAiGenerate(tpl)}
+                aiLoading={aiLoadingKey === tpl.key}
               />
             ))}
           </div>

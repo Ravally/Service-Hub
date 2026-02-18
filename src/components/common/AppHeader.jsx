@@ -18,10 +18,12 @@ export default function AppHeader({
     <header className="mb-6 space-y-3 sticky top-0 z-40 bg-midnight/95 backdrop-blur-sm -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 pt-3 pb-2 lg:static lg:bg-transparent lg:backdrop-blur-none lg:mx-0 lg:pt-0 lg:pb-0">
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-3 min-w-0">
-          <button className="lg:hidden p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-md border border-slate-700" onClick={() => setSidebarOpen(true)} aria-label="Open menu">
-            <span className="block w-5 h-0.5 bg-slate-300 mb-1"></span>
-            <span className="block w-5 h-0.5 bg-slate-300 mb-1"></span>
-            <span className="block w-5 h-0.5 bg-slate-300"></span>
+          <button className="lg:hidden min-h-[44px] min-w-[44px] flex items-center justify-center rounded-md hover:bg-charcoal transition-colors" onClick={() => setSidebarOpen(true)} aria-label="Open menu">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-slate-200">
+              <line x1="3" y1="6" x2="21" y2="6"/>
+              <line x1="3" y1="12" x2="21" y2="12"/>
+              <line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
           </button>
           <div className="min-w-0">
             <p className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-0.5">

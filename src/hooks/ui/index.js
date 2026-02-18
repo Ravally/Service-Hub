@@ -8,3 +8,4 @@ export { useAsync } from './useAsync';
 export { useToggle } from './useToggle';
 export { useBulkSelection } from './useBulkSelection';
 export { useIsMobile } from './useIsMobile';
+export { useScrollLock } from './useScrollLock';

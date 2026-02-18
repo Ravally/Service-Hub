@@ -14,6 +14,7 @@ import BookingSettingsTab from './settings/BookingSettingsTab';
 import ReviewSettingsTab from './settings/ReviewSettingsTab';
 import CustomFieldsTab from './settings/CustomFieldsTab';
 import { hasPermission } from '../utils';
+import { useIsMobile } from '../hooks/ui';
 
 export default function SettingsPage({
   companySettings, invoiceSettings, emailTemplates,
@@ -28,7 +29,15 @@ export default function SettingsPage({
   onConnectAccounting, onDisconnectAccounting, onSyncNow,
 }) {
   const isAdmin = hasPermission(userProfile?.role, 'settings.all');
+  const isMobile = useIsMobile();
   const [activeTab, setActiveTab] = useState(isAdmin ? 'company' : 'account');
+  // On mobile, null = show nav list; non-null = show content panel
+  const [mobilePanel, setMobilePanel] = useState(null);
+
+  const handleTabSelect = (key) => {
+    setActiveTab(key);
+    if (isMobile) setMobilePanel(key);
+  };
 
   const cs = (updates) => appState.setCompanySettings({ ...companySettings, ...updates });
   const csn = (key, updates) => cs({ [key]: { ...(companySettings[key] || {}), ...updates } });
@@ -96,26 +105,71 @@ export default function SettingsPage({
     return null;
   };
 
+  const activeTabLabel = tabs.find(t => t.key === activeTab)?.label || 'Settings';
+
+  // Mobile: full-screen nav pattern (list → tap → content with back button)
+  if (isMobile) {
+    return (
+      <div className="space-y-4">
+        {mobilePanel ? (
+          <>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setMobilePanel(null)}
+                className="min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-300 hover:text-scaffld-teal transition-colors"
+                aria-label="Back to settings"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+              </button>
+              <h2 className="text-xl font-bold font-display text-slate-100">{activeTabLabel}</h2>
+            </div>
+            <div className="bg-charcoal rounded-xl border border-slate-700/30 p-4">
+              {renderTabContent()}
+            </div>
+          </>
+        ) : (
+          <>
+            <h2 className="text-2xl font-bold font-display text-slate-100">Settings</h2>
+            <div className="bg-charcoal rounded-xl border border-slate-700/30 overflow-hidden">
+              {tabs.map((tab) => {
+                if (tab.divider) {
+                  return (
+                    <div key={tab.key} className="px-4 pt-3 pb-1">
+                      {tab.sectionLabel ? (
+                        <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">{tab.sectionLabel}</p>
+                      ) : (
+                        <div className="border-t border-slate-700/30" />
+                      )}
+                    </div>
+                  );
+                }
+                const Icon = tab.icon;
+                return (
+                  <button
+                    key={tab.key}
+                    onClick={() => handleTabSelect(tab.key)}
+                    className="w-full min-h-[44px] flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-200 hover:bg-midnight/50 border-b border-slate-700/20 last:border-b-0 transition-colors"
+                  >
+                    <Icon className="h-4 w-4 text-slate-400 shrink-0" />
+                    <span className="flex-1 text-left">{tab.label}</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-slate-500 shrink-0"><path d="M9 18l6-6-6-6"/></svg>
+                  </button>
+                );
+              })}
+            </div>
+          </>
+        )}
+      </div>
+    );
+  }
+
+  // Desktop: side-by-side layout (unchanged)
   return (
     <div className="space-y-6">
       <h2 className="text-2xl sm:text-3xl font-bold font-display text-slate-100">Settings</h2>
 
-      {/* Mobile tab selector */}
-      <div className="md:hidden">
-        <select
-          value={activeTab}
-          onChange={(e) => setActiveTab(e.target.value)}
-          className="w-full min-h-[44px] px-3 py-2 bg-charcoal border border-slate-700/30 rounded-xl text-sm text-slate-100"
-        >
-          {tabs.filter(t => !t.divider).map((tab) => (
-            <option key={tab.key} value={tab.key}>{tab.label}</option>
-          ))}
-        </select>
-      </div>
-
       <div className="flex gap-6 min-h-[calc(100vh-12rem)]">
-        {/* Sidebar Nav — hidden on mobile */}
-        <nav className="w-56 flex-shrink-0 hidden md:block">
+        <nav className="w-56 flex-shrink-0">
           <div className="bg-charcoal rounded-xl border border-slate-700/30 p-2 sticky top-6">
             {tabs.map((tab) => {
               if (tab.divider) {
@@ -147,7 +201,6 @@ export default function SettingsPage({
           </div>
         </nav>
 
-        {/* Content Panel */}
         <div className="flex-1 min-w-0">
           <div className="bg-charcoal rounded-xl border border-slate-700/30 p-4 sm:p-6">
             {renderTabContent()}

@@ -16,6 +16,7 @@ import {
 } from './icons';
 import ScaffldLogo from './icons/ScaffldLogo';
 import { filterByPermission } from '../utils/permissions';
+import { useScrollLock } from '../hooks/ui';
 
 const NAV_ITEMS = [
   { key: 'dashboard', label: 'Home', icon: LayoutDashboardIcon, permission: 'nav.dashboard' },
@@ -61,6 +62,7 @@ const NavItem = ({ active, label, onClick, children }) => (
 
 const Sidebar = ({ activeView, setActiveView, onCreateAction, open = false, onClose, userRole }) => {
   const [createOpen, setCreateOpen] = useState(false);
+  useScrollLock(open);
 
   const visibleNav = useMemo(() => filterByPermission(userRole, NAV_ITEMS), [userRole]);
   const visibleCreate = useMemo(() => filterByPermission(userRole, CREATE_ITEMS), [userRole]);
@@ -123,10 +125,28 @@ const Sidebar = ({ activeView, setActiveView, onCreateAction, open = false, onCl
       </aside>
       {/* Mobile overlay */}
       <div className={`${open ? '' : 'pointer-events-none'} lg:hidden fixed inset-0 z-50`} aria-hidden={!open}>
-        <div className={`${open ? 'opacity-50' : 'opacity-0'} transition-opacity duration-200 bg-black absolute inset-0`} onClick={onClose} />
-        <div className={`${open ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-200 absolute inset-y-0 left-0`}
-             onClick={(e)=>e.stopPropagation()}>
+        <div
+          className={`${open ? 'opacity-50' : 'opacity-0'} transition-opacity duration-200 bg-black absolute inset-0`}
+          onClick={onClose}
+          style={{ touchAction: 'none' }}
+        />
+        <div
+          className={`${open ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-200 absolute inset-y-0 left-0 overflow-y-auto`}
+          style={{ overscrollBehavior: 'contain', WebkitOverflowScrolling: 'touch' }}
+          onClick={(e) => e.stopPropagation()}
+        >
           {Body}
+          {/* Close button (×) overlay */}
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-400 hover:text-white transition-colors"
+            aria-label="Close menu"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
         </div>
       </div>
     </>

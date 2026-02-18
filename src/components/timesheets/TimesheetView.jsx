@@ -245,16 +245,23 @@ export default function TimesheetView({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 overflow-x-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold font-display text-slate-100">Timesheets</h2>
-        <div className="flex gap-2">
-          {/* Payroll Format Selector */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl sm:text-3xl font-bold font-display text-slate-100">Timesheets</h2>
+          <button
+            onClick={handleNewEntry}
+            className="min-h-[44px] px-4 py-2 text-sm font-medium text-white bg-scaffld-teal rounded-md hover:bg-scaffld-teal-deep transition-colors whitespace-nowrap"
+          >
+            + Add Time Entry
+          </button>
+        </div>
+        <div className="flex flex-wrap gap-2">
           <select
             value={payrollFormat}
             onChange={(e) => setPayrollFormat(e.target.value)}
-            className="px-3 py-2 text-sm font-medium text-slate-100 bg-charcoal border border-slate-700 rounded-md hover:bg-slate-dark focus:outline-none focus:ring-2 focus:ring-scaffld-teal/20"
+            className="min-h-[44px] px-3 py-2 text-sm font-medium text-slate-100 bg-charcoal border border-slate-700 rounded-md hover:bg-slate-dark focus:outline-none focus:ring-2 focus:ring-scaffld-teal/20"
           >
             <option value="xero">Xero (NZ)</option>
             <option value="myob">MYOB (NZ)</option>
@@ -264,25 +271,19 @@ export default function TimesheetView({
           </select>
           <button
             onClick={() => onExportPayroll && onExportPayroll(filteredEntries, payrollFormat)}
-            className="px-4 py-2 text-sm font-medium text-slate-300 bg-charcoal border border-slate-700 rounded-md hover:bg-slate-dark transition-colors"
+            className="min-h-[44px] px-4 py-2 text-sm font-medium text-slate-300 bg-charcoal border border-slate-700 rounded-md hover:bg-slate-dark transition-colors whitespace-nowrap"
             disabled={filteredEntries.length === 0}
           >
-            📊 Export for Payroll
-          </button>
-          <button
-            onClick={handleNewEntry}
-            className="px-4 py-2 text-sm font-medium text-white bg-scaffld-teal rounded-md hover:bg-scaffld-teal-deep transition-colors"
-          >
-            + Add Time Entry
+            Export for Payroll
           </button>
         </div>
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-charcoal rounded-xl border border-slate-700/30 shadow-sm p-4">
-          <div className="text-sm text-white font-medium">Total Hours</div>
-          <div className="text-2xl font-bold text-slate-100">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+        <div className="bg-charcoal rounded-xl border border-slate-700/30 shadow-sm p-3 sm:p-4">
+          <div className="text-xs sm:text-sm text-white font-medium">Total Hours</div>
+          <div className="text-lg sm:text-2xl font-bold text-slate-100">
             {summaryStats.totalHours.toFixed(2)}
           </div>
           <div className="text-xs text-slate-500 mt-1">
@@ -290,23 +291,23 @@ export default function TimesheetView({
           </div>
         </div>
 
-        <div className="bg-charcoal rounded-xl border border-slate-700/30 shadow-sm p-4">
-          <div className="text-sm text-white font-medium">Total Cost</div>
-          <div className="text-2xl font-bold text-slate-100">
+        <div className="bg-charcoal rounded-xl border border-slate-700/30 shadow-sm p-3 sm:p-4">
+          <div className="text-xs sm:text-sm text-white font-medium">Total Cost</div>
+          <div className="text-lg sm:text-2xl font-bold text-slate-100">
             {formatCurrency(summaryStats.totalCost)}
           </div>
         </div>
 
-        <div className="bg-charcoal rounded-xl border border-slate-700/30 shadow-sm p-4">
-          <div className="text-sm text-white font-medium">Billable Hours</div>
-          <div className="text-2xl font-bold text-scaffld-teal">
+        <div className="bg-charcoal rounded-xl border border-slate-700/30 shadow-sm p-3 sm:p-4">
+          <div className="text-xs sm:text-sm text-white font-medium">Billable Hours</div>
+          <div className="text-lg sm:text-2xl font-bold text-scaffld-teal">
             {summaryStats.billableHours.toFixed(2)}
           </div>
         </div>
 
-        <div className="bg-charcoal rounded-xl border border-slate-700/30 shadow-sm p-4">
-          <div className="text-sm text-white font-medium">Billable Cost</div>
-          <div className="text-2xl font-bold text-scaffld-teal">
+        <div className="bg-charcoal rounded-xl border border-slate-700/30 shadow-sm p-3 sm:p-4">
+          <div className="text-xs sm:text-sm text-white font-medium">Billable Cost</div>
+          <div className="text-lg sm:text-2xl font-bold text-scaffld-teal">
             {formatCurrency(summaryStats.billableCost)}
           </div>
         </div>
@@ -520,13 +521,13 @@ export default function TimesheetView({
           {groupedEntries.map((group) => (
             <div key={group.key} className="border-b border-slate-700/30 last:border-b-0">
               {/* Group Header */}
-              <div className="bg-midnight px-6 py-3 border-b border-slate-700/30">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-semibold text-slate-100">
+              <div className="bg-midnight px-4 sm:px-6 py-3 border-b border-slate-700/30">
+                <div className="flex items-center justify-between gap-2">
+                  <h3 className="text-sm font-semibold text-slate-100 truncate">
                     {group.label}
                   </h3>
-                  <div className="flex items-center gap-4 text-sm text-slate-400">
-                    <span>{group.totalHours.toFixed(2)} hours</span>
+                  <div className="flex items-center gap-3 sm:gap-4 text-xs sm:text-sm text-slate-400 shrink-0">
+                    <span>{group.totalHours.toFixed(2)} hrs</span>
                     <span>{formatCurrency(group.totalCost)}</span>
                   </div>
                 </div>
@@ -535,10 +536,10 @@ export default function TimesheetView({
               {/* Group Entries */}
               <div className="divide-y divide-slate-700/30">
                 {group.entries.map((entry) => (
-                  <div key={entry.id} className="px-6 py-4 hover:bg-slate-dark/50 transition-colors">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3">
+                  <div key={entry.id} className="px-4 sm:px-6 py-3 sm:py-4 hover:bg-slate-dark/50 transition-colors">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
                           <span className="text-sm font-medium text-slate-100">
                             {entry.staffName || 'Unknown Staff'}
                           </span>
@@ -548,7 +549,7 @@ export default function TimesheetView({
                             </span>
                           )}
                         </div>
-                        <div className="text-sm text-slate-400 mt-1">
+                        <div className="text-sm text-slate-400 mt-1 truncate">
                           {entry.jobNumber || entry.jobId?.substring(0, 8)} - {entry.jobTitle}
                         </div>
                         <div className="text-xs text-slate-500 mt-1">
@@ -556,13 +557,13 @@ export default function TimesheetView({
                           {entry.end && ` → ${formatDateTime(entry.end)}`}
                         </div>
                         {entry.note && (
-                          <div className="text-sm text-slate-400 mt-2 italic">
+                          <div className="text-sm text-slate-400 mt-2 italic line-clamp-2">
                             {entry.note}
                           </div>
                         )}
                       </div>
 
-                      <div className="flex items-center gap-6 ml-4">
+                      <div className="flex items-center gap-3 sm:gap-6 shrink-0">
                         <div className="text-right">
                           <div className="text-sm font-semibold text-slate-100">
                             {entry.hours?.toFixed(2) || '0.00'} hrs
@@ -577,17 +578,17 @@ export default function TimesheetView({
                           </div>
                         </div>
 
-                        <div className="flex gap-2">
+                        <div className="flex gap-1 sm:gap-2">
                           <button
                             onClick={() => handleEditEntry(entry)}
-                            className="p-2 text-scaffld-teal hover:bg-scaffld-teal/10 rounded"
+                            className="min-h-[44px] min-w-[44px] flex items-center justify-center text-scaffld-teal hover:bg-scaffld-teal/10 rounded"
                             title="Edit"
                           >
                             ✏️
                           </button>
                           <button
                             onClick={() => handleDeleteEntry(entry)}
-                            className="p-2 text-signal-coral hover:bg-signal-coral/10 rounded"
+                            className="min-h-[44px] min-w-[44px] flex items-center justify-center text-signal-coral hover:bg-signal-coral/10 rounded"
                             title="Delete"
                           >
                             🗑️

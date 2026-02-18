@@ -1104,3 +1104,15 @@ exports.onInvoiceStatusChange = functions.firestore
     }
   });
 
+// ─── AI Cloud Function ────────────────────────────────────────────────────────
+const ai = require('./ai');
+exports.scaffldAI = ai.scaffldAI;
+
+// ─── SMS Cloud Functions ──────────────────────────────────────────────────────
+const sms = require('./sms');
+exports.sendSMS = sms.sendSMS;
+exports.dailyAppointmentReminders = sms.dailyAppointmentReminders;
+exports.dailyOverdueReminders = sms.dailyOverdueReminders;
+exports.onMyWayNotification = sms.onMyWayNotification;
+exports.jobCompletionNotification = sms.jobCompletionNotification;
+

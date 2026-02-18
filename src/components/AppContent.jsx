@@ -47,6 +47,7 @@ const TimesheetView = React.lazy(() => import('./timesheets/TimesheetView'));
 import AppHeader from './common/AppHeader';
 import PlaceholderPage from './common/PlaceholderPage';
 import ScheduleToolbar from './common/ScheduleToolbar';
+import ClampChat from './clamp/ClampChat';
 
 /**
  * Main application content component.
@@ -962,6 +963,7 @@ export default function AppContent({ auth, appState, handlers }) {
           )}
         </main>
       </div>
+      <ClampChat />
     </div>
   );
 }

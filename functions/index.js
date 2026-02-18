@@ -1104,9 +1104,12 @@ exports.onInvoiceStatusChange = functions.firestore
     }
   });
 
-// ─── AI Cloud Function ────────────────────────────────────────────────────────
+// ─── AI Cloud Functions ──────────────────────────────────────────────────────
 const ai = require('./ai');
 exports.scaffldAI = ai.scaffldAI;
+
+const clampChat = require('./clampChat');
+exports.clampChat = clampChat.clampChat;
 
 // ─── SMS Cloud Functions ──────────────────────────────────────────────────────
 const sms = require('./sms');

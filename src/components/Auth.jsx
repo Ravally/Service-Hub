@@ -3,9 +3,15 @@ import React, { useState } from 'react';
 import ScaffldLogo from './icons/ScaffldLogo';
 import { useAuth } from '../contexts/AuthContext';
 
+const getInitialAuthMode = () => {
+  const path = window.location.pathname.toLowerCase();
+  if (path === '/signup' || path === '/register') return 'signup';
+  return 'login';
+};
+
 const Auth = () => {
   const { signUp, signIn, resetPassword } = useAuth();
-  const [authMode, setAuthMode] = useState('login'); // 'login' | 'signup' | 'forgot'
+  const [authMode, setAuthMode] = useState(getInitialAuthMode);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');

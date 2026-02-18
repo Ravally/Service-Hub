@@ -3,6 +3,7 @@ import { collection, addDoc, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../../firebase/config';
 import { inputCls, labelCls, sectionCls, saveBtnCls } from './settingsShared';
 import TeamInviteSection from './TeamInviteSection';
+import ClampHelpCard from '../clamp/ClampHelpCard';
 
 export default function StaffTemplatesTab({ tab, userId, staff, quoteTemplates, newStaff, setNewStaff, newTemplate, setNewTemplate, handleAddTemplate, handleDeleteTemplate, newInvite, setNewInvite, handleInviteUser, userEmail }) {
   if (tab === 'staff') {
@@ -84,6 +85,12 @@ export default function StaffTemplatesTab({ tab, userId, staff, quoteTemplates, 
           )}
         </div>
       </div>
+
+      <ClampHelpCard chips={[
+        'Suggest common item templates for my trade',
+        'What pricing should I use for house washing?',
+        'Help me set up my service catalogue',
+      ]} />
     </div>
   );
 }

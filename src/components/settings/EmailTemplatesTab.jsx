@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { inputCls, labelCls, saveBtnCls, sectionCls, sectionTitle } from './settingsShared';
 import ClampButton from '../clamp/ClampButton';
+import ClampHelpCard from '../clamp/ClampHelpCard';
 import { aiService } from '../../services/aiService';
 
 const TEMPLATE_GROUPS = [
@@ -166,6 +167,12 @@ export default function EmailTemplatesTab({ emailTemplates, setEmailTemplates, h
           <button type="submit" className={saveBtnCls}>Save All Email Templates</button>
         </div>
       </form>
+
+      <ClampHelpCard chips={[
+        'Draft all my email templates',
+        'What placeholders should I use?',
+        'Write a friendly overdue invoice email',
+      ]} />
     </div>
   );
 }

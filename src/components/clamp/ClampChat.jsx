@@ -36,6 +36,19 @@ export default function ClampChat() {
     return () => clearTimeout(timer);
   }, []);
 
+  // Listen for programmatic open with a pre-seeded message
+  useEffect(() => {
+    const handler = (e) => {
+      setIsOpen(true);
+      if (e.detail?.message) {
+        // Small delay so the panel renders before sending
+        setTimeout(() => handleSend(e.detail.message), 100);
+      }
+    };
+    window.addEventListener('clampChat:open', handler);
+    return () => window.removeEventListener('clampChat:open', handler);
+  }, [messages]); // re-bind when messages change so handleSend has fresh closure
+
   // Auto-scroll to bottom on new messages
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -109,7 +122,7 @@ export default function ClampChat() {
         </div>
         <div className="flex-1">
           <div className="text-sm font-bold text-slate-100">Clamp</div>
-          <div className="text-xs text-slate-400">AI Foreman</div>
+          <div className="text-xs text-slate-400">Your AI Foreman</div>
         </div>
         <button
           type="button"

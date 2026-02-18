@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { inputCls, labelCls, sectionCls, sectionTitle, saveBtnCls, Toggle } from './settingsShared';
 import { useCustomFieldDefinitions } from '../../hooks/data';
 import { CUSTOM_FIELD_TYPES, CUSTOM_FIELD_ENTITIES } from '../../constants';
+import ClampHelpCard from '../clamp/ClampHelpCard';
 
 const emptyForm = { name: '', type: 'text', appliesTo: [], options: [], required: false };
 
@@ -165,6 +166,12 @@ export default function CustomFieldsTab({ userId }) {
           )}
         </div>
       </div>
+
+      <ClampHelpCard chips={[
+        'What custom fields should I create?',
+        'Suggest fields for a property maintenance business',
+        'How do custom fields work on quotes and invoices?',
+      ]} />
     </div>
   );
 }

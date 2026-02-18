@@ -6,10 +6,9 @@ const db = admin.firestore();
 
 // Helper: get Twilio client from user's stored credentials or env config
 async function getTwilioClient(uid) {
-  // Check user-level settings first, then fall back to env/config
-  const settingsSnap = await db.doc(`users/${uid}/settings/integrations`).get();
+  const settingsSnap = await db.doc(`users/${uid}/settings/companyDetails`).get();
   const settings = settingsSnap.exists ? settingsSnap.data() : {};
-  const tw = settings.twilio || {};
+  const tw = settings.integrations?.twilio || {};
 
   const sid = tw.sid || functions.config().twilio?.sid || process.env.TWILIO_SID;
   const token = tw.token || functions.config().twilio?.token || process.env.TWILIO_TOKEN;
@@ -31,10 +30,10 @@ async function logSMS(uid, { to, body, type, relatedId, status, twilioSid }) {
 
 // Helper: check if a specific automation toggle is enabled
 async function isAutomationEnabled(uid, toggleName) {
-  const snap = await db.doc(`users/${uid}/settings/smsAutomation`).get();
+  const snap = await db.doc(`users/${uid}/settings/companyDetails`).get();
   if (!snap.exists) return false;
-  const settings = snap.data();
-  return settings[toggleName] === true;
+  const smsAutomation = snap.data().smsAutomation || {};
+  return smsAutomation[toggleName] === true;
 }
 
 /**

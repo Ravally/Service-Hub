@@ -853,7 +853,7 @@ export default function AppContent({ auth, appState, handlers }) {
                     )}</div>
                   ) : scheduleView === 'calendar' ? (
                     <Suspense fallback={<div className="text-center p-10 text-slate-400">Loading...</div>}>
-                      <CalendarView jobs={filteredJobs} staff={staff} calendarDate={calendarDate} setCalendarDate={setCalendarDate} onJobSelect={setSelectedJob} scheduleRange={scheduleRange} />
+                      <CalendarView jobs={filteredJobs} staff={staff} calendarDate={calendarDate} setCalendarDate={setCalendarDate} onJobSelect={setSelectedJob} onJobReschedule={handleUpdateJobDetails} scheduleRange={scheduleRange} />
                     </Suspense>
                   ) : null}
                 </div>

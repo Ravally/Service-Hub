@@ -2,16 +2,25 @@
 import React, { useMemo, useState } from 'react';
 import { ChevronLeftIcon, ChevronRightIcon } from './icons';
 
-const CalendarView = ({ jobs, calendarDate, setCalendarDate, onJobSelect, staff = [], scheduleRange = 'month' }) => {
+const STATUS_COLORS = {
+  Scheduled: { bg: '#1e40af', fg: '#dbeafe' },
+  'In Progress': { bg: '#b45309', fg: '#fef3c7' },
+  Completed: { bg: '#0EA5A0', fg: '#ffffff' },
+  Unscheduled: { bg: '#475569', fg: '#e2e8f0' },
+};
+
+const CalendarView = ({ jobs, calendarDate, setCalendarDate, onJobSelect, onJobReschedule, staff = [], scheduleRange = 'month' }) => {
   const month = calendarDate.getMonth();
   const year = calendarDate.getFullYear();
   const [selectedDay, setSelectedDay] = useState(null);
+  const [dragJobId, setDragJobId] = useState(null);
+  const [dropTarget, setDropTarget] = useState(null);
+  const [confirmDrop, setConfirmDrop] = useState(null);
 
   const firstDayOfMonth = new Date(year, month, 1);
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const paddingDays = firstDayOfMonth.getDay();
   const daysArr = Array.from({ length: paddingDays + daysInMonth }, (_, i) => i < paddingDays ? null : i - paddingDays + 1);
-  const rowCount = Math.ceil(daysArr.length / 7);
 
   const jobsByDate = useMemo(() => (
     (jobs || []).reduce((acc, job) => {
@@ -22,6 +31,12 @@ const CalendarView = ({ jobs, calendarDate, setCalendarDate, onJobSelect, staff 
       return acc;
     }, {})
   ), [jobs]);
+
+  const jobsById = useMemo(() => {
+    const map = {};
+    (jobs || []).forEach(j => { map[j.id] = j; });
+    return map;
+  }, [jobs]);
 
   const staffMap = useMemo(() => {
     const map = {};
@@ -43,15 +58,57 @@ const CalendarView = ({ jobs, calendarDate, setCalendarDate, onJobSelect, staff 
       setCalendarDate(d);
     }
   };
-  const getJobColor = (job) => staffMap[(job.assignees || [])[0]]?.color || '#BFDBFE';
-  const getContrast = (hex) => {
-    const h = (hex || '').replace('#','');
-    const full = h.length === 3 ? h.split('').map(x=>x+x).join('') : h;
-    const val = parseInt(full, 16);
-    if (isNaN(val)) return '#1F2937';
-    const r = (val >> 16) & 255, g = (val >> 8) & 255, b = val & 255;
-    const luminance = (0.299*r + 0.587*g + 0.114*b)/255;
-    return luminance > 0.6 ? '#1F2937' : '#FFFFFF';
+
+  const getJobColor = (job) => {
+    const status = STATUS_COLORS[job.status];
+    if (status) return status;
+    const staffColor = staffMap[(job.assignees || [])[0]]?.color;
+    return staffColor ? { bg: staffColor, fg: '#1F2937' } : { bg: '#BFDBFE', fg: '#1F2937' };
+  };
+
+  // Drag and drop handlers
+  const handleDragStart = (e, jobId) => {
+    setDragJobId(jobId);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', jobId);
+  };
+
+  const handleDragOver = (e, dateStr) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    setDropTarget(dateStr);
+  };
+
+  const handleDragLeave = () => {
+    setDropTarget(null);
+  };
+
+  const handleDrop = (e, dateStr) => {
+    e.preventDefault();
+    setDropTarget(null);
+    const jobId = e.dataTransfer.getData('text/plain') || dragJobId;
+    if (!jobId) return;
+    const job = jobsById[jobId];
+    if (!job) return;
+    const currentDate = job.start ? new Date(job.start).toDateString() : null;
+    if (currentDate === dateStr) return; // Dropped on same day
+    setConfirmDrop({ job, newDate: new Date(dateStr) });
+    setDragJobId(null);
+  };
+
+  const handleDragEnd = () => {
+    setDragJobId(null);
+    setDropTarget(null);
+  };
+
+  const confirmReschedule = () => {
+    if (!confirmDrop || !onJobReschedule) return;
+    const { job, newDate } = confirmDrop;
+    // Preserve original time, just change date
+    const original = job.start ? new Date(job.start) : new Date();
+    newDate.setHours(original.getHours(), original.getMinutes(), original.getSeconds());
+    onJobReschedule(job.id, { start: newDate.toISOString() });
+    setConfirmDrop(null);
   };
 
   const handleDayClick = (day) => {
@@ -65,8 +122,28 @@ const CalendarView = ({ jobs, calendarDate, setCalendarDate, onJobSelect, staff 
     setSelectedDay(prev => prev === dateStr ? null : dateStr);
   };
 
-  // Selected day jobs
   const selectedDayJobs = selectedDay ? (jobsByDate[selectedDay] || []) : [];
+
+  // Confirmation dialog
+  const ConfirmDialog = () => {
+    if (!confirmDrop) return null;
+    const { job, newDate } = confirmDrop;
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+        <div className="bg-charcoal border border-slate-700/30 rounded-xl p-6 shadow-xl max-w-sm w-full mx-4 animate-fade-in">
+          <h3 className="text-lg font-semibold text-slate-100 mb-2">Move job?</h3>
+          <p className="text-sm text-slate-300 mb-4">
+            Move <span className="font-semibold text-scaffld-teal">{job.title}</span> to{' '}
+            <span className="font-semibold">{newDate.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}</span>?
+          </p>
+          <div className="flex items-center justify-end gap-2">
+            <button onClick={() => setConfirmDrop(null)} className="px-4 py-2 rounded-md border border-slate-700 text-sm font-semibold text-slate-300 hover:bg-midnight">Cancel</button>
+            <button onClick={confirmReschedule} className="px-4 py-2 rounded-md bg-scaffld-teal text-white text-sm font-semibold hover:bg-scaffld-teal/90">Confirm</button>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   // Detail panel for selected day
   const DayDetailPanel = () => {
@@ -89,15 +166,14 @@ const CalendarView = ({ jobs, calendarDate, setCalendarDate, onJobSelect, staff 
           <div className="space-y-2">
             {selectedDayJobs.sort((a, b) => new Date(a.start || 0) - new Date(b.start || 0)).map(job => {
               const ids = job.assignees || [];
-              const bg = getJobColor(job);
-              const fg = getContrast(bg);
+              const colors = getJobColor(job);
               return (
                 <div key={job.id} onClick={() => onJobSelect(job)} className="flex items-center justify-between p-3 bg-midnight rounded-lg border border-slate-700/30 hover:border-scaffld-teal/30 cursor-pointer transition-colors">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <p className="font-semibold text-scaffld-teal text-sm truncate">{job.title}</p>
                       {job.status && (
-                        <span className="px-2 py-0.5 text-[10px] font-medium rounded-full bg-slate-700/30 text-slate-300 border border-slate-700 whitespace-nowrap">{job.status}</span>
+                        <span className="px-2 py-0.5 text-[10px] font-medium rounded-full whitespace-nowrap" style={{ backgroundColor: colors.bg + '30', color: colors.bg, border: `1px solid ${colors.bg}40` }}>{job.status}</span>
                       )}
                     </div>
                     {job.start && (
@@ -126,6 +202,33 @@ const CalendarView = ({ jobs, calendarDate, setCalendarDate, onJobSelect, staff 
     );
   };
 
+  // Job pill component (reused across views)
+  const JobPill = ({ job, small = false }) => {
+    const colors = getJobColor(job);
+    const ids = job.assignees || [];
+    return (
+      <div
+        draggable
+        onDragStart={(e) => handleDragStart(e, job.id)}
+        onDragEnd={handleDragEnd}
+        onClick={(e) => { e.stopPropagation(); onJobSelect(job); }}
+        className={`rounded-md p-1 ${small ? 'text-[10px]' : 'text-[11px]'} leading-tight mb-1 cursor-grab active:cursor-grabbing`}
+        style={{ backgroundColor: colors.bg, color: colors.fg }}
+        title={ids.length ? `Assigned: ${ids.map(id => staffMap[id]?.name).filter(Boolean).join(', ')}` : 'Unassigned'}
+      >
+        <div className="flex items-center justify-between gap-1">
+          <span className="truncate">{job.title}</span>
+          <div className="flex -space-x-1">
+            {ids.slice(0, 3).map(id => (
+              <span key={id} className="inline-block h-2 w-2 rounded-full border border-charcoal" style={{ backgroundColor: (staffMap[id]?.color || '#9CA3AF') }} />
+            ))}
+            {ids.length > 3 && (<span className="text-[9px] ml-1">+{ids.length - 3}</span>)}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   // Render helpers
   const MonthGrid = () => (
     <>
@@ -138,33 +241,24 @@ const CalendarView = ({ jobs, calendarDate, setCalendarDate, onJobSelect, staff 
           const jobsForDay = fullDate ? (jobsByDate[fullDate] || []) : [];
           const isToday = fullDate === new Date().toDateString();
           const isSelected = fullDate === selectedDay;
+          const isDragOver = fullDate === dropTarget;
           return (
             <div
               key={index}
               onClick={() => handleDayClick(day)}
-              className={`relative border rounded-md p-1 overflow-y-auto bg-midnight cursor-pointer transition-colors ${isSelected ? 'border-scaffld-teal ring-1 ring-scaffld-teal/30' : 'border-slate-700/30 hover:border-slate-600'}`}
+              onDragOver={fullDate ? (e) => handleDragOver(e, fullDate) : undefined}
+              onDragLeave={handleDragLeave}
+              onDrop={fullDate ? (e) => handleDrop(e, fullDate) : undefined}
+              className={`relative border rounded-md p-1 overflow-y-auto bg-midnight cursor-pointer transition-colors ${
+                isDragOver ? 'border-scaffld-teal bg-scaffld-teal/10 ring-1 ring-scaffld-teal/30' :
+                isSelected ? 'border-scaffld-teal ring-1 ring-scaffld-teal/30' :
+                'border-slate-700/30 hover:border-slate-600'
+              }`}
             >
               {day && (
                 <span className={`absolute top-1 right-2 text-xs text-slate-300 ${isToday ? 'bg-scaffld-teal text-white rounded-full h-5 w-5 flex items-center justify-center' : ''}`}>{day}</span>
               )}
-              {jobsForDay.map(job => {
-                const bg = getJobColor(job);
-                const fg = getContrast(bg);
-                const ids = job.assignees || [];
-                return (
-                  <div key={job.id} onClick={(e) => { e.stopPropagation(); onJobSelect(job); }} className="rounded-md p-1 text-[10px] leading-tight mb-1 cursor-pointer" style={{ backgroundColor: bg, color: fg }} title={ids.length ? `Assigned: ${ids.map(id=>staffMap[id]?.name).filter(Boolean).join(', ')}` : 'Unassigned'}>
-                    <div className="flex items-center justify-between gap-1">
-                      <span className="truncate">{job.title}</span>
-                      <div className="flex -space-x-1">
-                        {ids.slice(0,3).map(id => (
-                          <span key={id} className="inline-block h-2 w-2 rounded-full border border-charcoal" style={{ backgroundColor: (staffMap[id]?.color || '#9CA3AF') }} />
-                        ))}
-                        {ids.length > 3 && (<span className="text-[9px] ml-1">+{ids.length - 3}</span>)}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+              {jobsForDay.map(job => <JobPill key={job.id} job={job} small />)}
             </div>
           );
         })}
@@ -188,32 +282,24 @@ const CalendarView = ({ jobs, calendarDate, setCalendarDate, onJobSelect, staff 
             const jobsForDay = jobsByDate[key] || [];
             const isToday = key === new Date().toDateString();
             const isSelected = key === selectedDay;
+            const isDragOver = key === dropTarget;
             return (
               <div
                 key={key}
                 onClick={() => handleWeekDayClick(day)}
-                className={`relative border rounded-md p-2 overflow-y-auto bg-midnight cursor-pointer transition-colors ${isSelected ? 'border-scaffld-teal ring-1 ring-scaffld-teal/30' : 'border-slate-700/30 hover:border-slate-600'}`}
+                onDragOver={(e) => handleDragOver(e, key)}
+                onDragLeave={handleDragLeave}
+                onDrop={(e) => handleDrop(e, key)}
+                className={`relative border rounded-md p-2 overflow-y-auto bg-midnight cursor-pointer transition-colors ${
+                  isDragOver ? 'border-scaffld-teal bg-scaffld-teal/10 ring-1 ring-scaffld-teal/30' :
+                  isSelected ? 'border-scaffld-teal ring-1 ring-scaffld-teal/30' :
+                  'border-slate-700/30 hover:border-slate-600'
+                }`}
               >
                 <div className="flex items-center justify-between text-sm mb-1">
                   <span className={`font-medium ${isToday ? 'text-scaffld-teal' : 'text-slate-300'}`}>{day.getDate()}</span>
                 </div>
-                {jobsForDay.map(job => {
-                  const bg = getJobColor(job);
-                  const fg = getContrast(bg);
-                  const ids = job.assignees || [];
-                  return (
-                    <div key={job.id} onClick={(e) => { e.stopPropagation(); onJobSelect(job); }} className="rounded-md p-1 text-[11px] leading-tight mb-1 cursor-pointer" style={{ backgroundColor: bg, color: fg }} title={ids.length ? `Assigned: ${ids.map(id=>staffMap[id]?.name).filter(Boolean).join(', ')}` : 'Unassigned'}>
-                      <div className="flex items-center justify-between gap-1">
-                        <span className="truncate">{job.title}</span>
-                        <div className="flex -space-x-1">
-                          {ids.slice(0,3).map(id => (
-                            <span key={id} className="inline-block h-2 w-2 rounded-full border border-charcoal" style={{ backgroundColor: (staffMap[id]?.color || '#9CA3AF') }} />
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
+                {jobsForDay.map(job => <JobPill key={job.id} job={job} />)}
               </div>
             );
           })}
@@ -231,7 +317,7 @@ const CalendarView = ({ jobs, calendarDate, setCalendarDate, onJobSelect, staff 
           <div className="text-center p-10 text-slate-400 bg-midnight rounded-xl border border-slate-700/30">No jobs scheduled for today.</div>
         ) : jobsForDay.map(job => {
           const ids = job.assignees || [];
-          const bg = getJobColor(job); const fg = getContrast(bg);
+          const colors = getJobColor(job);
           return (
             <div key={job.id} onClick={() => onJobSelect(job)} className="bg-midnight rounded-xl shadow border border-slate-700/30 p-3 cursor-pointer hover:border-scaffld-teal/30 transition-colors">
               <div className="flex justify-between items-start">
@@ -239,15 +325,22 @@ const CalendarView = ({ jobs, calendarDate, setCalendarDate, onJobSelect, staff 
                   <p className="font-semibold text-scaffld-teal">{job.title}</p>
                   {job.start && <p className="text-xs text-slate-400">{new Date(job.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>}
                 </div>
-                <div className="flex -space-x-1 ml-2">
-                  {ids.slice(0,3).map(id => (
-                    <span key={id} className="inline-block h-4 w-4 rounded-full border border-charcoal" style={{ backgroundColor: (staffMap[id]?.color || '#9CA3AF') }} title={staffMap[id]?.name || ''} />
-                  ))}
+                <div className="flex items-center gap-2 ml-2">
+                  {job.status && (
+                    <span className="px-2 py-0.5 text-[10px] font-medium rounded-full" style={{ backgroundColor: (STATUS_COLORS[job.status]?.bg || '#475569') + '30', color: STATUS_COLORS[job.status]?.bg || '#475569' }}>{job.status}</span>
+                  )}
+                  <div className="flex -space-x-1">
+                    {ids.slice(0, 3).map(id => (
+                      <span key={id} className="inline-block h-4 w-4 rounded-full border border-charcoal" style={{ backgroundColor: (staffMap[id]?.color || '#9CA3AF') }} title={staffMap[id]?.name || ''} />
+                    ))}
+                  </div>
                 </div>
               </div>
-              <div className="mt-2 rounded p-1 text-[11px]" style={{ backgroundColor: bg, color: fg }}>
-                Assigned: {ids.map(id=>staffMap[id]?.name).filter(Boolean).join(', ') || 'Unassigned'}
-              </div>
+              {ids.length > 0 && (
+                <div className="mt-2 text-xs text-slate-400">
+                  Assigned: {ids.map(id => staffMap[id]?.name).filter(Boolean).join(', ') || 'Unassigned'}
+                </div>
+              )}
             </div>
           );
         })}
@@ -274,6 +367,7 @@ const CalendarView = ({ jobs, calendarDate, setCalendarDate, onJobSelect, staff 
       {scheduleRange === 'today' && <TodayList />}
 
       {scheduleRange !== 'today' && <DayDetailPanel />}
+      <ConfirmDialog />
     </div>
   );
 };

@@ -130,27 +130,73 @@ export default function IntegrationsPortalTab({ tab, companySettings, cs, csn, h
           </div>
         </div>
 
-        {/* SMS Provider */}
+        {/* Twilio SMS */}
         <div className={sectionCls}>
           <div className="flex items-center justify-between mb-3">
             <div>
-              <h4 className="font-semibold text-slate-100">SMS Provider</h4>
-              <p className="text-sm text-slate-400">Send appointment reminders via SMS</p>
+              <h4 className="font-semibold text-slate-100">Twilio SMS</h4>
+              <p className="text-sm text-slate-400">Send automated SMS notifications to clients</p>
+            </div>
+            {companySettings.integrations?.twilio?.connected && (
+              <span className="text-xs font-medium text-scaffld-teal bg-scaffld-teal/10 px-2 py-1 rounded">Connected</span>
+            )}
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className={labelCls}>Account SID</label>
+              <input type="text" value={companySettings.integrations?.twilio?.sid || ''} onChange={e => csn('integrations', { twilio: { ...(companySettings.integrations?.twilio || {}), sid: e.target.value } })} className={inputCls + ' font-mono text-sm'} placeholder="AC..." />
+            </div>
+            <div>
+              <label className={labelCls}>Auth Token</label>
+              <input type="password" value={companySettings.integrations?.twilio?.token || ''} onChange={e => csn('integrations', { twilio: { ...(companySettings.integrations?.twilio || {}), token: e.target.value } })} className={inputCls + ' font-mono text-sm'} placeholder="Your auth token" />
+            </div>
+            <div>
+              <label className={labelCls}>From Number</label>
+              <input type="text" value={companySettings.integrations?.twilio?.from || ''} onChange={e => csn('integrations', { twilio: { ...(companySettings.integrations?.twilio || {}), from: e.target.value } })} className={inputCls + ' font-mono text-sm'} placeholder="+1234567890" />
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className={labelCls}>Provider</label>
-              <select value={companySettings.integrations?.smsProvider?.provider || 'none'} onChange={e => csn('integrations', { smsProvider: { ...(companySettings.integrations?.smsProvider || {}), provider: e.target.value } })} className={inputCls}>
-                <option value="none">None</option><option value="twilio">Twilio</option><option value="messagebird">MessageBird</option><option value="vonage">Vonage</option>
-              </select>
-            </div>
-            {companySettings.integrations?.smsProvider?.provider !== 'none' && (
-              <div>
-                <label className={labelCls}>API Key</label>
-                <input type="password" value={companySettings.integrations?.smsProvider?.apiKey || ''} onChange={e => csn('integrations', { smsProvider: { ...(companySettings.integrations?.smsProvider || {}), apiKey: e.target.value } })} className={inputCls + ' font-mono text-sm'} />
-              </div>
-            )}
+        </div>
+
+        {/* SMS Automations */}
+        <div className={sectionCls}>
+          <h4 className={sectionTitle}>Automated SMS Notifications</h4>
+          <p className="text-sm text-slate-400 mb-4">Messages sent automatically on your behalf via Twilio.</p>
+          {!(companySettings.integrations?.twilio?.sid && companySettings.integrations?.twilio?.token && companySettings.integrations?.twilio?.from) && (
+            <p className="text-xs text-harvest-amber mb-3">Enter your Twilio credentials above to enable automated SMS.</p>
+          )}
+          <div className="space-y-3">
+            <Toggle
+              checked={companySettings.smsAutomation?.appointmentReminders || false}
+              onChange={v => csn('smsAutomation', { appointmentReminders: v })}
+              label="Appointment reminders — Send clients a reminder the day before their scheduled job"
+            />
+            <Toggle
+              checked={companySettings.smsAutomation?.overdueReminders || false}
+              onChange={v => csn('smsAutomation', { overdueReminders: v })}
+              label="Overdue invoice reminders — Nudge clients about unpaid invoices (max once per week)"
+            />
+            <Toggle
+              checked={companySettings.smsAutomation?.onMyWay || false}
+              onChange={v => csn('smsAutomation', { onMyWay: v })}
+              label="On-my-way notifications — Let clients know when you're heading to their job"
+            />
+            <Toggle
+              checked={companySettings.smsAutomation?.jobCompletion || false}
+              onChange={v => csn('smsAutomation', { jobCompletion: v })}
+              label="Job completion notifications — Notify clients when their job is marked complete"
+            />
+          </div>
+          <div className="mt-4">
+            <label className={labelCls}>Send appointment reminders at</label>
+            <select
+              value={companySettings.smsAutomation?.reminderTime || '18:00'}
+              onChange={e => csn('smsAutomation', { reminderTime: e.target.value })}
+              className={inputCls + ' w-auto'}
+            >
+              <option value="18:00">6:00 PM day before</option>
+              <option value="08:00">8:00 AM day of</option>
+              <option value="09:00">9:00 AM day of</option>
+            </select>
           </div>
         </div>
 

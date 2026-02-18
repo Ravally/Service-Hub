@@ -96,12 +96,12 @@ export default function InvoicesList({ invoices=[], clients=[], onOpenInvoice, o
 
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-3xl font-bold font-display text-slate-100">Invoices</h2>
+      <div className="mb-6 flex items-center justify-between gap-3">
+        <h2 className="text-2xl sm:text-3xl font-bold font-display text-slate-100">Invoices</h2>
         {onNewInvoice && (
           <button
             onClick={onNewInvoice}
-            className="px-4 py-2 rounded-lg bg-scaffld-teal text-white text-sm font-semibold hover:bg-scaffld-teal-deep transition-colors"
+            className="px-4 py-2 min-h-[44px] rounded-lg bg-scaffld-teal text-white text-sm font-semibold hover:bg-scaffld-teal-deep transition-colors shrink-0"
           >
             New Invoice
           </button>
@@ -121,8 +121,8 @@ export default function InvoicesList({ invoices=[], clients=[], onOpenInvoice, o
         <KpiCard title="Average time to get paid" sub="Past 7 days" value={`${kpis.avgDays} days`} />
       </div>
 
-      <div className="mb-3 flex items-center justify-between">
-        <div className="flex items-center gap-2">
+      <div className="mb-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
           <div className="relative">
             <button onClick={()=>setStatusOpen(o=>!o)} className="px-3 py-1.5 rounded-full bg-charcoal text-slate-100 text-sm border border-slate-700">Status | {status==='all' ? 'All' : status}</button>
             {statusOpen && (
@@ -160,7 +160,7 @@ export default function InvoicesList({ invoices=[], clients=[], onOpenInvoice, o
             )}
           </div>
         </div>
-        <input value={search} onChange={(e)=>setSearch(e.target.value)} placeholder="Search invoices..." className="px-3 py-2 bg-midnight border border-slate-700 text-slate-100 placeholder-slate-500 focus:border-scaffld-teal focus:ring-2 focus:ring-scaffld-teal/20 rounded-md text-sm w-72"/>
+        <input value={search} onChange={(e)=>setSearch(e.target.value)} placeholder="Search invoices..." className="px-3 py-2 min-h-[44px] bg-midnight border border-slate-700 text-slate-100 placeholder-slate-500 focus:border-scaffld-teal focus:ring-2 focus:ring-scaffld-teal/20 rounded-md text-sm w-full sm:w-72"/>
       </div>
 
       <div className="text-sm text-slate-100 mb-2">{(status!=='all' || dueMode!=='all' || search) ? 'Filtered invoices' : 'All invoices'} ({filtered.length} results)</div>
@@ -171,17 +171,18 @@ export default function InvoicesList({ invoices=[], clients=[], onOpenInvoice, o
         {filtered.length === 0 ? (
           <div className="text-center p-10 text-slate-400">No invoices found.</div>
         ) : (
-          <table className="w-full">
+          <div className="overflow-x-auto">
+          <table className="w-full min-w-[600px]">
             <thead className="bg-midnight text-sm border-b border-slate-700">
               <tr>
                 <th className="p-3 w-10"><input type="checkbox" checked={allChecked} onChange={toggleAll} className="accent-scaffld-teal" /></th>
                 <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-scaffld-teal transition-colors" onClick={()=>toggleSort('client')}>Client{sortBy==='client' && (sortDir==='asc'?' ^':' v')}</th>
-                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-scaffld-teal transition-colors" onClick={()=>toggleSort('number')}>Invoice number{sortBy==='number' && (sortDir==='asc'?' ^':' v')}</th>
-                <th className="text-left font-semibold text-slate-300 p-3">Property</th>
-                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-scaffld-teal transition-colors" onClick={()=>toggleSort('due')}>Due date{sortBy==='due' && (sortDir==='asc'?' ^':' v')}</th>
+                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-scaffld-teal transition-colors hidden sm:table-cell" onClick={()=>toggleSort('number')}>Invoice #{sortBy==='number' && (sortDir==='asc'?' ^':' v')}</th>
+                <th className="text-left font-semibold text-slate-300 p-3 hidden md:table-cell">Property</th>
+                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-scaffld-teal transition-colors hidden sm:table-cell" onClick={()=>toggleSort('due')}>Due{sortBy==='due' && (sortDir==='asc'?' ^':' v')}</th>
                 <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-scaffld-teal transition-colors" onClick={()=>toggleSort('status')}>Status{sortBy==='status' && (sortDir==='asc'?' ^':' v')}</th>
                 <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-scaffld-teal transition-colors" onClick={()=>toggleSort('total')}>Total{sortBy==='total' && (sortDir==='asc'?' ^':' v')}</th>
-                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-scaffld-teal transition-colors" onClick={()=>toggleSort('balance')}>Balance{sortBy==='balance' && (sortDir==='asc'?' ^':' v')}</th>
+                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-scaffld-teal transition-colors hidden sm:table-cell" onClick={()=>toggleSort('balance')}>Balance{sortBy==='balance' && (sortDir==='asc'?' ^':' v')}</th>
               </tr>
             </thead>
             <tbody className="text-sm">
@@ -189,9 +190,9 @@ export default function InvoicesList({ invoices=[], clients=[], onOpenInvoice, o
                 <tr key={inv.id} className="border-t border-slate-700/30 hover:bg-slate-dark/50 transition-colors" onClick={()=>onOpenInvoice && onOpenInvoice(inv)}>
                   <td className="p-3" onClick={(e) => e.stopPropagation()}><input type="checkbox" checked={selected.has(inv.id)} onChange={() => toggleOne(inv.id)} className="accent-scaffld-teal" /></td>
                   <td className="p-3"><button className="font-semibold text-scaffld-teal hover:underline">{inv._clientName}</button></td>
-                  <td className="p-3"><button onClick={()=>onOpenInvoice && onOpenInvoice(inv)} className="font-semibold text-scaffld-teal hover:underline">{inv.invoiceNumber || `#${(inv.id||'').slice(0,6)}`}</button></td>
-                  <td className="p-3"><div className="truncate max-w-xs">{inv._address || '-'}</div></td>
-                  <td className="p-3">{inv.dueDate ? new Date(inv.dueDate).toLocaleDateString() : '-'}</td>
+                  <td className="p-3 hidden sm:table-cell"><button onClick={()=>onOpenInvoice && onOpenInvoice(inv)} className="font-semibold text-scaffld-teal hover:underline">{inv.invoiceNumber || `#${(inv.id||'').slice(0,6)}`}</button></td>
+                  <td className="p-3 hidden md:table-cell"><div className="truncate max-w-xs">{inv._address || '-'}</div></td>
+                  <td className="p-3 hidden sm:table-cell">{inv.dueDate ? new Date(inv.dueDate).toLocaleDateString() : '-'}</td>
                   <td className="p-3">
                     <div className="flex items-center gap-2">
                       <span>{inv.status}</span>
@@ -201,11 +202,12 @@ export default function InvoicesList({ invoices=[], clients=[], onOpenInvoice, o
                     </div>
                   </td>
                   <td className="p-3 font-semibold text-slate-100">{formatCurrency(inv.total||0)}</td>
-                  <td className="p-3 font-semibold text-slate-100">{formatCurrency(inv._balance||0)}</td>
+                  <td className="p-3 font-semibold text-slate-100 hidden sm:table-cell">{formatCurrency(inv._balance||0)}</td>
                 </tr>
               ))}
             </tbody>
           </table>
+          </div>
         )}
         {filtered.length > 0 && filtered.length < 5 && (
           <div className="bg-midnight/50 border border-slate-700/20 rounded-lg p-4 m-4 text-sm text-slate-500">

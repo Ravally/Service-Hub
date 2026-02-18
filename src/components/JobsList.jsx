@@ -168,12 +168,12 @@ export default function JobsList({
 
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-3xl font-bold font-display text-slate-100">Jobs</h2>
-        <div className="flex items-center gap-2">
-          <button onClick={onNewJobClick} className="px-4 py-2 rounded-md bg-scaffld-teal text-white font-semibold hover:bg-scaffld-teal-deep transition-colors">New Job</button>
+      <div className="mb-6 flex items-center justify-between gap-3">
+        <h2 className="text-2xl sm:text-3xl font-bold font-display text-slate-100">Jobs</h2>
+        <div className="flex items-center gap-2 shrink-0">
+          <button onClick={onNewJobClick} className="px-4 py-2 min-h-[44px] rounded-md bg-scaffld-teal text-white font-semibold hover:bg-scaffld-teal-deep transition-colors text-sm">New Job</button>
           <div className="relative">
-            <button onClick={()=>setJobTypeOpen(o=>!o)} className="px-3 py-2 rounded-md bg-charcoal text-slate-300 border border-slate-700 hover:bg-slate-dark transition-colors">More Actions</button>
+            <button onClick={()=>setJobTypeOpen(o=>!o)} className="hidden sm:inline-flex px-3 py-2 min-h-[44px] rounded-md bg-charcoal text-slate-300 border border-slate-700 hover:bg-slate-dark transition-colors text-sm">More Actions</button>
             {jobTypeOpen && (
               <div className="absolute right-0 mt-2 w-48 bg-charcoal border border-slate-700/30 rounded-md shadow z-20">
                 <button className="w-full text-left px-3 py-2 text-sm text-slate-100 hover:bg-slate-dark" onClick={()=>{ setJobTypeOpen(false); onManageJobForms && onManageJobForms(); }}>Manage Job Forms</button>
@@ -199,10 +199,10 @@ export default function JobsList({
         <KpiCard title="Visits scheduled" sub="Next 30 days" value={kpis.visitsNext30} money={currency(kpis.valueNext30)} />
       </div>
 
-      <div className="mb-3 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="relative">
-            <button onClick={()=>setStatusOpen(o=>!o)} className="px-3 py-1.5 rounded-full bg-charcoal text-slate-100 text-sm border border-slate-700">Status | {status==='all'? 'All' : status}</button>
+      <div className="mb-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
+          <div className="relative shrink-0">
+            <button onClick={()=>setStatusOpen(o=>!o)} className="px-3 py-1.5 min-h-[44px] rounded-full bg-charcoal text-slate-100 text-sm border border-slate-700">Status | {status==='all'? 'All' : status}</button>
             {statusOpen && (
               <div className="absolute z-20 mt-2 w-64 bg-charcoal border border-slate-700/30 rounded-md shadow p-2">
                 <input placeholder="Search status" className="w-full px-2 py-1 bg-midnight border border-slate-700 text-slate-100 placeholder-slate-500 rounded mb-2 text-sm focus:border-scaffld-teal" />
@@ -223,7 +223,7 @@ export default function JobsList({
             <button className="px-3 py-1.5 rounded-full bg-charcoal text-slate-100 text-sm border border-slate-700">Job Type | {jobType==='all'? 'All' : jobType}</button>
           </div>
         </div>
-        <input value={search} onChange={(e)=>setSearch(e.target.value)} placeholder="Search jobs..." className="px-3 py-2 bg-midnight border border-slate-700 text-slate-100 placeholder-slate-500 rounded-md text-sm w-72 focus:border-scaffld-teal focus:ring-2 focus:ring-scaffld-teal/20"/>
+        <input value={search} onChange={(e)=>setSearch(e.target.value)} placeholder="Search jobs..." className="px-3 py-2 min-h-[44px] bg-midnight border border-slate-700 text-slate-100 placeholder-slate-500 rounded-md text-sm w-full sm:w-72 focus:border-scaffld-teal focus:ring-2 focus:ring-scaffld-teal/20"/>
       </div>
 
       <div className="text-sm text-slate-100 mb-2">{(status!=='all' || jobType!=='all' || search) ? 'Filtered jobs' : 'All jobs'} ({filtered.length} results)</div>
@@ -234,16 +234,17 @@ export default function JobsList({
         {filtered.length === 0 ? (
           <div className="text-center p-10 text-slate-400">No jobs found.</div>
         ) : (
-          <table className="w-full">
+          <div className="overflow-x-auto">
+          <table className="w-full min-w-[600px]">
             <thead className="bg-midnight text-sm border-b border-slate-700">
               <tr>
                 <th className="p-3 w-10"><input type="checkbox" checked={allChecked} onChange={toggleAll} className="accent-scaffld-teal" /></th>
                 <th className="text-left font-semibold p-3 text-slate-300 cursor-pointer select-none hover:text-scaffld-teal transition-colors" onClick={()=>toggleSort('client')}>Client{sortBy==='client' && (sortDir==='asc'?' ^':' v')}</th>
-                <th className="text-left font-semibold p-3 text-slate-300 cursor-pointer select-none hover:text-scaffld-teal transition-colors" onClick={()=>toggleSort('job')}>Job number{sortBy==='job' && (sortDir==='asc'?' ^':' v')}</th>
-                <th className="text-left font-semibold p-3 text-slate-300 cursor-pointer select-none hover:text-scaffld-teal transition-colors" onClick={()=>toggleSort('property')}>Property{sortBy==='property' && (sortDir==='asc'?' ^':' v')}</th>
+                <th className="text-left font-semibold p-3 text-slate-300 cursor-pointer select-none hover:text-scaffld-teal transition-colors hidden sm:table-cell" onClick={()=>toggleSort('job')}>Job #{sortBy==='job' && (sortDir==='asc'?' ^':' v')}</th>
+                <th className="text-left font-semibold p-3 text-slate-300 cursor-pointer select-none hover:text-scaffld-teal transition-colors hidden md:table-cell" onClick={()=>toggleSort('property')}>Property{sortBy==='property' && (sortDir==='asc'?' ^':' v')}</th>
                 <th className="text-left font-semibold p-3 text-slate-300 cursor-pointer select-none hover:text-scaffld-teal transition-colors" onClick={()=>toggleSort('schedule')}>Schedule{sortBy==='schedule' && (sortDir==='asc'?' ^':' v')}</th>
                 <th className="text-left font-semibold p-3 text-slate-300 cursor-pointer select-none hover:text-scaffld-teal transition-colors" onClick={()=>toggleSort('status')}>Status{sortBy==='status' && (sortDir==='asc'?' ^':' v')}</th>
-                <th className="text-left font-semibold p-3 text-slate-300 cursor-pointer select-none hover:text-scaffld-teal transition-colors" onClick={()=>toggleSort('total')}>Total{sortBy==='total' && (sortDir==='asc'?' ^':' v')}</th>
+                <th className="text-left font-semibold p-3 text-slate-300 cursor-pointer select-none hover:text-scaffld-teal transition-colors hidden sm:table-cell" onClick={()=>toggleSort('total')}>Total{sortBy==='total' && (sortDir==='asc'?' ^':' v')}</th>
               </tr>
             </thead>
             <tbody className="text-sm">
@@ -251,15 +252,16 @@ export default function JobsList({
                 <tr key={j.id} className="border-t border-slate-700/30 hover:bg-slate-dark/50 transition-colors">
                   <td className="p-3" onClick={(e) => e.stopPropagation()}><input type="checkbox" checked={selected.has(j.id)} onChange={() => toggleOne(j.id)} className="accent-scaffld-teal" /></td>
                   <td className="p-3"><button onClick={()=>onOpenJob && onOpenJob(j)} className="font-semibold text-scaffld-teal hover:underline">{j._clientName}</button></td>
-                  <td className="p-3"><button onClick={()=>onOpenJob && onOpenJob(j)} className="font-semibold text-scaffld-teal hover:underline">{j.jobNumber || ('#'+(j.id||'').slice(0,8))}</button></td>
-                  <td className="p-3"><div className="truncate max-w-xs">{j._address || '--'}</div></td>
+                  <td className="p-3 hidden sm:table-cell"><button onClick={()=>onOpenJob && onOpenJob(j)} className="font-semibold text-scaffld-teal hover:underline">{j.jobNumber || ('#'+(j.id||'').slice(0,8))}</button></td>
+                  <td className="p-3 hidden md:table-cell"><div className="truncate max-w-xs">{j._address || '--'}</div></td>
                   <td className="p-3">{j.start ? new Date(j.start).toLocaleDateString() : '--'}</td>
                   <td className="p-3"><Pill className={STATUS_PILL[j._status] || STATUS_PILL['Active']}>{j._status}</Pill></td>
-                  <td className="p-3 font-semibold text-slate-100">{currency(j._total)}</td>
+                  <td className="p-3 font-semibold text-slate-100 hidden sm:table-cell">{currency(j._total)}</td>
                 </tr>
               ))}
             </tbody>
           </table>
+          </div>
         )}
         {filtered.length > 0 && filtered.length < 5 && (
           <div className="bg-midnight/50 border border-slate-700/20 rounded-lg p-4 m-4 text-sm text-slate-500">

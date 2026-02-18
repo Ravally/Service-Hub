@@ -48,7 +48,7 @@ const CREATE_ITEMS = [
 const NavItem = ({ active, label, onClick, children }) => (
   <button
     onClick={onClick}
-    className={`w-full h-10 flex items-center gap-3 px-4 rounded-lg text-sm font-medium transition-all ${
+    className={`w-full min-h-[44px] flex items-center gap-3 px-4 rounded-lg text-sm font-medium transition-all ${
       active
         ? 'bg-scaffld-teal/10 text-scaffld-teal border-l-2 border-scaffld-teal'
         : 'text-slate-300 hover:bg-charcoal hover:text-scaffld-teal'
@@ -80,16 +80,16 @@ const Sidebar = ({ activeView, setActiveView, onCreateAction, open = false, onCl
               <PlusCircleIcon /> Create
             </button>
             {createOpen && (
-              <div className="absolute left-full ml-3 top-0 z-[9999]">
-                <div className="absolute -left-2 top-3 h-4 w-4 bg-charcoal border border-slate-700/30 rotate-45 rounded-sm" />
+              <div className="absolute left-0 right-0 top-full mt-2 lg:left-full lg:right-auto lg:top-0 lg:mt-0 lg:ml-3 z-[9999]">
+                <div className="hidden lg:block absolute -left-2 top-3 h-4 w-4 bg-charcoal border border-slate-700/30 rotate-45 rounded-sm" />
                 <div className="relative bg-charcoal text-slate-100 rounded-xl shadow-xl border border-slate-700/30 p-3">
-                  <div className="flex items-center gap-3">
+                  <div className="grid grid-cols-3 gap-2 lg:flex lg:items-center lg:gap-3">
                     {visibleCreate.map((item) => {
                       const Icon = item.icon;
                       return (
-                        <button key={item.type} onClick={() => { onCreateAction && onCreateAction(item.type); setCreateOpen(false); }} className="flex flex-col items-center px-3 py-2 hover:bg-charcoal/50 rounded-lg transition-colors">
-                          <span className={`h-8 w-8 rounded-lg inline-flex items-center justify-center ${item.color}`}><Icon className="h-4 w-4" /></span>
-                          <span className="mt-1 text-xs font-semibold text-slate-700">{item.label}</span>
+                        <button key={item.type} onClick={() => { onCreateAction && onCreateAction(item.type); setCreateOpen(false); if (onClose) onClose(); }} className="flex flex-col items-center px-3 py-2 min-h-[44px] hover:bg-slate-dark/50 rounded-lg transition-colors">
+                          <span className={`h-10 w-10 lg:h-8 lg:w-8 rounded-lg inline-flex items-center justify-center ${item.color}`}><Icon className="h-5 w-5 lg:h-4 lg:w-4" /></span>
+                          <span className="mt-1 text-xs font-semibold text-slate-300">{item.label}</span>
                         </button>
                       );
                     })}

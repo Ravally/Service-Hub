@@ -195,11 +195,11 @@ export default function ClientsList({
   return (
     <div>
       {/* Header */}
-      <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-3xl font-bold font-display text-slate-100">Clients</h2>
-        <div className="flex items-center gap-2">
-          <button onClick={onNewClientClick} className="px-4 py-2 rounded-md bg-scaffld-teal text-white font-semibold hover:bg-scaffld-teal-deep transition-colors">New Client</button>
-          <button className="px-3 py-2 rounded-md bg-charcoal text-slate-300 border border-slate-700 hover:bg-slate-dark transition-colors">More Actions</button>
+      <div className="mb-6 flex items-center justify-between gap-3">
+        <h2 className="text-2xl sm:text-3xl font-bold font-display text-slate-100">Clients</h2>
+        <div className="flex items-center gap-2 shrink-0">
+          <button onClick={onNewClientClick} className="px-4 py-2 min-h-[44px] rounded-md bg-scaffld-teal text-white font-semibold hover:bg-scaffld-teal-deep transition-colors text-sm">New Client</button>
+          <button className="hidden sm:inline-flex px-3 py-2 min-h-[44px] rounded-md bg-charcoal text-slate-300 border border-slate-700 hover:bg-slate-dark transition-colors text-sm">More Actions</button>
         </div>
       </div>
 
@@ -211,8 +211,8 @@ export default function ClientsList({
       </div>
 
       {/* Filters + Search */}
-      <div className="mb-2 flex items-center justify-between">
-        <div className="flex items-center gap-2">
+      <div className="mb-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
           <div className="relative">
             <Chip onClick={() => { setTagPopover((s) => !s); setStatusPopover(false); }}>Tags +</Chip>
             {tagPopover && (
@@ -293,12 +293,12 @@ export default function ClientsList({
             <Chip onClick={() => { setSelectedTags([]); setStatusMode('all'); setSelectedSegments([]); }} className="bg-midnight border-slate-700/30">Clear</Chip>
           )}
         </div>
-        <div className="relative">
+        <div className="w-full sm:w-auto">
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search filtered clients..."
-            className="px-3 py-2 bg-midnight border border-slate-700 text-slate-100 placeholder-slate-500 rounded-md text-sm w-64 focus:border-scaffld-teal focus:ring-2 focus:ring-scaffld-teal/20"
+            className="px-3 py-2 min-h-[44px] bg-midnight border border-slate-700 text-slate-100 placeholder-slate-500 rounded-md text-sm w-full sm:w-64 focus:border-scaffld-teal focus:ring-2 focus:ring-scaffld-teal/20"
           />
         </div>
       </div>
@@ -321,17 +321,18 @@ export default function ClientsList({
         {filtered.length === 0 ? (
           <div className="text-center p-10 text-slate-400">No matching clients.</div>
         ) : (
-          <table className="w-full">
+          <div className="overflow-x-auto">
+          <table className="w-full min-w-[600px]">
             <thead className="bg-midnight text-sm border-b border-slate-700">
               <tr>
                 <th className="p-3 w-10"><input type="checkbox" checked={allChecked} onChange={toggleAll} className="accent-scaffld-teal" /></th>
                 <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-scaffld-teal transition-colors" onClick={() => toggleSort('name')}>
                   <span className="inline-flex items-center gap-1">Name{sortBy==='name' && (sortDir==='asc' ? ' ▲' : ' ▼')}</span>
                 </th>
-                <th className="text-left font-semibold text-slate-300 p-3">Address</th>
-                <th className="text-left font-semibold text-slate-300 p-3">Tags</th>
+                <th className="text-left font-semibold text-slate-300 p-3 hidden md:table-cell">Address</th>
+                <th className="text-left font-semibold text-slate-300 p-3 hidden sm:table-cell">Tags</th>
                 <th className="text-left font-semibold text-slate-300 p-3">Status</th>
-                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-scaffld-teal transition-colors" onClick={() => toggleSort('last')}>
+                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-scaffld-teal transition-colors hidden sm:table-cell" onClick={() => toggleSort('last')}>
                   <span className="inline-flex items-center gap-1">Last{sortBy==='last' && (sortDir==='asc' ? ' ▲' : ' ▼')}</span>
                 </th>
               </tr>
@@ -344,12 +345,12 @@ export default function ClientsList({
                     <button className="font-semibold text-scaffld-teal hover:underline" onClick={() => onSelectClient && onSelectClient(c)}>{c.name}</button>
                     {c.company && <div className="text-xs text-slate-400">{c.company}</div>}
                   </td>
-                  <td className="p-3 text-slate-100">
+                  <td className="p-3 text-slate-100 hidden md:table-cell">
                     {(c.address || '').length > 0 ? (
                       <div className="truncate max-w-xs">{c.address}</div>
                     ) : <span className="text-slate-500">—</span>}
                   </td>
-                  <td className="p-3">
+                  <td className="p-3 hidden sm:table-cell">
                     <div className="flex flex-wrap gap-1">
                       {(c.tags || []).slice(0,1).map((t, i) => (
                         <span key={`${t}-${i}`} className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-slate-dark text-slate-100 border border-slate-700/30">{t}</span>
@@ -366,11 +367,12 @@ export default function ClientsList({
                     </div>
                   </td>
                   <td className="p-3"><StatusPill label={c._status} /></td>
-                  <td className="p-3 text-slate-100">{formatLastSeen(c._last)}</td>
+                  <td className="p-3 text-slate-100 hidden sm:table-cell">{formatLastSeen(c._last)}</td>
                 </tr>
               ))}
             </tbody>
           </table>
+          </div>
         )}
         {filtered.length > 0 && filtered.length < 5 && (
           <div className="bg-midnight/50 border border-slate-700/20 rounded-lg p-4 m-4 text-sm text-slate-500">

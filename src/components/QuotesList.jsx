@@ -261,9 +261,9 @@ export default function QuotesList({
   return (
     <div>
       {/* Header */}
-      <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-3xl font-bold font-display text-slate-100">Quotes</h2>
-        <button onClick={onNewQuoteClick} className="px-4 py-2 rounded-md bg-scaffld-teal text-white font-semibold hover:bg-scaffld-teal-deep transition-colors">New Quote</button>
+      <div className="mb-6 flex items-center justify-between gap-3">
+        <h2 className="text-2xl sm:text-3xl font-bold font-display text-slate-100">Quotes</h2>
+        <button onClick={onNewQuoteClick} className="px-4 py-2 min-h-[44px] rounded-md bg-scaffld-teal text-white font-semibold hover:bg-scaffld-teal-deep transition-colors text-sm shrink-0">New Quote</button>
       </div>
 
       {/* KPI cards */}
@@ -285,8 +285,8 @@ export default function QuotesList({
       </div>
 
       {/* Filters/Search */}
-      <div className="mb-3 flex items-center justify-between">
-        <div className="flex items-center gap-2">
+      <div className="mb-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
           <div className="relative">
             <button onClick={()=>setStatusOpen(o=>!o)} className="px-3 py-1.5 rounded-full bg-charcoal text-slate-100 text-sm border border-slate-700 hover:bg-slate-dark transition-colors">Status | {statusLabel}</button>
             {statusOpen && (
@@ -343,7 +343,7 @@ export default function QuotesList({
             {salesOptions.map(s => <option key={s} value={s}>{s}</option>)}
           </select>
         </div>
-        <input value={search} onChange={(e)=>setSearch(e.target.value)} placeholder="Search quotes..." className="px-3 py-2 bg-midnight border border-slate-700 text-slate-100 placeholder-slate-500 rounded-md text-sm w-72 focus:border-scaffld-teal focus:ring-2 focus:ring-scaffld-teal/20"/>
+        <input value={search} onChange={(e)=>setSearch(e.target.value)} placeholder="Search quotes..." className="px-3 py-2 min-h-[44px] bg-midnight border border-slate-700 text-slate-100 placeholder-slate-500 rounded-md text-sm w-full sm:w-72 focus:border-scaffld-teal focus:ring-2 focus:ring-scaffld-teal/20"/>
       </div>
 
       <div className="text-sm text-slate-100 mb-2">{(statusFilter.length || sales || (period !== 'all') || search) ? 'Filtered quotes' : 'All quotes'} ({filtered.length} results)</div>
@@ -351,18 +351,19 @@ export default function QuotesList({
       <BulkActionBar selectedCount={selected.size} onDeselectAll={clearSelection} actions={bulkActions} />
 
       {/* Table */}
-      <div className="bg-charcoal rounded-xl shadow-lg border border-slate-700/30 overflow-visible min-h-[calc(100vh-26rem)]">
+      <div className="bg-charcoal rounded-xl shadow-lg border border-slate-700/30 overflow-hidden min-h-[calc(100vh-26rem)]">
         {filtered.length === 0 ? (
           <div className="text-center p-10 text-slate-400">No quotes.</div>
         ) : (
-          <table className="w-full">
+          <div className="overflow-x-auto">
+          <table className="w-full min-w-[600px]">
             <thead className="bg-midnight text-sm border-b border-slate-700">
               <tr>
                 <th className="p-3 w-10"><input type="checkbox" checked={allChecked} onChange={toggleAll} className="accent-scaffld-teal" /></th>
                 <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-scaffld-teal transition-colors" onClick={()=>toggleSort('client')}>Client{sortBy==='client' && (sortDir==='asc'?' ▲':' ▼')}</th>
-                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-scaffld-teal transition-colors" onClick={()=>toggleSort('quoteNumber')}>Quote number{sortBy==='quoteNumber' && (sortDir==='asc'?' ▲':' ▼')}</th>
-                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-scaffld-teal transition-colors" onClick={()=>toggleSort('property')}>Property{sortBy==='property' && (sortDir==='asc'?' ▲':' ▼')}</th>
-                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-scaffld-teal transition-colors" onClick={()=>toggleSort('createdAt')}>Created{sortBy==='createdAt' && (sortDir==='asc'?' ▲':' ▼')}</th>
+                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-scaffld-teal transition-colors hidden sm:table-cell" onClick={()=>toggleSort('quoteNumber')}>Quote #{sortBy==='quoteNumber' && (sortDir==='asc'?' ▲':' ▼')}</th>
+                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-scaffld-teal transition-colors hidden md:table-cell" onClick={()=>toggleSort('property')}>Property{sortBy==='property' && (sortDir==='asc'?' ▲':' ▼')}</th>
+                <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-scaffld-teal transition-colors hidden sm:table-cell" onClick={()=>toggleSort('createdAt')}>Created{sortBy==='createdAt' && (sortDir==='asc'?' ▲':' ▼')}</th>
                 <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-scaffld-teal transition-colors" onClick={()=>toggleSort('status')}>Status{sortBy==='status' && (sortDir==='asc'?' ▲':' ▼')}</th>
                 <th className="text-left font-semibold text-slate-300 p-3 cursor-pointer select-none hover:text-scaffld-teal transition-colors" onClick={()=>toggleSort('total')}>Total{sortBy==='total' && (sortDir==='asc'?' ▲':' ▼')}</th>
                 <th className="p-3 w-12"></th>
@@ -373,14 +374,14 @@ export default function QuotesList({
                 <tr key={q.id} className="border-t border-slate-700/30 hover:bg-slate-dark/50 transition-colors">
                   <td className="p-3" onClick={(e) => e.stopPropagation()}><input type="checkbox" checked={selected.has(q.id)} onChange={() => toggleOne(q.id)} className="accent-scaffld-teal" /></td>
                   <td className="p-3"><button onClick={()=>onOpenQuote && onOpenQuote(q)} className="font-semibold text-scaffld-teal hover:underline">{q._clientName}</button></td>
-                  <td className="p-3">
+                  <td className="p-3 hidden sm:table-cell">
                     <button onClick={()=>onOpenQuote && onOpenQuote(q)} className="font-semibold text-scaffld-teal hover:underline">
                       {q.quoteNumber || `#${(q.id||'').slice(0,6)}`}
                     </button>
                     {q.title ? <div className="text-xs text-slate-400">{q.title}</div> : null}
                   </td>
-                  <td className="p-3"><div className="truncate max-w-xs">{q._address || 'N/A'}</div></td>
-                  <td className="p-3">{q.createdAt ? new Date(q.createdAt).toLocaleDateString() : 'N/A'}</td>
+                  <td className="p-3 hidden md:table-cell"><div className="truncate max-w-xs">{q._address || 'N/A'}</div></td>
+                  <td className="p-3 hidden sm:table-cell">{q.createdAt ? new Date(q.createdAt).toLocaleDateString() : 'N/A'}</td>
                   <td className="p-3"><Pill className={MERGED_STATUS_COLORS[q._status]||STATUS_COLORS.Draft}>{q._status}</Pill></td>
                   <td className="p-3 font-semibold text-slate-100">{formatCurrency(q.total||0)}</td>
                   <td className="p-3 w-12 text-right align-middle">
@@ -392,6 +393,7 @@ export default function QuotesList({
               ))}
             </tbody>
           </table>
+          </div>
         )}
         {filtered.length > 0 && filtered.length < 5 && (
           <div className="bg-midnight/50 border border-slate-700/20 rounded-lg p-4 m-4 text-sm text-slate-500">

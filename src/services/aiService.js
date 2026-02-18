@@ -3,11 +3,21 @@ import { functions } from "../firebase/config";
 
 const scaffldAI = httpsCallable(functions, 'scaffldAI');
 
+/** Strip markdown code fences (```json ... ```) that the model sometimes wraps around JSON. */
+function stripCodeFences(text) {
+  if (typeof text !== 'string') return text;
+  const trimmed = text.trim();
+  if (trimmed.startsWith('```')) {
+    return trimmed.replace(/^```[\w]*\n?/, '').replace(/\n?```$/, '').trim();
+  }
+  return trimmed;
+}
+
 export const aiService = {
   async generateQuote(description, context = {}) {
     try {
       const result = await scaffldAI({ action: 'quoteWriter', input: description, context });
-      return JSON.parse(result.data.result);
+      return JSON.parse(stripCodeFences(result.data.result));
     } catch (error) {
       throw normalizeError(error);
     }
@@ -38,7 +48,7 @@ export const aiService = {
         input: JSON.stringify(lineItems),
         context,
       });
-      return JSON.parse(result.data.result);
+      return JSON.parse(stripCodeFences(result.data.result));
     } catch (error) {
       throw normalizeError(error);
     }

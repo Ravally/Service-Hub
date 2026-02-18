@@ -301,7 +301,7 @@ firebase deploy --only hosting
 npm run deploy:prod
 ```
 
-### Mobile Apps (Coming Soon - Q1 2026)
+### Mobile Apps (In Development)
 
 ```bash
 # Build for iOS

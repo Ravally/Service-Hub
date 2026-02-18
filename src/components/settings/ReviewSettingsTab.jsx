@@ -32,7 +32,7 @@ export default function ReviewSettingsTab({ companySettings, cs, csn, handleSave
                 className={`${inputCls} max-w-xs`}
                 placeholder="0 = send immediately"
               />
-              <p className="text-xs text-slate-500 mt-1">Set to 0 for immediate send. Delay feature coming soon.</p>
+              <p className="text-xs text-slate-500 mt-1">Set to 0 for immediate send after job completion.</p>
             </div>
           </div>
         </div>

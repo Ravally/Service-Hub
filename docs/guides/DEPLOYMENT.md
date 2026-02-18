@@ -2,7 +2,7 @@
 
 **Last Updated**: February 11, 2026
 **Version**: 2.0
-**Platforms**: Firebase Hosting (Web), EAS (Mobile - Coming Soon)
+**Platforms**: Firebase Hosting (Web), EAS (Mobile - In Development)
 
 ---
 
@@ -34,7 +34,7 @@
 - **Database**: Firestore (managed)
 - **Storage**: Firebase Storage (managed)
 
-**Mobile (Coming Soon)**:
+**Mobile (In Development)**:
 - **Builds**: EAS Build (Expo)
 - **Distribution**: App Store, Google Play
 - **OTA Updates**: EAS Update
@@ -435,10 +435,10 @@ jobs:
 
 ## Mobile App Deployment
 
-### Coming Soon: Expo EAS Deployment
+### Expo EAS Deployment
 
 **Platform**: Expo Application Services (EAS)
-**Target**: Q1 2026 (Phase 2 completion)
+**Status**: In development (Phase 2)
 
 **Planned workflow**:
 ```bash

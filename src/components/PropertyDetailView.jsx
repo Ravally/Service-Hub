@@ -248,7 +248,7 @@ export default function PropertyDetailView({
                 )
               )}
               {tab === 'requests' && (
-                <div className="text-slate-400">Requests view coming soon.</div>
+                <div className="text-slate-400">No service requests for this property.</div>
               )}
               {tab === 'chemical' && (
                 <div className="text-slate-400">No chemical treatments recorded yet.</div>

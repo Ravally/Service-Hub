@@ -950,7 +950,16 @@ export default function AppContent({ auth, appState, handlers }) {
               <ExpensesPage />
             </Suspense>
           )}
-          {activeView === 'apps' && <PlaceholderPage icon={<BriefcaseIcon className="h-12 w-12 text-scaffld-teal" />} title="Apps & Integrations" description="Connect Scaffld with the tools you already use to automate your workflows." features={['Sync with accounting software (Xero, QuickBooks)', 'Payment gateway integrations (Stripe)', 'Calendar sync with Google and Outlook', 'Custom workflow automations']} />}
+          {activeView === 'apps' && (
+            <div className="max-w-2xl mx-auto py-10 px-4 text-center">
+              <BriefcaseIcon className="h-12 w-12 text-scaffld-teal mx-auto mb-4" />
+              <h2 className="text-2xl font-bold text-slate-100 mb-2">Apps & Integrations</h2>
+              <p className="text-slate-400 mb-6">Stripe, QuickBooks, Xero, Google Calendar, and Twilio SMS are all live and ready to configure in your settings.</p>
+              <button type="button" onClick={() => setActiveView('settings')} className="px-6 py-3 rounded-xl bg-scaffld-teal text-white font-semibold hover:bg-scaffld-teal/90 transition-colors">
+                Open Settings &rarr; Integrations
+              </button>
+            </div>
+          )}
         </main>
       </div>
     </div>

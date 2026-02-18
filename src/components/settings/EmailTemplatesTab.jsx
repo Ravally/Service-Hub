@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { inputCls, labelCls, saveBtnCls, sectionCls, sectionTitle } from './settingsShared';
-import AIAssistButton from '../common/AIAssistButton';
+import ClampButton from '../clamp/ClampButton';
 import { aiService } from '../../services/aiService';
 
 const TEMPLATE_GROUPS = [
@@ -61,7 +61,7 @@ function TemplateCard({ name, subject, body, expanded, onToggle, onChangeSubject
           <div>
             <div className="flex items-center justify-between mb-1">
               <label className={`${labelCls} mb-0`}>Body</label>
-              <AIAssistButton label="Generate with AI" onClick={onAiGenerate} loading={aiLoading} />
+              <ClampButton label="Clamp Draft" onClick={onAiGenerate} loading={aiLoading} />
             </div>
             <textarea rows={6} value={body} onChange={onChangeBody} className={inputCls} />
           </div>

@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { aiService } from '../../services/aiService';
-import AIResultPreview from './AIResultPreview';
+import ClampIcon from './ClampIcon';
+import ClampResultPreview from './ClampResultPreview';
 
 const TONES = ['Cheerful', 'Casual', 'Professional', 'Shorter'];
 
-export default function AIRewriteButtons({ text, onApply, context = {}, disabled = false }) {
+export default function ClampRewriteButtons({ text, onApply, context = {}, disabled = false }) {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
@@ -44,19 +45,19 @@ export default function AIRewriteButtons({ text, onApply, context = {}, disabled
             type="button"
             onClick={() => handleRewrite(tone)}
             disabled={loading || disabled || !(text || '').trim()}
-            className="inline-flex items-center gap-1 px-2 py-1 rounded-full border border-purple-500/30 text-purple-300 hover:bg-purple-600/20 hover:text-purple-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            className="inline-flex items-center gap-1 px-2 py-1 rounded-full border border-clamp-border text-clamp hover:bg-clamp-hover hover:text-clamp-deep transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            <span>✨</span> {tone}
+            <ClampIcon size={12} /> {tone}
           </button>
         ))}
       </div>
       {error && (
         <div className="mt-2 text-xs text-signal-coral">{error}</div>
       )}
-      <AIResultPreview
+      <ClampResultPreview
         result={result}
         loading={loading}
-        label="AI Rewrite"
+        label="Clamp Rewrite"
         onAccept={accept}
         onReject={reject}
         onRetry={() => handleRewrite('Professional')}

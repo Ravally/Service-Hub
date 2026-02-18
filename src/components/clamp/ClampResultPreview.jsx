@@ -1,22 +1,23 @@
 import React from 'react';
+import ClampIcon from './ClampIcon';
 
-export default function AIResultPreview({ original, result, onAccept, onReject, onRetry, loading = false, label = 'AI Result' }) {
+export default function ClampResultPreview({ result, onAccept, onReject, onRetry, loading = false, label = 'Clamp Result' }) {
   if (!result && !loading) return null;
 
   return (
-    <div className="mt-3 border border-purple-500/30 rounded-xl bg-purple-900/10 p-4 space-y-3 animate-fade-in">
+    <div className="mt-3 border border-clamp-border rounded-xl bg-clamp-soft p-4 space-y-3 animate-fade-in">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-semibold text-purple-300 flex items-center gap-1.5">
-          <span>✨</span> {label}
+        <span className="text-xs font-semibold text-clamp flex items-center gap-1.5">
+          <ClampIcon size={14} /> {label}
         </span>
       </div>
       {loading ? (
         <div className="flex items-center gap-2 text-sm text-slate-400">
-          <svg className="animate-spin h-4 w-4 text-purple-400" fill="none" viewBox="0 0 24 24">
+          <svg className="animate-spin h-4 w-4 text-clamp" fill="none" viewBox="0 0 24 24">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
           </svg>
-          Generating...
+          Clamp is working...
         </div>
       ) : (
         <>

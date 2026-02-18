@@ -20,6 +20,13 @@ export default {
         'harvest-amber-deep': '#FF9633',
         'harvest-amber-light': '#FFE8CC',
 
+        // Clamp (AI assistant)
+        'clamp': '#F59E0B',
+        'clamp-deep': '#D97706',
+        'clamp-soft': 'rgba(245, 158, 11, 0.10)',
+        'clamp-border': 'rgba(245, 158, 11, 0.25)',
+        'clamp-hover': 'rgba(245, 158, 11, 0.20)',
+
         // Scaffld Neutrals
         'midnight': '#0C1220',
         'charcoal': '#1A2332',

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { toDateInput, toIsoDate } from '../../utils';
-import AIAssistButton from '../common/AIAssistButton';
-import AIResultPreview from '../common/AIResultPreview';
+import ClampButton from '../clamp/ClampButton';
+import ClampIcon from '../clamp/ClampIcon';
 import { aiService } from '../../services/aiService';
 
 export default function InvoiceLineItemsCard({ draft, canEdit, updateLineItem, addLineItem, removeLineItem }) {
@@ -46,7 +46,7 @@ export default function InvoiceLineItemsCard({ draft, canEdit, updateLineItem, a
         <h3 className="text-2xl font-bold text-slate-100">Product / Service</h3>
         <div className="flex items-center gap-2">
           {canEdit && hasDescriptions && (
-            <AIAssistButton label="Improve descriptions" onClick={handleImproveDescriptions} loading={aiLoading} />
+            <ClampButton label="Clamp Improve" onClick={handleImproveDescriptions} loading={aiLoading} />
           )}
           <button type="button" onClick={() => addLineItem()} className="px-4 py-2 rounded-full bg-green-700 text-white text-sm font-semibold" disabled={!canEdit}>
             Add Line Item
@@ -56,9 +56,9 @@ export default function InvoiceLineItemsCard({ draft, canEdit, updateLineItem, a
 
       {aiError && <div className="mb-3 text-xs text-signal-coral">{aiError}</div>}
       {aiResults && (
-        <div className="mb-4 border border-purple-500/30 rounded-xl bg-purple-900/10 p-4 space-y-3 animate-fade-in">
-          <div className="text-xs font-semibold text-purple-300 flex items-center gap-1.5">
-            <span>✨</span> Improved Descriptions
+        <div className="mb-4 border border-clamp-border rounded-xl bg-clamp-soft p-4 space-y-3 animate-fade-in">
+          <div className="text-xs font-semibold text-clamp flex items-center gap-1.5">
+            <ClampIcon size={14} /> Improved Descriptions
           </div>
           <div className="space-y-2">
             {aiResults.map((desc, i) => (

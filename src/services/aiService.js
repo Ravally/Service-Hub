@@ -60,7 +60,7 @@ export const aiService = {
 
 function normalizeError(error) {
   if (error?.code === 'functions/failed-precondition') {
-    return new Error('AI features are being set up — check back soon.');
+    return new Error('Clamp is being set up — check back soon.');
   }
-  return new Error(error?.message || 'AI request failed. Please try again.');
+  return new Error(error?.message || 'Clamp request failed. Please try again.');
 }

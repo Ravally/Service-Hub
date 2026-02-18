@@ -1,6 +1,6 @@
 import React from 'react';
 import { toDateInput } from '../../utils';
-import AIRewriteButtons from '../common/AIRewriteButtons';
+import ClampRewriteButtons from '../clamp/ClampRewriteButtons';
 
 export function InvoiceDetailsCard({ draft, canEdit, handleIssueDateChange, handleDueTermChange, updateDraft, customFieldsNode }) {
   return (
@@ -82,7 +82,7 @@ export function InternalNotesCard({ draft, canEdit, updateDraft, onUploadAttachm
       <h3 className="text-lg font-semibold text-slate-100">Internal notes & attachments</h3>
       <textarea value={draft.internalNotes || ''} onChange={(e) => updateDraft({ internalNotes: e.target.value })} className="w-full px-3 py-2 border border-slate-700 rounded-md text-sm" rows={4} placeholder="Note details" disabled={!canEdit} />
       {canEdit && (
-        <AIRewriteButtons text={draft.internalNotes} onApply={(text) => updateDraft({ internalNotes: text })} disabled={!canEdit} />
+        <ClampRewriteButtons text={draft.internalNotes} onApply={(text) => updateDraft({ internalNotes: text })} disabled={!canEdit} />
       )}
       <div className="border-2 border-dashed border-slate-700/30 rounded-2xl p-4 text-center text-sm text-slate-400">
         <div className="flex items-center justify-center gap-2">

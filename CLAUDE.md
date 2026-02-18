@@ -6,7 +6,15 @@ Field service management platform for home service businesses.
 
 ## Clamp
 
-Before starting ANY task that touches AI features, read [CLAMP.md](CLAMP.md) first. It is the single source of truth for all AI integration points, the Cloud Function contract, shared components, and rules. Do not guess — read CLAMP.md.
+Before starting ANY task that touches AI features, read [CLAMP.md](CLAMP.md) first. It is the single source of truth for Clamp — Scaffld's AI assistant.
+
+- **Colour:** Amber `#F59E0B` — never purple, never app teal
+- **Icon:** `<ClampIcon />` SVG bracket — never sparkle emoji (✨)
+- **Copy:** "Ask Clamp" / "Clamp Improve" / "Clamp Draft" — never "AI Assist"
+- **Loading:** "Clamp is working..." — never "Generating..."
+- **Components:** `src/components/clamp/` — `ClampButton`, `ClampResultPreview`, `ClampRewriteButtons`
+- **Results:** Always preview before applying — never auto-apply AI output
+- **Voice:** No first-person, no chatbot tone, no emoji in AI output
 
 ## Key Rules
 

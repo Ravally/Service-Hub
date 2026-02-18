@@ -10,7 +10,7 @@ import InvoiceTotalsCard from './invoices/InvoiceTotalsCard';
 import { InvoiceDetailsCard, ClientViewCard, PaymentSettingsCard, InternalNotesCard } from './invoices/InvoiceSidebarCards';
 import PaymentPlanCard from './invoices/PaymentPlanCard';
 import CustomFieldEditor from './common/CustomFieldEditor';
-import AIRewriteButtons from './common/AIRewriteButtons';
+import ClampRewriteButtons from './clamp/ClampRewriteButtons';
 
 const buildLineItem = (opts = {}) => ({
   type: 'line_item',
@@ -424,7 +424,7 @@ export default function InvoiceDetailView({
               disabled={!canEdit}
             />
             {canEdit && (
-              <AIRewriteButtons text={draft.clientMessage} onApply={(text) => updateDraft({ clientMessage: text })} disabled={!canEdit} />
+              <ClampRewriteButtons text={draft.clientMessage} onApply={(text) => updateDraft({ clientMessage: text })} disabled={!canEdit} />
             )}
           </div>
 

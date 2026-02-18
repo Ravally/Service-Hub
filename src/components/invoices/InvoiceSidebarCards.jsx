@@ -9,17 +9,17 @@ export function InvoiceDetailsCard({ draft, canEdit, handleIssueDateChange, hand
       <div className="space-y-3 text-sm">
         <div className="flex items-center justify-between">
           <span>Issued date</span>
-          <input type="date" value={toDateInput(draft.issueDate || draft.createdAt)} onChange={(e) => handleIssueDateChange(e.target.value)} className="px-2 py-1 border border-slate-700/30 rounded-md text-sm bg-midnight text-slate-100" disabled={!canEdit} />
+          <input type="date" value={toDateInput(draft.issueDate || draft.createdAt)} onChange={(e) => handleIssueDateChange(e.target.value)} className="min-h-[44px] px-2 py-1 border border-slate-700/30 rounded-md text-sm bg-midnight text-slate-100" disabled={!canEdit} />
         </div>
         <div className="flex items-center justify-between">
           <span>Payment due</span>
-          <select value={draft.dueTerm || 'Due Today'} onChange={(e) => handleDueTermChange(e.target.value)} className="px-2 py-1 border border-slate-700/30 rounded-md text-sm bg-midnight text-slate-100" disabled={!canEdit}>
+          <select value={draft.dueTerm || 'Due Today'} onChange={(e) => handleDueTermChange(e.target.value)} className="min-h-[44px] px-2 py-1 border border-slate-700/30 rounded-md text-sm bg-midnight text-slate-100" disabled={!canEdit}>
             <option>Due Today</option><option>Due on receipt</option><option>Net 7</option><option>Net 9</option><option>Net 14</option><option>Net 15</option><option>Net 30</option><option>Net 60</option>
           </select>
         </div>
         <div className="flex items-center justify-between">
           <span>Ask client for review</span>
-          <select value={draft.askForReview ? 'Yes' : 'No'} onChange={(e) => updateDraft({ askForReview: e.target.value === 'Yes' })} className="px-2 py-1 border border-slate-700/30 rounded-md text-sm bg-midnight text-slate-100" disabled={!canEdit}>
+          <select value={draft.askForReview ? 'Yes' : 'No'} onChange={(e) => updateDraft({ askForReview: e.target.value === 'Yes' })} className="min-h-[44px] px-2 py-1 border border-slate-700/30 rounded-md text-sm bg-midnight text-slate-100" disabled={!canEdit}>
             <option value="Yes">Yes</option><option value="No">No</option>
           </select>
         </div>
@@ -44,7 +44,7 @@ export function ClientViewCard({ draft, canEdit, showClientView, setShowClientVi
           <div className="flex flex-wrap gap-4">
             {[['showQuantities', 'Quantities'], ['showUnitCosts', 'Unit costs'], ['showLineItemTotals', 'Line item totals'], ['showTotals', 'Totals'], ['showAccountBalance', 'Account balance'], ['showLateStamp', 'Late stamp']].map(([key, label]) => (
               <label key={key} className="flex items-center gap-2 text-sm">
-                <input type="checkbox" checked={draft.clientViewSettings?.[key] !== false} onChange={(e) => updateDraft({ clientViewSettings: { ...draft.clientViewSettings, [key]: e.target.checked } })} className="h-4 w-4 accent-scaffld-teal" disabled={!canEdit} />
+                <input type="checkbox" checked={draft.clientViewSettings?.[key] !== false} onChange={(e) => updateDraft({ clientViewSettings: { ...draft.clientViewSettings, [key]: e.target.checked } })} className="h-5 w-5 accent-scaffld-teal" disabled={!canEdit} />
                 {label}
               </label>
             ))}
@@ -61,9 +61,9 @@ export function PaymentSettingsCard({ draft, canEdit, updateDraft }) {
       <h3 className="text-lg font-semibold text-slate-100 mb-3">Invoice Payment Settings</h3>
       <div className="text-sm text-slate-400 mb-3">Disabling payment options on this invoice will not change your default payment preferences.</div>
       <div className="space-y-2 text-sm text-slate-100">
-        <label className="flex items-center justify-between gap-3"><span>Accept card payments</span><input type="checkbox" checked={draft.paymentSettings?.acceptCard ?? true} onChange={(e) => updateDraft({ paymentSettings: { ...draft.paymentSettings, acceptCard: e.target.checked } })} disabled={!canEdit} /></label>
-        <label className="flex items-center justify-between gap-3"><span>Accept bank payments (ACH)</span><input type="checkbox" checked={draft.paymentSettings?.acceptBank ?? false} onChange={(e) => updateDraft({ paymentSettings: { ...draft.paymentSettings, acceptBank: e.target.checked } })} disabled={!canEdit} /></label>
-        <label className="flex items-center justify-between gap-3"><span>Allow partial payments</span><input type="checkbox" checked={draft.paymentSettings?.allowPartialPayments ?? true} onChange={(e) => updateDraft({ paymentSettings: { ...draft.paymentSettings, allowPartialPayments: e.target.checked } })} disabled={!canEdit} /></label>
+        <label className="min-h-[44px] flex items-center justify-between gap-3"><span>Accept card payments</span><input type="checkbox" checked={draft.paymentSettings?.acceptCard ?? true} onChange={(e) => updateDraft({ paymentSettings: { ...draft.paymentSettings, acceptCard: e.target.checked } })} className="h-5 w-5" disabled={!canEdit} /></label>
+        <label className="min-h-[44px] flex items-center justify-between gap-3"><span>Accept bank payments (ACH)</span><input type="checkbox" checked={draft.paymentSettings?.acceptBank ?? false} onChange={(e) => updateDraft({ paymentSettings: { ...draft.paymentSettings, acceptBank: e.target.checked } })} className="h-5 w-5" disabled={!canEdit} /></label>
+        <label className="min-h-[44px] flex items-center justify-between gap-3"><span>Allow partial payments</span><input type="checkbox" checked={draft.paymentSettings?.allowPartialPayments ?? true} onChange={(e) => updateDraft({ paymentSettings: { ...draft.paymentSettings, allowPartialPayments: e.target.checked } })} className="h-5 w-5" disabled={!canEdit} /></label>
       </div>
     </div>
   );

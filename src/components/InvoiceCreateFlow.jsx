@@ -176,20 +176,20 @@ export default function InvoiceCreateFlow({
             <p className="text-sm text-slate-400">Select the jobs you want to invoice or create an ad-hoc invoice.</p>
           </div>
         </div>
-        <button onClick={onCancel} className="text-sm font-semibold text-slate-400 hover:text-slate-100">Cancel</button>
+        <button onClick={onCancel} className="min-h-[44px] text-sm font-semibold text-slate-400 hover:text-slate-100">Cancel</button>
       </div>
 
-      <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-6 space-y-6">
+      <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-4 sm:p-6 space-y-6">
         <div className="flex flex-wrap items-center gap-3">
           <button
             onClick={() => setMode('job')}
-            className={`px-4 py-2 rounded-full text-sm font-semibold border ${mode === 'job' ? 'bg-scaffld-teal text-white border-scaffld-teal' : 'bg-charcoal text-slate-300 border-slate-700/30'}`}
+            className={`min-h-[44px] px-4 py-2 rounded-full text-sm font-semibold border ${mode === 'job' ? 'bg-scaffld-teal text-white border-scaffld-teal' : 'bg-charcoal text-slate-300 border-slate-700/30'}`}
           >
             From jobs
           </button>
           <button
             onClick={() => setMode('ad_hoc')}
-            className={`px-4 py-2 rounded-full text-sm font-semibold border ${mode === 'ad_hoc' ? 'bg-scaffld-teal text-white border-scaffld-teal' : 'bg-charcoal text-slate-300 border-slate-700/30'}`}
+            className={`min-h-[44px] px-4 py-2 rounded-full text-sm font-semibold border ${mode === 'ad_hoc' ? 'bg-scaffld-teal text-white border-scaffld-teal' : 'bg-charcoal text-slate-300 border-slate-700/30'}`}
           >
             Ad-hoc invoice
           </button>
@@ -201,7 +201,7 @@ export default function InvoiceCreateFlow({
             <select
               value={clientId}
               onChange={(e) => { setClientId(e.target.value); setSelectedJobIds([]); }}
-              className="w-full px-3 py-2 border border-slate-700/30 rounded-xl text-sm bg-midnight text-slate-100"
+              className="w-full min-h-[44px] px-3 py-2 border border-slate-700/30 rounded-xl text-sm bg-midnight text-slate-100"
             >
               <option value="">Select a client</option>
               {clients.map((c) => (
@@ -238,7 +238,7 @@ export default function InvoiceCreateFlow({
                           type="checkbox"
                           checked={selectedJobIds.includes(job.id)}
                           onChange={() => toggleJob(job.id)}
-                          className="mt-1"
+                          className="mt-1 h-5 w-5 shrink-0"
                         />
                         <div className="flex-1">
                           <div className="flex items-center justify-between">
@@ -262,11 +262,11 @@ export default function InvoiceCreateFlow({
         )}
 
         <div className="flex items-center justify-end gap-3">
-          <button onClick={onCancel} className="px-4 py-2 rounded-md border border-slate-700 text-sm font-semibold text-slate-300">Cancel</button>
+          <button onClick={onCancel} className="min-h-[44px] px-4 py-2 rounded-md border border-slate-700 text-sm font-semibold text-slate-300">Cancel</button>
           <button
             onClick={handleNext}
             disabled={!clientId || (mode === 'job' && selectedJobIds.length === 0)}
-            className="px-4 py-2 rounded-md bg-scaffld-teal text-white text-sm font-semibold disabled:bg-slate-600 hover:bg-scaffld-teal/90"
+            className="min-h-[44px] px-4 py-2 rounded-md bg-scaffld-teal text-white text-sm font-semibold disabled:bg-slate-600 hover:bg-scaffld-teal/90"
           >
             Next Step
           </button>

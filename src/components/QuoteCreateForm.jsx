@@ -115,20 +115,20 @@ export default function QuoteCreateForm({
   const customFields = Array.isArray(quote.customFields) ? quote.customFields : [];
 
   return (
-    <div className="bg-charcoal p-8 rounded-2xl shadow-lg mb-8 border border-slate-700/30 animate-fade-in">
-      <div className="flex items-center justify-between mb-8">
+    <div className="bg-charcoal p-4 sm:p-8 rounded-2xl shadow-lg mb-8 border border-slate-700/30 animate-fade-in">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6 sm:mb-8">
         <div className="flex items-center gap-3">
-          <span className="h-10 w-10 rounded-full bg-rose-50 text-rose-700 flex items-center justify-center">
+          <span className="h-10 w-10 rounded-full bg-signal-coral/10 text-signal-coral flex items-center justify-center">
             <FileTextIcon className="h-5 w-5" />
           </span>
-          <h2 className="text-3xl font-bold text-slate-100">New Quote</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold text-slate-100">New Quote</h2>
         </div>
-        <button onClick={onCancel} className="text-sm font-semibold text-slate-400 hover:text-slate-200">Back to Quotes</button>
+        <button onClick={onCancel} className="min-h-[44px] text-sm font-semibold text-slate-400 hover:text-slate-200">Back to Quotes</button>
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-6">
         <div className="space-y-6">
-          <div className="border border-slate-700/30 rounded-2xl p-6 bg-charcoal/80">
+          <div className="border border-slate-700/30 rounded-2xl p-4 sm:p-6 bg-charcoal/80">
             <div className="space-y-6">
               <input
                 type="text"
@@ -195,16 +195,16 @@ export default function QuoteCreateForm({
             </div>
           </div>
 
-          <div className="border border-slate-700/30 rounded-2xl p-6 bg-charcoal">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-2xl font-bold text-slate-100">Product / Service</h3>
-              <div className="flex items-center gap-2">
+          <div className="border border-slate-700/30 rounded-2xl p-4 sm:p-6 bg-charcoal">
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+              <h3 className="text-xl sm:text-2xl font-bold text-slate-100">Product / Service</h3>
+              <div className="flex flex-wrap items-center gap-2">
                 <ClampButton label="Ask Clamp" onClick={() => setShowAiPanel(v => !v)} loading={aiLoading} />
-                <select value={templateId} onChange={(e) => setTemplateId(e.target.value)} className="px-3 py-2 border border-slate-700/30 rounded-full text-sm shadow-sm bg-midnight text-slate-100">
+                <select value={templateId} onChange={(e) => setTemplateId(e.target.value)} className="min-h-[44px] px-3 py-2 border border-slate-700/30 rounded-full text-sm shadow-sm bg-midnight text-slate-100">
                   <option value="">Templates</option>
                   {quoteTemplates.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
                 </select>
-                <button type="button" onClick={addFromTemplate} className="px-3 py-2 rounded-full border border-slate-700/30 text-sm shadow-sm text-slate-200">Add</button>
+                <button type="button" onClick={addFromTemplate} className="min-h-[44px] px-3 py-2 rounded-full border border-slate-700/30 text-sm shadow-sm text-slate-200">Add</button>
               </div>
             </div>
 

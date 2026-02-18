@@ -21,7 +21,7 @@ export default function JobLineItemsCard({ job, quote, lineItems, totalPrice, ca
   };
 
   return (
-    <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-6">
+    <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-4 sm:p-6">
       <div className="flex items-center justify-between mb-4">
         <div>
           <h3 className="text-xl font-semibold text-slate-100">Line Items</h3>
@@ -37,31 +37,32 @@ export default function JobLineItemsCard({ job, quote, lineItems, totalPrice, ca
           )}
         </div>
         {canEditLineItems && (
-          <button onClick={() => setShowForm((v) => !v)} className="px-3 py-1.5 rounded-md border border-slate-700/30 text-sm font-semibold text-scaffld-teal hover:bg-green-50">
+          <button onClick={() => setShowForm((v) => !v)} className="min-h-[44px] px-3 py-1.5 rounded-md border border-slate-700/30 text-sm font-semibold text-scaffld-teal hover:bg-midnight">
             {showForm ? 'Cancel' : 'New Line Item'}
           </button>
         )}
       </div>
       {showForm && canEditLineItems && (
-        <div className="mb-4 grid grid-cols-1 md:grid-cols-5 gap-3 text-sm">
-          <input value={draft.description} onChange={(e) => setDraft({ ...draft, description: e.target.value })} placeholder="Description" className="md:col-span-2 px-3 py-2 border border-slate-700 rounded-md" />
-          <input type="number" min="0" value={draft.qty} onChange={(e) => setDraft({ ...draft, qty: e.target.value })} placeholder="Qty" className="px-3 py-2 border border-slate-700 rounded-md" />
-          <input type="number" min="0" value={draft.price} onChange={(e) => setDraft({ ...draft, price: e.target.value })} placeholder="Price" className="px-3 py-2 border border-slate-700 rounded-md" />
-          <input type="number" min="0" value={draft.unitCost} onChange={(e) => setDraft({ ...draft, unitCost: e.target.value })} placeholder="Unit cost" className="px-3 py-2 border border-slate-700 rounded-md" />
-          <input value={draft.note} onChange={(e) => setDraft({ ...draft, note: e.target.value })} placeholder="Notes" className="md:col-span-3 px-3 py-2 border border-slate-700 rounded-md" />
-          <div className="md:col-span-2 flex justify-end">
-            <button onClick={handleAdd} className="px-4 py-2 bg-scaffld-teal text-white rounded-md text-sm font-semibold hover:bg-scaffld-teal/90">Add Line Item</button>
+        <div className="mb-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 text-sm">
+          <input value={draft.description} onChange={(e) => setDraft({ ...draft, description: e.target.value })} placeholder="Description" className="sm:col-span-2 md:col-span-2 min-h-[44px] px-3 py-2 border border-slate-700 rounded-md bg-midnight text-slate-100" />
+          <input type="number" min="0" value={draft.qty} onChange={(e) => setDraft({ ...draft, qty: e.target.value })} placeholder="Qty" className="min-h-[44px] px-3 py-2 border border-slate-700 rounded-md bg-midnight text-slate-100" />
+          <input type="number" min="0" value={draft.price} onChange={(e) => setDraft({ ...draft, price: e.target.value })} placeholder="Price" className="min-h-[44px] px-3 py-2 border border-slate-700 rounded-md bg-midnight text-slate-100" />
+          <input type="number" min="0" value={draft.unitCost} onChange={(e) => setDraft({ ...draft, unitCost: e.target.value })} placeholder="Unit cost" className="min-h-[44px] px-3 py-2 border border-slate-700 rounded-md bg-midnight text-slate-100" />
+          <input value={draft.note} onChange={(e) => setDraft({ ...draft, note: e.target.value })} placeholder="Notes" className="sm:col-span-2 md:col-span-3 min-h-[44px] px-3 py-2 border border-slate-700 rounded-md bg-midnight text-slate-100" />
+          <div className="sm:col-span-2 md:col-span-2 flex justify-end">
+            <button onClick={handleAdd} className="min-h-[44px] px-4 py-2 bg-scaffld-teal text-white rounded-md text-sm font-semibold hover:bg-scaffld-teal/90">Add Line Item</button>
           </div>
         </div>
       )}
       {lineItems.length === 0 ? (
         <div className="text-sm text-slate-400">No line items yet.</div>
       ) : (
-        <table className="w-full text-sm">
+        <div className="overflow-x-auto">
+        <table className="w-full text-sm min-w-[340px]">
           <thead className="text-xs text-slate-400 border-b">
             <tr>
               <th className="text-left py-2">Product / Service</th>
-              <th className="text-right py-2">Quantity</th>
+              <th className="text-right py-2">Qty</th>
               <th className="text-right py-2">Price</th>
               <th className="text-right py-2">Total</th>
             </tr>
@@ -80,6 +81,7 @@ export default function JobLineItemsCard({ job, quote, lineItems, totalPrice, ca
             ))}
           </tbody>
         </table>
+        </div>
       )}
       <div className="mt-4 text-right font-semibold text-slate-100">{formatCurrency(totalPrice)}</div>
     </div>

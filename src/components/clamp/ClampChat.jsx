@@ -114,7 +114,7 @@ export default function ClampChat() {
         <button
           type="button"
           onClick={() => setIsOpen(false)}
-          className="h-8 w-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-700/50 transition-colors"
+          className="h-11 w-11 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-700/50 transition-colors"
           title="Close"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

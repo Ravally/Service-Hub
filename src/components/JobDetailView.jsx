@@ -48,20 +48,20 @@ export default function JobDetailView({
         </button>
         <div className="flex flex-wrap items-center gap-2">
           {onCreateInvoice && (
-            <button onClick={() => onCreateInvoice(job)} className="px-4 py-2 rounded-lg bg-scaffld-teal text-white text-sm font-semibold hover:bg-scaffld-teal/90 inline-flex items-center gap-2">
+            <button onClick={() => onCreateInvoice(job)} className="min-h-[44px] px-4 py-2 rounded-lg bg-scaffld-teal text-white text-sm font-semibold hover:bg-scaffld-teal/90 inline-flex items-center gap-2">
               <DollarSignIcon className="h-4 w-4" />
               Generate Invoice
             </button>
           )}
-          <button className="px-4 py-2 rounded-lg bg-scaffld-teal text-white text-sm font-semibold hover:bg-scaffld-teal/90">Text Booking Confirmation</button>
-          <button className="px-4 py-2 rounded-lg border border-slate-700 text-slate-100 text-sm font-semibold hover:bg-midnight">More Actions</button>
+          <button className="min-h-[44px] px-4 py-2 rounded-lg bg-scaffld-teal text-white text-sm font-semibold hover:bg-scaffld-teal/90 hidden sm:inline-flex">Text Booking Confirmation</button>
+          <button className="min-h-[44px] px-4 py-2 rounded-lg border border-slate-700 text-slate-100 text-sm font-semibold hover:bg-midnight">More Actions</button>
         </div>
       </div>
 
       <JobInfoCard job={job} client={client} staff={staff} statusColors={statusColors} onUpdate={onUpdate} onOpenClient={onOpenClient} getClientNameById={getClientNameById} />
 
       {/* Custom Fields */}
-      <div className="bg-charcoal border border-slate-700/30 rounded-2xl p-5">
+      <div className="bg-charcoal border border-slate-700/30 rounded-2xl p-4 sm:p-5">
         <h3 className="text-sm font-semibold text-slate-100 mb-3">Custom Fields</h3>
         <CustomFieldEditor
           entityType="jobs"

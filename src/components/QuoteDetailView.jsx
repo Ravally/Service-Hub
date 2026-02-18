@@ -10,7 +10,7 @@ const SectionHeader = ({ title, onEdit, isEditing }) => (
   <div className="flex items-center justify-between mb-4">
     <h3 className="text-lg font-semibold text-slate-100">{title}</h3>
     {onEdit && (
-      <button onClick={onEdit} className="text-sm font-semibold text-scaffld-teal hover:text-scaffld-teal/80">
+      <button onClick={onEdit} className="min-h-[44px] text-sm font-semibold text-scaffld-teal hover:text-scaffld-teal/80">
         <span className="inline-flex items-center gap-2"><EditIcon /> {isEditing ? 'Cancel' : 'Edit'}</span>
       </button>
     )}
@@ -183,12 +183,12 @@ export default function QuoteDetailView({
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <button onClick={onBack} className="flex items-center gap-2 text-sm font-semibold text-slate-400 hover:text-scaffld-teal">
+      <button onClick={onBack} className="min-h-[44px] flex items-center gap-2 text-sm font-semibold text-slate-400 hover:text-scaffld-teal">
         <ChevronLeftIcon />
         Back to all quotes
       </button>
 
-      <div className="bg-harvest-amber/10 border border-harvest-amber/30 rounded-2xl p-6">
+      <div className="bg-harvest-amber/10 border border-harvest-amber/30 rounded-2xl p-4 sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <FileTextIcon />
@@ -197,14 +197,14 @@ export default function QuoteDetailView({
           <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={() => onConvertToJob && onConvertToJob(quote)}
-              className="px-4 py-2 bg-scaffld-teal text-midnight rounded-lg text-sm font-semibold hover:bg-scaffld-teal/90"
+              className="min-h-[44px] px-4 py-2 bg-scaffld-teal text-midnight rounded-lg text-sm font-semibold hover:bg-scaffld-teal/90"
             >
               Convert to Job
             </button>
             <div className="relative">
               <button
                 onClick={() => setMenuOpen(v => !v)}
-                className="px-4 py-2 bg-charcoal border border-slate-700/30 rounded-lg text-sm font-semibold text-slate-100 hover:bg-charcoal/80"
+                className="min-h-[44px] px-4 py-2 bg-charcoal border border-slate-700/30 rounded-lg text-sm font-semibold text-slate-100 hover:bg-charcoal/80"
               >
                 More
               </button>
@@ -235,7 +235,7 @@ export default function QuoteDetailView({
           </div>
         </div>
 
-        <h1 className="text-3xl font-bold text-slate-100 mt-4">{overviewDraft.title || `Quote for ${client?.name || 'Client'}`}</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold text-slate-100 mt-4 truncate">{overviewDraft.title || `Quote for ${client?.name || 'Client'}`}</h1>
         <div className="mt-2 flex flex-wrap gap-4 text-sm text-slate-400">
           <span>Quote #{overviewDraft.quoteNumber || quote.quoteNumber || quote.id?.slice(0, 6)}</span>
           <span>Created {formatDate(quote.createdAt)}</span>
@@ -245,7 +245,7 @@ export default function QuoteDetailView({
 
       <div className="grid grid-cols-1 xl:grid-cols-[2.5fr_1fr] gap-6">
         <div className="space-y-6">
-          <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-6">
+          <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-4 sm:p-6">
             <SectionHeader
               title="Overview"
               onEdit={canEdit ? () => setEditingSection(editingSection === 'overview' ? '' : 'overview') : null}
@@ -307,7 +307,7 @@ export default function QuoteDetailView({
             )}
           </div>
 
-          <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-6">
+          <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-4 sm:p-6">
             <SectionHeader
               title="Client Data"
               onEdit={canEdit ? () => setEditingSection(editingSection === 'client' ? '' : 'client') : null}
@@ -364,7 +364,7 @@ export default function QuoteDetailView({
               </div>
             )}
           </div>
-          <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-6">
+          <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-4 sm:p-6">
             <SectionHeader
               title="Product / Service"
               onEdit={canEdit ? () => setEditingSection(editingSection === 'lineItems' ? '' : 'lineItems') : null}
@@ -440,12 +440,13 @@ export default function QuoteDetailView({
               </div>
             ) : (
               <>
-                <table className="w-full text-sm">
+                <div className="overflow-x-auto">
+              <table className="w-full text-sm min-w-[340px]">
                   <thead className="text-xs text-slate-400 border-b">
                     <tr>
                       <th className="text-left py-2">Line Item</th>
-                      <th className="text-right py-2">Quantity</th>
-                      <th className="text-right py-2">Unit Price</th>
+                      <th className="text-right py-2">Qty</th>
+                      <th className="text-right py-2">Price</th>
                       <th className="text-right py-2">Total</th>
                     </tr>
                   </thead>
@@ -476,6 +477,7 @@ export default function QuoteDetailView({
                     })}
                   </tbody>
                 </table>
+                </div>
                 <div className="flex justify-end mt-4">
                   <div className="w-full max-w-sm space-y-2 text-sm">
                     <div className="flex justify-between"><span>Subtotal</span><span>{formatCurrency(totals.subtotalBeforeDiscount)}</span></div>
@@ -487,7 +489,7 @@ export default function QuoteDetailView({
             )}
           </div>
 
-          <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-6">
+          <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-4 sm:p-6">
             <SectionHeader
               title="Financials"
               onEdit={canEdit ? () => setEditingSection(editingSection === 'financials' ? '' : 'financials') : null}
@@ -516,7 +518,7 @@ export default function QuoteDetailView({
                     value={financialDraft.quoteDiscountValue}
                     onChange={(e) => setFinancialDraft({ ...financialDraft, quoteDiscountValue: e.target.value })}
                     placeholder="Value"
-                    className="flex-1 px-3 py-2 border border-slate-700 rounded-md"
+                    className="flex-1 px-3 py-2 border border-slate-700 rounded-md bg-midnight text-slate-100"
                   />
                 </div>
                 <input
@@ -564,7 +566,7 @@ export default function QuoteDetailView({
             )}
           </div>
 
-          <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-6">
+          <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-4 sm:p-6">
             <SectionHeader
               title="Contract / Disclaimer"
               onEdit={canEdit ? () => setEditingSection(editingSection === 'legal' ? '' : 'legal') : null}
@@ -599,17 +601,17 @@ export default function QuoteDetailView({
           </div>
 
           <div className="flex flex-wrap items-center gap-2 text-sm text-slate-100">
-            <button className="px-3 py-1 rounded-full bg-midnight border border-slate-700/30">+ Add section</button>
-            <button className="px-3 py-1 rounded-full bg-charcoal border border-slate-700/30">Introduction</button>
-            <button className="px-3 py-1 rounded-full bg-charcoal border border-slate-700/30">Attachments</button>
-            <button className="px-3 py-1 rounded-full bg-charcoal border border-slate-700/30">Images</button>
-            <button className="px-3 py-1 rounded-full bg-charcoal border border-slate-700/30">Reviews</button>
-            <button className="px-3 py-1 rounded-full bg-charcoal border border-slate-700/30">Client message</button>
+            <button className="min-h-[44px] px-3 py-1.5 rounded-full bg-midnight border border-slate-700/30">+ Add section</button>
+            <button className="min-h-[44px] px-3 py-1.5 rounded-full bg-charcoal border border-slate-700/30">Introduction</button>
+            <button className="min-h-[44px] px-3 py-1.5 rounded-full bg-charcoal border border-slate-700/30">Attachments</button>
+            <button className="min-h-[44px] px-3 py-1.5 rounded-full bg-charcoal border border-slate-700/30">Images</button>
+            <button className="min-h-[44px] px-3 py-1.5 rounded-full bg-charcoal border border-slate-700/30">Reviews</button>
+            <button className="min-h-[44px] px-3 py-1.5 rounded-full bg-charcoal border border-slate-700/30">Client message</button>
           </div>
         </div>
 
         <div className="space-y-6">
-          <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-6">
+          <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-4 sm:p-6">
             <h3 className="text-lg font-semibold text-slate-100 mb-4">Customize</h3>
             <div className="border border-slate-700/30 rounded-xl p-4 space-y-3">
               <div className="text-sm font-semibold text-slate-200">Deposit payment settings</div>
@@ -632,12 +634,12 @@ export default function QuoteDetailView({
                   acceptBank: quote.depositSettings?.acceptBank ?? false,
                   requireMethodOnFile: quote.depositSettings?.requireMethodOnFile ?? false,
                 })}>Cancel</button>
-                <button className="px-3 py-1.5 rounded-md bg-green-600 text-white text-sm font-semibold" onClick={saveDepositSettings}>Save</button>
+                <button className="min-h-[44px] px-3 py-1.5 rounded-md bg-scaffld-teal text-white text-sm font-semibold" onClick={saveDepositSettings}>Save</button>
               </div>
             </div>
           </div>
 
-          <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-6">
+          <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-4 sm:p-6">
             <h3 className="text-lg font-semibold text-slate-100 mb-4">Notes</h3>
             <div className="border-2 border-dashed border-slate-700/30 rounded-2xl p-4 text-center text-sm text-slate-400">
               <textarea
@@ -649,7 +651,7 @@ export default function QuoteDetailView({
             </div>
             <div className="flex justify-end gap-2 mt-3">
               <button className="px-3 py-1.5 rounded-md border border-slate-700/30 text-sm font-semibold" onClick={() => setInternalNotes(quote.internalNotes || '')}>Cancel</button>
-              <button className="px-3 py-1.5 rounded-md bg-green-600 text-white text-sm font-semibold" onClick={saveNotes}>Save</button>
+              <button className="min-h-[44px] px-3 py-1.5 rounded-md bg-scaffld-teal text-white text-sm font-semibold" onClick={saveNotes}>Save</button>
             </div>
           </div>
         </div>

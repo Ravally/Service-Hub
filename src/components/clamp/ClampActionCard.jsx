@@ -13,7 +13,7 @@ export default function ClampActionCard({ card, onNavigate }) {
       <button
         type="button"
         onClick={() => onNavigate(card)}
-        className="px-3 py-1.5 bg-clamp text-midnight text-xs font-semibold rounded-full hover:bg-clamp-deep transition-colors min-h-[36px]"
+        className="px-3 py-1.5 bg-clamp text-midnight text-xs font-semibold rounded-full hover:bg-clamp-deep transition-colors min-h-[44px]"
       >
         View
       </button>

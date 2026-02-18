@@ -65,10 +65,10 @@ export default function JobActivityCards({ job, userRole, onUpdate, onUploadAtta
   return (
     <>
       {/* Expenses */}
-      <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-6">
+      <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-4 sm:p-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-xl font-semibold text-slate-100">Expenses</h3>
-          <button onClick={() => setShowExpenseForm((v) => !v)} className="px-3 py-1.5 rounded-md border border-slate-700/30 text-sm font-semibold text-scaffld-teal hover:bg-green-50">
+          <button onClick={() => setShowExpenseForm((v) => !v)} className="min-h-[44px] px-3 py-1.5 rounded-md border border-slate-700/30 text-sm font-semibold text-scaffld-teal hover:bg-midnight">
             {showExpenseForm ? 'Cancel' : 'New Expense'}
           </button>
         </div>
@@ -109,10 +109,10 @@ export default function JobActivityCards({ job, userRole, onUpdate, onUploadAtta
       </div>
 
       {/* Chemical tracking */}
-      <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-6">
+      <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-4 sm:p-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-xl font-semibold text-slate-100">Chemical tracking</h3>
-          <button onClick={() => setShowChemicalForm((v) => !v)} className="px-3 py-1.5 rounded-md border border-slate-700/30 text-sm font-semibold text-scaffld-teal hover:bg-green-50">
+          <button onClick={() => setShowChemicalForm((v) => !v)} className="min-h-[44px] px-3 py-1.5 rounded-md border border-slate-700/30 text-sm font-semibold text-scaffld-teal hover:bg-midnight">
             {showChemicalForm ? 'Cancel' : 'Record Treatment'}
           </button>
         </div>
@@ -141,23 +141,26 @@ export default function JobActivityCards({ job, userRole, onUpdate, onUploadAtta
       </div>
 
       {/* Notes */}
-      <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-6">
+      <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-4 sm:p-6">
         <h3 className="text-xl font-semibold text-slate-100 mb-4">Notes</h3>
         <div className="border-2 border-dashed border-slate-700/30 rounded-2xl p-6 text-center">
           <textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Leave an internal note for yourself or a team member" className="w-full h-40 bg-transparent text-sm text-slate-100 focus:outline-none" />
         </div>
         <div className="mt-4 flex items-center justify-end gap-2">
-          <button onClick={() => setNotes(job.notes || '')} className="px-4 py-2 rounded-lg border border-slate-700 text-sm font-semibold text-slate-100 hover:bg-midnight">Cancel</button>
-          <button onClick={() => onUpdate(job.id, { notes })} className="px-4 py-2 rounded-lg bg-scaffld-teal text-white text-sm font-semibold hover:bg-scaffld-teal/90">Save Job</button>
+          <button onClick={() => setNotes(job.notes || '')} className="min-h-[44px] px-4 py-2 rounded-lg border border-slate-700 text-sm font-semibold text-slate-100 hover:bg-midnight">Cancel</button>
+          <button onClick={() => onUpdate(job.id, { notes })} className="min-h-[44px] px-4 py-2 rounded-lg bg-scaffld-teal text-white text-sm font-semibold hover:bg-scaffld-teal/90">Save Job</button>
         </div>
       </div>
 
       {/* Attachments */}
-      <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-6">
+      <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-4 sm:p-6">
         <h3 className="text-xl font-semibold text-slate-100 mb-4">Attachments</h3>
         {hasPermission(userRole, 'job.uploadAttachment') && (
           <div className="flex items-center gap-2 mb-3">
-            <input type="file" onChange={(e) => { const f = e.target.files?.[0]; if (f && onUploadAttachment) onUploadAttachment(f); e.target.value = ''; }} className="text-sm" />
+            <label className="min-h-[44px] px-4 py-2 rounded-lg border border-slate-700/30 text-sm font-semibold text-scaffld-teal hover:bg-midnight cursor-pointer inline-flex items-center gap-2">
+              Upload File
+              <input type="file" onChange={(e) => { const f = e.target.files?.[0]; if (f && onUploadAttachment) onUploadAttachment(f); e.target.value = ''; }} className="hidden" />
+            </label>
           </div>
         )}
         {(job.attachments && job.attachments.length > 0) ? (
@@ -184,17 +187,17 @@ export default function JobActivityCards({ job, userRole, onUpdate, onUploadAtta
       </div>
 
       {/* Checklist */}
-      <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-6">
+      <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-4 sm:p-6">
         <h3 className="text-xl font-semibold text-slate-100 mb-4">Checklist</h3>
         <form onSubmit={handleAddChecklistItem} className="flex gap-2 mb-4">
-          <input value={checklistItem} onChange={(e) => setChecklistItem(e.target.value)} placeholder="Add checklist item" className="flex-1 px-3 py-2 border border-slate-700 rounded-md text-sm" />
-          <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-semibold hover:bg-blue-700">Add</button>
+          <input value={checklistItem} onChange={(e) => setChecklistItem(e.target.value)} placeholder="Add checklist item" className="flex-1 min-h-[44px] px-3 py-2 border border-slate-700 rounded-md text-sm bg-midnight text-slate-100" />
+          <button type="submit" className="min-h-[44px] px-4 py-2 bg-scaffld-teal text-white rounded-md text-sm font-semibold hover:bg-scaffld-teal/90">Add</button>
         </form>
         {(job.checklist && job.checklist.length > 0) ? (
           <ul className="space-y-2">
             {job.checklist.map((item, index) => (
-              <li key={index} className="flex items-center gap-2 text-sm">
-                <input type="checkbox" checked={item.completed} onChange={() => handleToggleChecklistItem(index)} />
+              <li key={index} className="flex items-center gap-3 min-h-[44px] text-sm">
+                <input type="checkbox" className="h-5 w-5 shrink-0" checked={item.completed} onChange={() => handleToggleChecklistItem(index)} />
                 <span className={item.completed ? 'line-through text-slate-500' : 'text-slate-100'}>{item.text}</span>
               </li>
             ))}

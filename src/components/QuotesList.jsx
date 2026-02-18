@@ -288,18 +288,18 @@ export default function QuotesList({
       <div className="mb-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
           <div className="relative">
-            <button onClick={()=>setStatusOpen(o=>!o)} className="px-3 py-1.5 rounded-full bg-charcoal text-slate-100 text-sm border border-slate-700 hover:bg-slate-dark transition-colors">Status | {statusLabel}</button>
+            <button onClick={()=>setStatusOpen(o=>!o)} className="min-h-[44px] px-3 py-1.5 rounded-full bg-charcoal text-slate-100 text-sm border border-slate-700 hover:bg-slate-dark transition-colors">Status | {statusLabel}</button>
             {statusOpen && (
               <div className="absolute z-20 mt-2 w-64 bg-charcoal border border-slate-700/30 rounded-md shadow p-2">
                 <input
                   value={statusSearch}
                   onChange={(e)=>setStatusSearch(e.target.value)}
                   placeholder="Search status"
-                  className="w-full px-2 py-1 bg-midnight border border-slate-700 text-slate-100 placeholder-slate-500 rounded mb-2 text-sm focus:border-scaffld-teal focus:ring-2 focus:ring-scaffld-teal/20"
+                  className="w-full min-h-[44px] px-2 py-1.5 bg-midnight border border-slate-700 text-slate-100 placeholder-slate-500 rounded mb-2 text-sm focus:border-scaffld-teal focus:ring-2 focus:ring-scaffld-teal/20"
                 />
                 <button
                   type="button"
-                  className={`w-full text-left px-3 py-2 text-slate-100 hover:bg-slate-dark ${statusFilter.length===0 ? 'bg-slate-dark' : ''}`}
+                  className={`w-full text-left px-3 py-2 min-h-[44px] text-slate-100 hover:bg-slate-dark ${statusFilter.length===0 ? 'bg-slate-dark' : ''}`}
                   onClick={()=>{ setStatusFilter([]); }}
                 >
                   <span className="inline-block mr-2" style={{width:12}}>{statusFilter.length===0 ? '✓' : ''}</span>
@@ -311,7 +311,7 @@ export default function QuotesList({
                     <button
                       key={s}
                       type="button"
-                      className={`w-full text-left px-3 py-2 text-slate-100 hover:bg-slate-dark ${active ? 'bg-slate-dark' : ''}`}
+                      className={`w-full text-left px-3 py-2 min-h-[44px] text-slate-100 hover:bg-slate-dark ${active ? 'bg-slate-dark' : ''}`}
                       onClick={()=> setStatusFilter(prev => active ? prev.filter(x=>x!==s) : [...prev, s])}
                     >
                       <span className="inline-block mr-2" style={{width:12}}>{active ? '✓' : ''}</span>
@@ -323,7 +323,7 @@ export default function QuotesList({
             )}
           </div>
           {/* Simplified popovers: small inline controls for now */}
-          <select value={period} onChange={(e)=>setPeriod(e.target.value)} className="px-3 py-1.5 rounded-full bg-charcoal text-slate-100 text-sm border border-slate-700 focus:border-scaffld-teal focus:ring-2 focus:ring-scaffld-teal/20">
+          <select value={period} onChange={(e)=>setPeriod(e.target.value)} className="min-h-[44px] px-3 py-1.5 rounded-full bg-charcoal text-slate-100 text-sm border border-slate-700 focus:border-scaffld-teal focus:ring-2 focus:ring-scaffld-teal/20">
             <option value="all">All</option>
             <option value="last_week">Last week</option>
             <option value="last_30">Last 30 days</option>
@@ -334,11 +334,11 @@ export default function QuotesList({
           </select>
           {period==='custom' && (
             <span className="text-xs text-slate-400">
-              <input type="date" className="bg-midnight border border-slate-700 text-slate-100 px-2 py-1 rounded mr-1 focus:border-scaffld-teal focus:ring-2 focus:ring-scaffld-teal/20" value={custom.start} onChange={(e)=>setCustom(c=>({...c,start:e.target.value}))}/>
-              <input type="date" className="bg-midnight border border-slate-700 text-slate-100 px-2 py-1 rounded focus:border-scaffld-teal focus:ring-2 focus:ring-scaffld-teal/20" value={custom.end} onChange={(e)=>setCustom(c=>({...c,end:e.target.value}))}/>
+              <input type="date" className="min-h-[44px] bg-midnight border border-slate-700 text-slate-100 px-2 py-1.5 rounded mr-1 focus:border-scaffld-teal focus:ring-2 focus:ring-scaffld-teal/20" value={custom.start} onChange={(e)=>setCustom(c=>({...c,start:e.target.value}))}/>
+              <input type="date" className="min-h-[44px] bg-midnight border border-slate-700 text-slate-100 px-2 py-1.5 rounded focus:border-scaffld-teal focus:ring-2 focus:ring-scaffld-teal/20" value={custom.end} onChange={(e)=>setCustom(c=>({...c,end:e.target.value}))}/>
             </span>
           )}
-          <select value={sales} onChange={(e)=>setSales(e.target.value)} className="px-3 py-1.5 rounded-full bg-charcoal text-slate-100 text-sm border border-slate-700 focus:border-scaffld-teal focus:ring-2 focus:ring-scaffld-teal/20">
+          <select value={sales} onChange={(e)=>setSales(e.target.value)} className="min-h-[44px] px-3 py-1.5 rounded-full bg-charcoal text-slate-100 text-sm border border-slate-700 focus:border-scaffld-teal focus:ring-2 focus:ring-scaffld-teal/20">
             <option value="">Salesperson | All</option>
             {salesOptions.map(s => <option key={s} value={s}>{s}</option>)}
           </select>
@@ -409,7 +409,7 @@ function RowActions({ q, onConvert, onArchive, onDelete }) {
   const [open, setOpen] = useState(false);
   return (
     <div className="relative" onClick={(e)=>e.stopPropagation()}>
-      <button className="h-8 w-8 inline-flex items-center justify-center rounded-md border border-slate-700 bg-charcoal text-slate-300 hover:bg-slate-dark transition-colors" onClick={()=>setOpen(o=>!o)}>...</button>
+      <button className="h-11 w-11 inline-flex items-center justify-center rounded-md border border-slate-700 bg-charcoal text-slate-300 hover:bg-slate-dark transition-colors" onClick={()=>setOpen(o=>!o)}>...</button>
       <Menu open={open}>
         <button className="w-full text-left px-4 py-2 text-slate-100 hover:bg-slate-dark" onClick={()=>{ setOpen(false); onConvert && onConvert(q); }}>Convert to Job</button>
         <button className="w-full text-left px-4 py-2 text-slate-100 hover:bg-slate-dark" onClick={()=>{ setOpen(false); onArchive && onArchive(q.id); }}>Archive Quote</button>

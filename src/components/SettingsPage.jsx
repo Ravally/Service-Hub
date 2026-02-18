@@ -98,11 +98,24 @@ export default function SettingsPage({
 
   return (
     <div className="space-y-6">
-      <h2 className="text-3xl font-bold font-display text-slate-100">Settings</h2>
+      <h2 className="text-2xl sm:text-3xl font-bold font-display text-slate-100">Settings</h2>
+
+      {/* Mobile tab selector */}
+      <div className="md:hidden">
+        <select
+          value={activeTab}
+          onChange={(e) => setActiveTab(e.target.value)}
+          className="w-full min-h-[44px] px-3 py-2 bg-charcoal border border-slate-700/30 rounded-xl text-sm text-slate-100"
+        >
+          {tabs.filter(t => !t.divider).map((tab) => (
+            <option key={tab.key} value={tab.key}>{tab.label}</option>
+          ))}
+        </select>
+      </div>
 
       <div className="flex gap-6 min-h-[calc(100vh-12rem)]">
-        {/* Sidebar Nav */}
-        <nav className="w-56 flex-shrink-0">
+        {/* Sidebar Nav — hidden on mobile */}
+        <nav className="w-56 flex-shrink-0 hidden md:block">
           <div className="bg-charcoal rounded-xl border border-slate-700/30 p-2 sticky top-6">
             {tabs.map((tab) => {
               if (tab.divider) {
@@ -136,7 +149,7 @@ export default function SettingsPage({
 
         {/* Content Panel */}
         <div className="flex-1 min-w-0">
-          <div className="bg-charcoal rounded-xl border border-slate-700/30 p-6">
+          <div className="bg-charcoal rounded-xl border border-slate-700/30 p-4 sm:p-6">
             {renderTabContent()}
           </div>
         </div>

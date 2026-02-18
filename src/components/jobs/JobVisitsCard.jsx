@@ -39,17 +39,17 @@ export default function JobVisitsCard({ job, staff, visits, onUpdate }) {
   };
 
   return (
-    <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-6">
+    <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-4 sm:p-6">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-xl font-semibold text-slate-100">Visits</h3>
-        <button onClick={() => setShowForm((v) => !v)} className="px-3 py-1.5 rounded-md border border-slate-700/30 text-sm font-semibold text-scaffld-teal hover:bg-green-50">
+        <button onClick={() => setShowForm((v) => !v)} className="min-h-[44px] px-3 py-1.5 rounded-md border border-slate-700/30 text-sm font-semibold text-scaffld-teal hover:bg-midnight">
           {showForm ? 'Cancel' : 'New Visit'}
         </button>
       </div>
       {showForm && (
-        <div className="mb-4 grid grid-cols-1 md:grid-cols-6 gap-3 text-sm">
-          <input type="datetime-local" value={toLocalInput(draft.start)} onChange={(e) => setDraft({ ...draft, start: e.target.value })} className="md:col-span-2 px-3 py-2 border border-slate-700 rounded-md" />
-          <input type="datetime-local" value={toLocalInput(draft.end)} onChange={(e) => setDraft({ ...draft, end: e.target.value })} className="md:col-span-2 px-3 py-2 border border-slate-700 rounded-md" />
+        <div className="mb-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-3 text-sm">
+          <input type="datetime-local" value={toLocalInput(draft.start)} onChange={(e) => setDraft({ ...draft, start: e.target.value })} className="sm:col-span-1 md:col-span-2 min-h-[44px] px-3 py-2 border border-slate-700 rounded-md bg-midnight text-slate-100" />
+          <input type="datetime-local" value={toLocalInput(draft.end)} onChange={(e) => setDraft({ ...draft, end: e.target.value })} className="sm:col-span-1 md:col-span-2 min-h-[44px] px-3 py-2 border border-slate-700 rounded-md bg-midnight text-slate-100" />
           <div className="md:col-span-2 border border-slate-700/30 rounded-md p-2">
             <div className="text-xs text-slate-400 mb-2">Assignees</div>
             <div className="flex flex-wrap gap-2">
@@ -68,9 +68,9 @@ export default function JobVisitsCard({ job, staff, visits, onUpdate }) {
               {staff.length === 0 && <span className="text-xs text-slate-400">No staff available.</span>}
             </div>
           </div>
-          <input value={draft.notes} onChange={(e) => setDraft({ ...draft, notes: e.target.value })} placeholder="Visit notes" className="md:col-span-4 px-3 py-2 border border-slate-700 rounded-md" />
-          <div className="md:col-span-2 flex justify-end">
-            <button onClick={handleAdd} className="px-4 py-2 bg-scaffld-teal text-white rounded-md text-sm font-semibold hover:bg-scaffld-teal/90">Add Visit</button>
+          <input value={draft.notes} onChange={(e) => setDraft({ ...draft, notes: e.target.value })} placeholder="Visit notes" className="sm:col-span-2 md:col-span-4 min-h-[44px] px-3 py-2 border border-slate-700 rounded-md bg-midnight text-slate-100" />
+          <div className="sm:col-span-2 md:col-span-2 flex justify-end">
+            <button onClick={handleAdd} className="min-h-[44px] px-4 py-2 bg-scaffld-teal text-white rounded-md text-sm font-semibold hover:bg-scaffld-teal/90">Add Visit</button>
           </div>
         </div>
       )}
@@ -85,9 +85,9 @@ export default function JobVisitsCard({ job, staff, visits, onUpdate }) {
                 {group.items.map((visit) => {
                   const assignedNames = (visit.assignees || job.assignees || []).map((id) => staffMap[id]?.name).filter(Boolean);
                   return (
-                    <div key={visit.id || visit.start} className="flex items-center justify-between px-4 py-3 text-sm">
+                    <div key={visit.id || visit.start} className="flex items-center justify-between px-4 py-3 min-h-[44px] text-sm">
                       <div className="flex items-center gap-3">
-                        <input type="checkbox" className="h-4 w-4" checked={visit.status === 'Completed'} onChange={() => handleToggleComplete(visit.id, visit.start)} />
+                        <input type="checkbox" className="h-5 w-5 shrink-0" checked={visit.status === 'Completed'} onChange={() => handleToggleComplete(visit.id, visit.start)} />
                         <div className="font-semibold text-slate-100">{formatDateTime(visit.start)}</div>
                       </div>
                       <div className="text-slate-400">{assignedNames.length ? `Assigned to ${assignedNames.join(', ')}` : 'Unassigned'}</div>

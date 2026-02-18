@@ -137,8 +137,8 @@ const CalendarView = ({ jobs, calendarDate, setCalendarDate, onJobSelect, onJobR
             <span className="font-semibold">{newDate.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}</span>?
           </p>
           <div className="flex items-center justify-end gap-2">
-            <button onClick={() => setConfirmDrop(null)} className="px-4 py-2 rounded-md border border-slate-700 text-sm font-semibold text-slate-300 hover:bg-midnight">Cancel</button>
-            <button onClick={confirmReschedule} className="px-4 py-2 rounded-md bg-scaffld-teal text-white text-sm font-semibold hover:bg-scaffld-teal/90">Confirm</button>
+            <button onClick={() => setConfirmDrop(null)} className="min-h-[44px] px-4 py-2 rounded-md border border-slate-700 text-sm font-semibold text-slate-300 hover:bg-midnight">Cancel</button>
+            <button onClick={confirmReschedule} className="min-h-[44px] px-4 py-2 rounded-md bg-scaffld-teal text-white text-sm font-semibold hover:bg-scaffld-teal/90">Confirm</button>
           </div>
         </div>
       </div>
@@ -357,13 +357,19 @@ const CalendarView = ({ jobs, calendarDate, setCalendarDate, onJobSelect, onJobR
   return (
     <div className="bg-charcoal p-4 rounded-xl shadow-lg border border-slate-700/30">
       <div className="flex justify-between items-center mb-4">
-        <button onClick={() => changePeriod(-1)} className="p-2 rounded-full text-slate-300 hover:bg-slate-dark hover:text-scaffld-teal transition-colors"><ChevronLeftIcon /></button>
-        <h2 className="text-lg font-semibold text-slate-100">{title}</h2>
-        <button onClick={() => changePeriod(1)} className="p-2 rounded-full text-slate-300 hover:bg-slate-dark hover:text-scaffld-teal transition-colors"><ChevronRightIcon /></button>
+        <button onClick={() => changePeriod(-1)} className="min-h-[44px] min-w-[44px] p-2 rounded-full text-slate-300 hover:bg-slate-dark hover:text-scaffld-teal transition-colors flex items-center justify-center"><ChevronLeftIcon /></button>
+        <h2 className="text-base sm:text-lg font-semibold text-slate-100 truncate px-2">{title}</h2>
+        <button onClick={() => changePeriod(1)} className="min-h-[44px] min-w-[44px] p-2 rounded-full text-slate-300 hover:bg-slate-dark hover:text-scaffld-teal transition-colors flex items-center justify-center"><ChevronRightIcon /></button>
       </div>
 
-      {scheduleRange === 'month' && <MonthGrid />}
-      {scheduleRange === 'week' && <WeekRow />}
+      {/* On mobile (<768px), show list view instead of grid for month/week */}
+      <div className="hidden md:block">
+        {scheduleRange === 'month' && <MonthGrid />}
+        {scheduleRange === 'week' && <WeekRow />}
+      </div>
+      <div className="md:hidden">
+        {(scheduleRange === 'month' || scheduleRange === 'week') && <TodayList />}
+      </div>
       {scheduleRange === 'today' && <TodayList />}
 
       {scheduleRange !== 'today' && <DayDetailPanel />}

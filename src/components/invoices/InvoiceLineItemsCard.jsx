@@ -41,14 +41,14 @@ export default function InvoiceLineItemsCard({ draft, canEdit, updateLineItem, a
   const hasDescriptions = (draft.lineItems || []).some(i => i.type !== 'text' && i.description);
 
   return (
-    <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-6">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-2xl font-bold text-slate-100">Product / Service</h3>
-        <div className="flex items-center gap-2">
+    <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-4 sm:p-6">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <h3 className="text-xl sm:text-2xl font-bold text-slate-100">Product / Service</h3>
+        <div className="flex flex-wrap items-center gap-2">
           {canEdit && hasDescriptions && (
             <ClampButton label="Clamp Improve" onClick={handleImproveDescriptions} loading={aiLoading} />
           )}
-          <button type="button" onClick={() => addLineItem()} className="px-4 py-2 rounded-full bg-scaffld-teal text-white text-sm font-semibold hover:bg-scaffld-teal/90" disabled={!canEdit}>
+          <button type="button" onClick={() => addLineItem()} className="min-h-[44px] px-4 py-2 rounded-full bg-scaffld-teal text-white text-sm font-semibold hover:bg-scaffld-teal/90" disabled={!canEdit}>
             Add Line Item
           </button>
         </div>
@@ -107,7 +107,7 @@ export default function InvoiceLineItemsCard({ draft, canEdit, updateLineItem, a
                   <input value={lineTotal.toFixed(2)} className="w-full px-3 py-2 border border-slate-700/30 rounded-xl text-sm text-right bg-midnight text-slate-400" disabled />
                 </div>
                 {canEdit && (
-                  <button onClick={() => removeLineItem(idx)} className="px-3 py-2 border border-signal-coral/30 rounded-lg text-signal-coral text-sm font-semibold">Delete</button>
+                  <button onClick={() => removeLineItem(idx)} className="min-h-[44px] px-3 py-2 border border-signal-coral/30 rounded-lg text-signal-coral text-sm font-semibold">Delete</button>
                 )}
               </div>
               <div className="flex flex-wrap items-center justify-between text-sm text-slate-400">

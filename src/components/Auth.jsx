@@ -61,7 +61,7 @@ const Auth = () => {
     setResetSent(false);
   };
 
-  const inputCls = 'w-full px-3 py-2 bg-midnight border border-slate-700 rounded-md text-slate-100 placeholder-slate-500 focus:border-scaffld-teal focus:ring-2 focus:ring-scaffld-teal/20';
+  const inputCls = 'w-full min-h-[44px] px-3 py-2.5 bg-midnight border border-slate-700 rounded-md text-slate-100 placeholder-slate-500 focus:border-scaffld-teal focus:ring-2 focus:ring-scaffld-teal/20';
 
   return (
     <div className="min-h-screen bg-midnight flex flex-col justify-center items-center p-4">
@@ -75,7 +75,7 @@ const Auth = () => {
           )}
         </div>
 
-        <div className="bg-charcoal p-8 rounded-xl border border-slate-700/30 shadow-lg">
+        <div className="bg-charcoal p-5 sm:p-8 rounded-xl border border-slate-700/30 shadow-lg">
           <h2 className="text-2xl font-bold font-display text-slate-100 mb-6 text-center">
             {authMode === 'login' && 'Welcome back'}
             {authMode === 'signup' && 'Start your free trial'}
@@ -103,7 +103,7 @@ const Auth = () => {
                 {error && (
                   <div className="text-sm text-signal-coral bg-signal-coral/10 border border-signal-coral/20 p-3 rounded-md">{error}</div>
                 )}
-                <button type="submit" disabled={loading} className="w-full py-2.5 px-4 bg-scaffld-teal text-white font-semibold rounded-md hover:bg-scaffld-teal-deep focus:outline-none focus:ring-2 focus:ring-scaffld-teal/50 disabled:opacity-50 transition-colors">
+                <button type="submit" disabled={loading} className="w-full min-h-[44px] py-2.5 px-4 bg-scaffld-teal text-white font-semibold rounded-md hover:bg-scaffld-teal-deep focus:outline-none focus:ring-2 focus:ring-scaffld-teal/50 disabled:opacity-50 transition-colors">
                   {loading ? 'Sending...' : 'Send Reset Link'}
                 </button>
               </form>
@@ -134,7 +134,7 @@ const Auth = () => {
                 <input id="password" type="password" autoComplete={authMode === 'login' ? 'current-password' : 'new-password'} required value={password} onChange={(e) => setPassword(e.target.value)} className={inputCls} placeholder={authMode === 'login' ? '\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022' : 'Min. 6 characters'} />
                 {authMode === 'login' && (
                   <div className="text-right mt-1">
-                    <button type="button" onClick={() => switchMode('forgot')} className="text-xs text-slate-400 hover:text-scaffld-teal transition-colors">Forgot password?</button>
+                    <button type="button" onClick={() => switchMode('forgot')} className="min-h-[44px] inline-flex items-center text-xs text-slate-400 hover:text-scaffld-teal transition-colors">Forgot password?</button>
                   </div>
                 )}
               </div>
@@ -152,7 +152,7 @@ const Auth = () => {
                 <div className="text-sm text-signal-coral bg-signal-coral/10 border border-signal-coral/20 p-3 rounded-md">{error}</div>
               )}
 
-              <button type="submit" disabled={loading} className="w-full py-2.5 px-4 bg-scaffld-teal text-white font-semibold rounded-md hover:bg-scaffld-teal-deep focus:outline-none focus:ring-2 focus:ring-scaffld-teal/50 disabled:opacity-50 transition-colors">
+              <button type="submit" disabled={loading} className="w-full min-h-[44px] py-2.5 px-4 bg-scaffld-teal text-white font-semibold rounded-md hover:bg-scaffld-teal-deep focus:outline-none focus:ring-2 focus:ring-scaffld-teal/50 disabled:opacity-50 transition-colors">
                 {loading ? 'Processing...' : (authMode === 'login' ? 'Sign In' : 'Start Free Trial')}
               </button>
             </form>

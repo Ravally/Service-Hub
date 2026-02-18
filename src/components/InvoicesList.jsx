@@ -124,19 +124,19 @@ export default function InvoicesList({ invoices=[], clients=[], onOpenInvoice, o
       <div className="mb-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
           <div className="relative">
-            <button onClick={()=>setStatusOpen(o=>!o)} className="px-3 py-1.5 rounded-full bg-charcoal text-slate-100 text-sm border border-slate-700">Status | {status==='all' ? 'All' : status}</button>
+            <button onClick={()=>setStatusOpen(o=>!o)} className="min-h-[44px] px-3 py-1.5 rounded-full bg-charcoal text-slate-100 text-sm border border-slate-700">Status | {status==='all' ? 'All' : status}</button>
             {statusOpen && (
               <div className="absolute z-20 mt-2 w-72 bg-charcoal border border-slate-700/30 rounded-md shadow p-2">
                 <input placeholder="Search status" className="w-full px-2 py-1 bg-midnight border border-slate-700 text-slate-100 placeholder-slate-500 focus:border-scaffld-teal rounded mb-2 text-sm" />
-                <button className={`w-full text-left px-3 py-2 text-slate-100 hover:bg-slate-dark ${status==='all'?'bg-slate-dark':''}`} onClick={()=>{ setStatus('all'); setStatusOpen(false); }}>All</button>
+                <button className={`w-full text-left px-3 py-2 min-h-[44px] text-slate-100 hover:bg-slate-dark ${status==='all'?'bg-slate-dark':''}`} onClick={()=>{ setStatus('all'); setStatusOpen(false); }}>All</button>
                 {statusOptions.map(s => (
-                  <button key={s} className={`w-full text-left px-3 py-2 text-slate-100 hover:bg-slate-dark ${status===s?'bg-slate-dark':''}`} onClick={()=>{ setStatus(s); setStatusOpen(false); }}>{s}</button>
+                  <button key={s} className={`w-full text-left px-3 py-2 min-h-[44px] text-slate-100 hover:bg-slate-dark ${status===s?'bg-slate-dark':''}`} onClick={()=>{ setStatus(s); setStatusOpen(false); }}>{s}</button>
                 ))}
               </div>
             )}
           </div>
           <div className="relative">
-            <button onClick={()=>setDueOpen(o=>!o)} className="px-3 py-1.5 rounded-full bg-charcoal text-slate-100 text-sm border border-slate-700">Due | {dueMode==='all' ? 'All' : dueMode.replace('_',' ')}</button>
+            <button onClick={()=>setDueOpen(o=>!o)} className="min-h-[44px] px-3 py-1.5 rounded-full bg-charcoal text-slate-100 text-sm border border-slate-700">Due | {dueMode==='all' ? 'All' : dueMode.replace('_',' ')}</button>
             {dueOpen && (
               <div className="absolute z-20 mt-2 w-80 bg-charcoal border border-slate-700/30 rounded-md shadow p-3">
                 <div className="text-sm text-slate-100 mb-2">Due date</div>
@@ -149,12 +149,12 @@ export default function InvoicesList({ invoices=[], clients=[], onOpenInvoice, o
                 </select>
                 {dueMode==='custom' && (
                   <div className="flex items-center gap-2 mb-3">
-                    <input type="date" value={custom.start} onChange={(e)=>setCustom(c=>({...c,start:e.target.value}))} className="px-2 py-1 bg-midnight border border-slate-700 text-slate-100 rounded text-sm w-full" />
-                    <input type="date" value={custom.end} onChange={(e)=>setCustom(c=>({...c,end:e.target.value}))} className="px-2 py-1 bg-midnight border border-slate-700 text-slate-100 rounded text-sm w-full" />
+                    <input type="date" value={custom.start} onChange={(e)=>setCustom(c=>({...c,start:e.target.value}))} className="min-h-[44px] px-2 py-1.5 bg-midnight border border-slate-700 text-slate-100 rounded text-sm w-full" />
+                    <input type="date" value={custom.end} onChange={(e)=>setCustom(c=>({...c,end:e.target.value}))} className="min-h-[44px] px-2 py-1.5 bg-midnight border border-slate-700 text-slate-100 rounded text-sm w-full" />
                   </div>
                 )}
                 <div className="text-right">
-                  <button onClick={()=>setDueOpen(false)} className="px-4 py-2 bg-scaffld-teal text-white rounded-md font-semibold hover:bg-scaffld-teal-deep transition-colors">Apply</button>
+                  <button onClick={()=>setDueOpen(false)} className="min-h-[44px] px-4 py-2 bg-scaffld-teal text-white rounded-md font-semibold hover:bg-scaffld-teal-deep transition-colors">Apply</button>
                 </div>
               </div>
             )}

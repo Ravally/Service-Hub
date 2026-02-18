@@ -27,15 +27,15 @@ export default function JobInfoCard({ job, client, staff, statusColors, onUpdate
   };
 
   return (
-    <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-6">
+    <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-4 sm:p-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
+        <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 text-sm text-slate-400">
             {isToday && <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-scaffld-teal">Today</span>}
             <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${jobStatusClass}`}>{job.status}</span>
           </div>
           <div className="mt-3 flex items-center gap-3">
-            <h1 className="text-3xl font-bold text-slate-100">{clientName}</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-slate-100 truncate">{clientName}</h1>
             {onOpenClient && (
               <button onClick={() => onOpenClient(job.clientId)} className="text-scaffld-teal text-lg font-semibold hover:text-green-800">Link</button>
             )}
@@ -45,7 +45,7 @@ export default function JobInfoCard({ job, client, staff, statusColors, onUpdate
         <div className="flex items-center gap-2">
           <button
             onClick={() => setIsEditing((v) => !v)}
-            className="px-4 py-2 rounded-lg border border-slate-700 text-slate-100 text-sm font-semibold hover:bg-midnight"
+            className="min-h-[44px] px-4 py-2 rounded-lg border border-slate-700 text-slate-100 text-sm font-semibold hover:bg-midnight"
           >
             <span className="inline-flex items-center gap-2"><EditIcon /> {isEditing ? 'Cancel Edit' : 'Edit'}</span>
           </button>
@@ -92,22 +92,22 @@ export default function JobInfoCard({ job, client, staff, statusColors, onUpdate
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-slate-100">Job Title</label>
-              <input type="text" value={editData.title || ''} onChange={(e) => setEditData({ ...editData, title: e.target.value })} className="mt-1 w-full px-3 py-2 border border-slate-700 rounded-md" />
+              <input type="text" value={editData.title || ''} onChange={(e) => setEditData({ ...editData, title: e.target.value })} className="mt-1 w-full min-h-[44px] px-3 py-2 border border-slate-700 rounded-md bg-midnight text-slate-100" />
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-100">Start time</label>
-              <input type="datetime-local" value={toLocalInput(editData.start)} onChange={(e) => setEditData({ ...editData, start: e.target.value })} className="mt-1 w-full px-3 py-2 border border-slate-700 rounded-md" />
+              <input type="datetime-local" value={toLocalInput(editData.start)} onChange={(e) => setEditData({ ...editData, start: e.target.value })} className="mt-1 w-full min-h-[44px] px-3 py-2 border border-slate-700 rounded-md bg-midnight text-slate-100" />
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-100">End time</label>
-              <input type="datetime-local" value={toLocalInput(editData.end)} onChange={(e) => setEditData({ ...editData, end: e.target.value })} className="mt-1 w-full px-3 py-2 border border-slate-700 rounded-md" />
+              <input type="datetime-local" value={toLocalInput(editData.end)} onChange={(e) => setEditData({ ...editData, end: e.target.value })} className="mt-1 w-full min-h-[44px] px-3 py-2 border border-slate-700 rounded-md bg-midnight text-slate-100" />
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-100 mb-1">Assignees</label>
               <div className="flex flex-wrap gap-2">
                 {staff.length === 0 && <span className="text-sm text-slate-400">No staff yet.</span>}
                 {staff.map((s) => (
-                  <label key={s.id} className="inline-flex items-center text-sm bg-midnight px-2 py-1 rounded-md border">
+                  <label key={s.id} className="inline-flex items-center text-sm bg-midnight px-3 py-2 min-h-[44px] rounded-md border border-slate-700/30">
                     <input
                       type="checkbox"
                       checked={(editData.assignees || []).includes(s.id)}
@@ -125,7 +125,7 @@ export default function JobInfoCard({ job, client, staff, statusColors, onUpdate
             </div>
           </div>
           <div className="mt-4 text-right">
-            <button onClick={handleSaveDetails} className="px-4 py-2 bg-scaffld-teal text-white rounded-md text-sm font-semibold hover:bg-scaffld-teal/90">Save Changes</button>
+            <button onClick={handleSaveDetails} className="min-h-[44px] px-4 py-2 bg-scaffld-teal text-white rounded-md text-sm font-semibold hover:bg-scaffld-teal/90">Save Changes</button>
           </div>
         </div>
       )}

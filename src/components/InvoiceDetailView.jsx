@@ -198,7 +198,7 @@ export default function InvoiceDetailView({
   return (
     <div className="space-y-6 animate-fade-in">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <button onClick={onBack} className="flex items-center gap-2 text-sm font-semibold text-slate-400 hover:text-slate-100">
+          <button onClick={onBack} className="min-h-[44px] flex items-center gap-2 text-sm font-semibold text-slate-400 hover:text-slate-100">
             <ChevronLeftIcon />
             Back to all invoices
           </button>
@@ -206,7 +206,7 @@ export default function InvoiceDetailView({
             {!isCreate && (
               <button
                 onClick={() => onPrint && onPrint(invoice)}
-                className="px-3 py-2 rounded-md border border-slate-700/30 text-sm font-semibold text-slate-100 hover:bg-midnight flex items-center gap-2"
+                className="min-h-[44px] px-3 py-2 rounded-md border border-slate-700/30 text-sm font-semibold text-slate-100 hover:bg-midnight flex items-center gap-2"
               >
                 <PrinterIcon />
                 Print
@@ -215,7 +215,7 @@ export default function InvoiceDetailView({
             {!isCreate && stripeEnabled && canEdit && (
               <button
                 onClick={() => onGeneratePaymentLink && onGeneratePaymentLink(invoice)}
-                className="px-3 py-2 rounded-md border border-scaffld-teal/30 text-sm font-semibold text-scaffld-teal hover:bg-scaffld-teal/10"
+                className="min-h-[44px] px-3 py-2 rounded-md border border-scaffld-teal/30 text-sm font-semibold text-scaffld-teal hover:bg-scaffld-teal/10"
               >
                 Get Payment Link
               </button>
@@ -223,7 +223,7 @@ export default function InvoiceDetailView({
             {!isCreate && canEdit && (
               <button
                 onClick={() => onSend && onSend(invoice)}
-                className="px-3 py-2 rounded-md bg-scaffld-teal text-white text-sm font-semibold hover:bg-scaffld-teal/90"
+                className="min-h-[44px] px-3 py-2 rounded-md bg-scaffld-teal text-white text-sm font-semibold hover:bg-scaffld-teal/90"
               >
                 Send Email
               </button>
@@ -231,7 +231,7 @@ export default function InvoiceDetailView({
             {!isCreate && (draft.status === 'Unpaid' || draft.status === 'Sent') && canEdit && (
               <button
                 onClick={() => onUpdateStatus && onUpdateStatus(invoice.id, 'Paid')}
-                className="px-3 py-2 rounded-md bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700"
+                className="min-h-[44px] px-3 py-2 rounded-md bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700"
               >
                 Record Payment
               </button>
@@ -239,14 +239,14 @@ export default function InvoiceDetailView({
           </div>
         </div>
 
-      <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-6">
-        <div className="flex flex-wrap items-start justify-between gap-6">
-          <div className="flex-1 min-w-[240px]">
+      <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-4 sm:p-6">
+        <div className="flex flex-wrap items-start justify-between gap-4 sm:gap-6">
+          <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 text-sm text-slate-400">
               <InvoiceIcon />
               <span>Invoice</span>
             </div>
-            <h1 className="text-3xl font-bold text-slate-100 mt-2">Invoice for {clientName}</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-slate-100 mt-2 truncate">Invoice for {clientName}</h1>
             <div className="mt-2 text-sm text-slate-400 flex items-center gap-2">
               {isCreate ? (
                 <span className="font-semibold text-slate-400">Invoice number assigned on save</span>
@@ -332,7 +332,7 @@ export default function InvoiceDetailView({
 
       <div className="grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-6">
         <div className="space-y-6">
-          <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-6">
+          <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-4 sm:p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-base font-semibold text-slate-100">Client details</h3>
               {canEdit && (
@@ -340,13 +340,13 @@ export default function InvoiceDetailView({
                   <div className="flex items-center gap-2">
                     <button
                       onClick={cancelContactEdit}
-                      className="px-3 py-1.5 rounded-md border border-slate-700 text-xs font-semibold text-slate-100"
+                      className="min-h-[44px] px-3 py-1.5 rounded-md border border-slate-700 text-xs font-semibold text-slate-100"
                     >
                       Cancel
                     </button>
                     <button
                       onClick={finishContactEdit}
-                      className="px-3 py-1.5 rounded-md bg-scaffld-teal text-white text-xs font-semibold"
+                      className="min-h-[44px] px-3 py-1.5 rounded-md bg-scaffld-teal text-white text-xs font-semibold"
                     >
                       Done
                     </button>
@@ -414,7 +414,7 @@ export default function InvoiceDetailView({
 
           <InvoiceLineItemsCard draft={draft} canEdit={canEdit} updateLineItem={updateLineItem} addLineItem={addLineItem} removeLineItem={removeLineItem} />
 
-          <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-6">
+          <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-4 sm:p-6">
             <h3 className="text-lg font-semibold text-slate-100 mb-3">Client message</h3>
             <textarea
               value={draft.clientMessage || ''}
@@ -428,7 +428,7 @@ export default function InvoiceDetailView({
             )}
           </div>
 
-          <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-6 space-y-3">
+          <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-4 sm:p-6 space-y-3">
             <h3 className="text-lg font-semibold text-slate-100">Contract / Disclaimer</h3>
             <textarea
               value={draft.contractTerms || ''}
@@ -481,13 +481,13 @@ export default function InvoiceDetailView({
             <div className="flex items-center justify-end gap-2">
               <button
                 onClick={() => setDraft({ ...invoice, lineItems: invoice.lineItems || [] })}
-                className="px-4 py-2 rounded-md border border-slate-700 text-sm font-semibold text-slate-100"
+                className="min-h-[44px] px-4 py-2 rounded-md border border-slate-700 text-sm font-semibold text-slate-100"
               >
                 Reset
               </button>
               <button
                 onClick={handleSave}
-                className="px-4 py-2 rounded-md bg-scaffld-teal text-white text-sm font-semibold hover:bg-scaffld-teal/90"
+                className="min-h-[44px] px-4 py-2 rounded-md bg-scaffld-teal text-white text-sm font-semibold hover:bg-scaffld-teal/90"
               >
                 {isCreate ? 'Create Invoice' : 'Save Invoice'}
               </button>

@@ -105,44 +105,44 @@ const ClientDetailView = ({
 
   return (
     <div className="animate-fade-in">
-      <button onClick={onBack} className="flex items-center gap-2 text-sm font-semibold text-slate-400 hover:text-scaffld-teal mb-3">
+      <button onClick={onBack} className="min-h-[44px] flex items-center gap-2 text-sm font-semibold text-slate-400 hover:text-scaffld-teal mb-3">
         <ChevronLeftIcon /> Back to Clients
       </button>
 
       {/* Header */}
-      <div className="mb-6 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-full bg-charcoal border border-slate-700/30 flex items-center justify-center text-scaffld-teal font-bold">{initials}</div>
-          <h1 className="text-3xl font-extrabold text-slate-100">{client.name}</h1>
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="h-10 w-10 shrink-0 rounded-full bg-charcoal border border-slate-700/30 flex items-center justify-center text-scaffld-teal font-bold">{initials}</div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-100 truncate">{client.name}</h1>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
             disabled={!client.email}
             onClick={() => { if (client.email) window.location.href = `mailto:${client.email}`; }}
-            className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-md border text-sm font-semibold ${client.email ? 'bg-scaffld-teal/10 text-scaffld-teal border-scaffld-teal/30 hover:bg-scaffld-teal/20' : 'bg-charcoal text-slate-500 border-slate-700/30 cursor-not-allowed'}`}
+            className={`min-h-[44px] inline-flex items-center gap-2 px-3 py-1.5 rounded-md border text-sm font-semibold ${client.email ? 'bg-scaffld-teal/10 text-scaffld-teal border-scaffld-teal/30 hover:bg-scaffld-teal/20' : 'bg-charcoal text-slate-500 border-slate-700/30 cursor-not-allowed'}`}
           >
             <AtSignIcon className="h-4 w-4" /> Email
           </button>
           <button
             type="button"
             onClick={() => onEditClient && onEditClient(client)}
-            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-slate-700/30 bg-charcoal text-sm font-semibold text-slate-100 hover:bg-charcoal/80"
+            className="min-h-[44px] inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-slate-700/30 bg-charcoal text-sm font-semibold text-slate-100 hover:bg-charcoal/80"
           >
             <EditIcon className="h-4 w-4" /> Edit
           </button>
           <details className="relative">
-            <summary className="list-none cursor-pointer inline-flex items-center px-3 py-1.5 rounded-md border border-slate-700/30 bg-charcoal text-slate-100 text-sm font-semibold hover:bg-charcoal/80">More Actions</summary>
+            <summary className="list-none cursor-pointer min-h-[44px] inline-flex items-center px-3 py-1.5 rounded-md border border-slate-700/30 bg-charcoal text-slate-100 text-sm font-semibold hover:bg-charcoal/80">More Actions</summary>
             <div className="absolute right-0 mt-2 w-64 bg-charcoal border border-slate-700/30 rounded-md shadow-lg z-10 p-1">
-            <button className="w-full text-left px-3 py-2 hover:bg-midnight text-sm text-slate-100" onClick={()=>onCreateQuote && onCreateQuote(client)}>Quote</button>
-            <button className="w-full text-left px-3 py-2 hover:bg-midnight text-sm text-slate-100" onClick={()=>onCreateJob && onCreateJob(client)}>Job</button>
-            <button className="w-full text-left px-3 py-2 hover:bg-midnight text-sm text-slate-100" onClick={()=>onCreateInvoice && onCreateInvoice(client)}>Invoice</button>
-            <button className="w-full text-left px-3 py-2 hover:bg-midnight text-sm text-slate-100" onClick={()=>onCollectPayment && onCollectPayment(client)}>Collect Payment</button>
-            <button className="w-full text-left px-3 py-2 hover:bg-midnight text-sm text-slate-100" onClick={()=>onArchiveClient && onArchiveClient(client)}>Archive Client</button>
-            <button className="w-full text-left px-3 py-2 hover:bg-midnight text-sm text-slate-100" onClick={()=>onDownloadVCard && onDownloadVCard(client)}>Download VCard</button>
-            <button className="w-full text-left px-3 py-2 hover:bg-midnight text-sm text-slate-100" onClick={()=>onGeneratePortalLink && onGeneratePortalLink(client)}>Generate Portal Link</button>
-            <button className="w-full text-left px-3 py-2 hover:bg-midnight text-sm text-slate-100" onClick={()=>onViewAsClient && onViewAsClient(client)}>Log in as Client</button>
-            <button className="w-full text-left px-3 py-2 hover:bg-midnight text-sm text-signal-coral" onClick={()=>handleDeleteClient && handleDeleteClient(client.id)}>Delete</button>
+            <button className="w-full text-left px-3 py-2 min-h-[44px] hover:bg-midnight text-sm text-slate-100" onClick={()=>onCreateQuote && onCreateQuote(client)}>Quote</button>
+            <button className="w-full text-left px-3 py-2 min-h-[44px] hover:bg-midnight text-sm text-slate-100" onClick={()=>onCreateJob && onCreateJob(client)}>Job</button>
+            <button className="w-full text-left px-3 py-2 min-h-[44px] hover:bg-midnight text-sm text-slate-100" onClick={()=>onCreateInvoice && onCreateInvoice(client)}>Invoice</button>
+            <button className="w-full text-left px-3 py-2 min-h-[44px] hover:bg-midnight text-sm text-slate-100" onClick={()=>onCollectPayment && onCollectPayment(client)}>Collect Payment</button>
+            <button className="w-full text-left px-3 py-2 min-h-[44px] hover:bg-midnight text-sm text-slate-100" onClick={()=>onArchiveClient && onArchiveClient(client)}>Archive Client</button>
+            <button className="w-full text-left px-3 py-2 min-h-[44px] hover:bg-midnight text-sm text-slate-100" onClick={()=>onDownloadVCard && onDownloadVCard(client)}>Download VCard</button>
+            <button className="w-full text-left px-3 py-2 min-h-[44px] hover:bg-midnight text-sm text-slate-100" onClick={()=>onGeneratePortalLink && onGeneratePortalLink(client)}>Generate Portal Link</button>
+            <button className="w-full text-left px-3 py-2 min-h-[44px] hover:bg-midnight text-sm text-slate-100" onClick={()=>onViewAsClient && onViewAsClient(client)}>Log in as Client</button>
+            <button className="w-full text-left px-3 py-2 min-h-[44px] hover:bg-midnight text-sm text-signal-coral" onClick={()=>handleDeleteClient && handleDeleteClient(client.id)}>Delete</button>
             </div>
           </details>
         </div>
@@ -155,7 +155,7 @@ const ClientDetailView = ({
         <div className="lg:col-span-2 bg-charcoal p-4 rounded-xl shadow border border-slate-700/30">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold text-slate-100">Properties</h3>
-            <button className="px-3 py-1 text-sm rounded-md bg-midnight text-slate-100 hover:bg-midnight/80" onClick={()=>onCreateProperty && onCreateProperty(client)}>+ New Property</button>
+            <button className="min-h-[44px] px-3 py-1.5 text-sm rounded-md bg-midnight text-slate-100 hover:bg-midnight/80" onClick={()=>onCreateProperty && onCreateProperty(client)}>+ New Property</button>
           </div>
           {properties.length === 0 ? (
             <p className="text-sm text-slate-400">No properties yet.</p>
@@ -180,7 +180,7 @@ const ClientDetailView = ({
                       </div>
                       <div className="flex items-center gap-2">
                         <a
-                          className="px-3 py-1 text-sm rounded-md bg-midnight text-slate-100 hover:bg-midnight/80"
+                          className="min-h-[44px] inline-flex items-center px-3 py-1.5 text-sm rounded-md bg-midnight text-slate-100 hover:bg-midnight/80"
                           href={`https://www.google.com/maps?q=${encodeURIComponent([p.street1,p.street2,p.city,p.state,p.zip,p.country].filter(Boolean).join(', '))}`}
                           target="_blank"
                           rel="noreferrer"
@@ -188,7 +188,7 @@ const ClientDetailView = ({
                           Show on Map
                         </a>
                         {onOpenProperty && (
-                          <button className="px-3 py-1 text-sm rounded-md border border-slate-700/30 text-slate-100 hover:bg-midnight/50" onClick={()=>onOpenProperty(p)}>
+                          <button className="min-h-[44px] px-3 py-1.5 text-sm rounded-md border border-slate-700/30 text-slate-100 hover:bg-midnight/50" onClick={()=>onOpenProperty(p)}>
                             View
                           </button>
                         )}
@@ -253,7 +253,7 @@ const ClientDetailView = ({
             </div>
             <div className="flex items-center gap-2 text-sm mb-3">
               {['active','quotes','jobs','invoices'].map(t => (
-                <button key={t} onClick={()=>setOverviewTab(t)} className={`px-3 py-1 rounded-full border ${overviewTab===t? 'bg-scaffld-teal text-midnight border-scaffld-teal':'bg-midnight text-slate-100 border-slate-700/30'}`}>{t.charAt(0).toUpperCase()+t.slice(1)}</button>
+                <button key={t} onClick={()=>setOverviewTab(t)} className={`min-h-[44px] px-3 py-1.5 rounded-full border ${overviewTab===t? 'bg-scaffld-teal text-midnight border-scaffld-teal':'bg-midnight text-slate-100 border-slate-700/30'}`}>{t.charAt(0).toUpperCase()+t.slice(1)}</button>
               ))}
             </div>
             <div>
@@ -361,7 +361,7 @@ const ClientDetailView = ({
           <div className="bg-charcoal p-4 rounded-xl shadow border border-slate-700/30">
             <div className="flex items-center justify-between mb-1">
               <h3 className="text-lg font-semibold text-slate-100">Billing history</h3>
-              <button className="text-sm px-2 py-1 bg-midnight text-slate-100 rounded hover:bg-midnight/80" onClick={()=>onCollectPayment && onCollectPayment(client)}>New</button>
+              <button className="min-h-[44px] text-sm px-3 py-1.5 bg-midnight text-slate-100 rounded hover:bg-midnight/80" onClick={()=>onCollectPayment && onCollectPayment(client)}>New</button>
             </div>
             {billingEntries.length === 0 ? (
               <p className="text-sm text-slate-400">No invoices or payments yet.</p>

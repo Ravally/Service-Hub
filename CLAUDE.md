@@ -4,6 +4,10 @@ Field service management platform for home service businesses.
 **Stack:** React 18 + Vite | Firebase (Firestore, Auth, Storage, Functions) | Tailwind CSS | Stripe
 **Domain:** scaffld.app | **Tagline:** "Build on Scaffld."
 
+## Clamp
+
+Before starting ANY task that touches AI features, read [CLAMP.md](CLAMP.md) first. It is the single source of truth for all AI integration points, the Cloud Function contract, shared components, and rules. Do not guess — read CLAMP.md.
+
 ## Key Rules
 
 - **Multi-tenant:** Every Firestore query is scoped under `users/{userId}`

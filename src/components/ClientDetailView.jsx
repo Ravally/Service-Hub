@@ -116,6 +116,12 @@ const ClientDetailView = ({
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-100 truncate">{client.name}</h1>
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          <a
+            href={client.phone ? `tel:${client.phone}` : undefined}
+            className={`min-h-[44px] inline-flex items-center gap-2 px-3 py-1.5 rounded-md border text-sm font-semibold ${client.phone ? 'bg-scaffld-teal/10 text-scaffld-teal border-scaffld-teal/30 hover:bg-scaffld-teal/20' : 'bg-charcoal text-slate-500 border-slate-700/30 pointer-events-none'}`}
+          >
+            <PhoneIcon className="h-4 w-4" /> Call
+          </a>
           <button
             type="button"
             disabled={!client.email}
@@ -221,8 +227,8 @@ const ClientDetailView = ({
         <div className="bg-charcoal p-4 rounded-xl shadow border border-slate-700/30">
           <h3 className="text-lg font-semibold mb-3 text-slate-100">Contact info</h3>
           <div className="space-y-2 text-sm text-slate-100">
-            {client.phone && (<div className="flex items-center gap-2"><PhoneIcon /><span>{client.phone}</span></div>)}
-            {client.email && (<div className="flex items-center gap-2"><AtSignIcon /><span>{client.email}</span></div>)}
+            {client.phone && (<div className="flex items-center gap-2"><PhoneIcon /><a href={`tel:${client.phone}`} className="text-scaffld-teal hover:underline">{client.phone}</a></div>)}
+            {client.email && (<div className="flex items-center gap-2"><AtSignIcon /><a href={`mailto:${client.email}`} className="text-scaffld-teal hover:underline">{client.email}</a></div>)}
             {client.leadSource && (<div className="flex items-center gap-2"><span className="text-slate-400">Lead source</span><span className="font-medium">{client.leadSource}</span></div>)}
           </div>
           {(client.tags && client.tags.length>0) && (

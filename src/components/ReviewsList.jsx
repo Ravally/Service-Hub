@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { useIsMobile } from '../hooks/ui';
 
 const FILTER_TABS = [
   { key: 'all', label: 'All' },
@@ -23,6 +24,7 @@ const Stars = ({ rating, size = 'h-4 w-4' }) => (
 );
 
 export default function ReviewsList({ reviews, getClientNameById, onDelete }) {
+  const isMobile = useIsMobile();
   const [filter, setFilter] = useState('all');
   const [expandedId, setExpandedId] = useState(null);
 
@@ -90,11 +92,48 @@ export default function ReviewsList({ reviews, getClientNameById, onDelete }) {
           </p>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className={isMobile ? 'bg-charcoal rounded-xl border border-slate-700/30 overflow-hidden' : 'space-y-3'}>
           {filtered.map((review) => {
             const expanded = expandedId === review.id;
             const clientName = review.clientName || (review.clientId ? getClientNameById(review.clientId) : 'Anonymous');
             const date = review.createdAt ? new Date(review.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+
+            if (isMobile) {
+              return (
+                <div
+                  key={review.id}
+                  className="border-b border-slate-700/30 p-4 last:border-b-0 cursor-pointer"
+                  onClick={() => setExpandedId(expanded ? null : review.id)}
+                >
+                  {/* Row 1: Client name + Star rating */}
+                  <div className="flex items-center justify-between gap-2 mb-1">
+                    <span className="text-slate-100 font-semibold truncate">{clientName}</span>
+                    <div className="shrink-0">
+                      <Stars rating={review.rating} size="h-3.5 w-3.5" />
+                    </div>
+                  </div>
+                  {/* Row 2: Review text preview */}
+                  {review.comment && !expanded && (
+                    <p className="text-sm text-slate-400 line-clamp-2">{review.comment}</p>
+                  )}
+                  {review.comment && expanded && (
+                    <p className="text-sm text-slate-300 whitespace-pre-wrap">{review.comment}</p>
+                  )}
+                  {/* Row 3: Date + Delete */}
+                  <div className="flex items-center justify-between gap-2 mt-2">
+                    <span className="text-xs text-slate-500">{date}</span>
+                    {onDelete && expanded && (
+                      <button
+                        onClick={(e) => { e.stopPropagation(); onDelete(review.id); }}
+                        className="text-xs text-signal-coral hover:text-signal-coral/80 font-medium px-2 py-1 rounded shrink-0 min-h-[44px] flex items-center"
+                      >
+                        Delete
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            }
 
             return (
               <div

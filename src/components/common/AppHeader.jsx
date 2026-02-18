@@ -15,7 +15,7 @@ export default function AppHeader({
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
 
   return (
-    <header className="mb-6 space-y-3">
+    <header className="mb-6 space-y-3 sticky top-0 z-40 bg-midnight/95 backdrop-blur-sm -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 pt-3 pb-2 lg:static lg:bg-transparent lg:backdrop-blur-none lg:mx-0 lg:pt-0 lg:pb-0">
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-3 min-w-0">
           <button className="lg:hidden p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-md border border-slate-700" onClick={() => setSidebarOpen(true)} aria-label="Open menu">

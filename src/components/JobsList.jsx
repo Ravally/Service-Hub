@@ -1,6 +1,6 @@
 // src/components/JobsList.jsx
 import React, { useMemo, useState } from 'react';
-import { useBulkSelection } from '../hooks/ui';
+import { useBulkSelection, useIsMobile } from '../hooks/ui';
 import KpiCard from './common/KpiCard';
 import BulkActionBar from './common/BulkActionBar';
 import Pill from './common/Pill';
@@ -85,6 +85,8 @@ export default function JobsList({
   onBulkArchiveJobs,
   onBulkDeleteJobs,
 }) {
+  const isMobile = useIsMobile();
+
   const clientById = useMemo(() => Object.fromEntries((clients||[]).map(c=>[c.id, c])), [clients]);
   const quoteMap = useMemo(() => Object.fromEntries((quotes||[]).map(q=>[q.id, q])), [quotes]);
   const invoicesByJob = useMemo(() => {
@@ -233,7 +235,38 @@ export default function JobsList({
       <div className="bg-charcoal rounded-xl shadow-lg border border-slate-700/30 overflow-hidden min-h-[calc(100vh-26rem)]">
         {filtered.length === 0 ? (
           <div className="text-center p-10 text-slate-400">No jobs found.</div>
+        ) : isMobile ? (
+          /* ── Mobile card layout ── */
+          <div>
+            {filtered.map((j, idx) => (
+              <button
+                key={j.id}
+                type="button"
+                onClick={() => onOpenJob && onOpenJob(j)}
+                className={`w-full text-left p-4 hover:bg-slate-dark/50 transition-colors${idx < filtered.length - 1 ? ' border-b border-slate-700/30' : ''}`}
+              >
+                {/* Row 1: Client name + Status */}
+                <div className="flex items-start justify-between gap-2">
+                  <span className="font-semibold text-scaffld-teal">{j._clientName}</span>
+                  <Pill className={STATUS_PILL[j._status] || STATUS_PILL['Active']}>{j._status}</Pill>
+                </div>
+                {/* Row 2: Job number + title */}
+                <div className="mt-1 text-sm text-slate-400">
+                  {j.jobNumber || ('#' + (j.id || '').slice(0, 8))}
+                  {j.title ? ` — ${j.title}` : ''}
+                </div>
+                {/* Row 3: Schedule date + Total */}
+                <div className="mt-2 flex items-center justify-between text-sm">
+                  <span className="text-slate-400">
+                    {j.start ? new Date(j.start).toLocaleDateString() : '--'}
+                  </span>
+                  <span className="font-semibold text-slate-100">{currency(j._total)}</span>
+                </div>
+              </button>
+            ))}
+          </div>
         ) : (
+          /* ── Desktop table layout ── */
           <div className="overflow-x-auto">
           <table className="w-full min-w-[600px]">
             <thead className="bg-midnight text-sm border-b border-slate-700">

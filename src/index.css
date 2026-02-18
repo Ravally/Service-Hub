@@ -125,6 +125,16 @@ input[type="search"]::-webkit-search-results-decoration { display: none; }
 /* Hide empty overview lists (e.g., Active tab in Client Detail) */
 ul.divide-y:empty { display: none; }
 
+/* Mobile: prevent iOS auto-zoom on focus + min touch targets */
+@media (max-width: 767px) {
+  input:not([type="checkbox"]):not([type="radio"]),
+  select,
+  textarea {
+    font-size: 1rem !important;
+    min-height: 44px;
+  }
+}
+
 /* Safe-area insets for iPhone notch/Dynamic Island */
 @supports (padding: env(safe-area-inset-top)) {
   body {

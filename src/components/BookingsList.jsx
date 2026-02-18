@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { STATUS_COLORS } from '../constants';
 import { formatCurrency } from '../utils';
+import { useIsMobile } from '../hooks/ui';
 
 const FILTER_TABS = [
   { key: 'all', label: 'All' },
@@ -12,6 +13,7 @@ const FILTER_TABS = [
 export default function BookingsList({
   jobs, getClientNameById, onSelectJob, onApproveBooking, onDeclineBooking,
 }) {
+  const isMobile = useIsMobile();
   const [filter, setFilter] = useState('all');
 
   const bookings = useMemo(() => {
@@ -70,13 +72,58 @@ export default function BookingsList({
           </p>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className={isMobile ? 'bg-charcoal rounded-xl border border-slate-700/30 overflow-hidden' : 'space-y-3'}>
           {bookings.map((job) => {
             const details = job.bookingDetails || {};
             const isPending = job.status === 'Unscheduled' && !job.bookingDeclined;
             const statusClass = job.bookingDeclined
               ? 'bg-signal-coral/10 text-signal-coral border border-signal-coral/30'
               : (STATUS_COLORS[job.status] || 'bg-slate-700/30 text-slate-400 border border-slate-700');
+
+            if (isMobile) {
+              return (
+                <div
+                  key={job.id}
+                  className="border-b border-slate-700/30 p-4 last:border-b-0 cursor-pointer"
+                  onClick={() => onSelectJob(job)}
+                >
+                  {/* Row 1: Client name + Status */}
+                  <div className="flex items-center justify-between gap-2 mb-1">
+                    <span className="text-slate-100 font-semibold truncate">
+                      {details.customerName || getClientNameById(job.clientId)}
+                    </span>
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium shrink-0 ${statusClass}`}>
+                      {job.bookingDeclined ? 'Declined' : job.status}
+                    </span>
+                  </div>
+                  {/* Row 2: Service requested */}
+                  <p className="text-sm text-slate-400 truncate">{job.title}</p>
+                  {/* Row 3: Date/time + Actions */}
+                  <div className="flex items-center justify-between gap-2 mt-2">
+                    <span className="text-xs text-slate-500">
+                      {job.start && new Date(job.start).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+                      {job.start && ` at ${new Date(job.start).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`}
+                    </span>
+                    {isPending && (
+                      <div className="flex gap-2 shrink-0" onClick={(e) => e.stopPropagation()}>
+                        <button
+                          onClick={() => onApproveBooking(job)}
+                          className="px-3 py-2 bg-scaffld-teal hover:bg-scaffld-teal-deep text-white rounded-lg text-xs font-medium transition-colors min-h-[44px]"
+                        >
+                          Approve
+                        </button>
+                        <button
+                          onClick={() => onDeclineBooking(job)}
+                          className="px-3 py-2 bg-midnight hover:bg-slate-700 text-signal-coral rounded-lg text-xs font-medium border border-signal-coral/30 transition-colors min-h-[44px]"
+                        >
+                          Decline
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            }
 
             return (
               <div

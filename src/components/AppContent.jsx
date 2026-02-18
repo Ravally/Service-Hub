@@ -355,7 +355,7 @@ export default function AppContent({ auth, appState, handlers }) {
         onClose={() => setSidebarOpen(false)}
         userRole={userProfile?.role}
       />
-      <div className="flex-1 max-w-full px-4 sm:px-6 lg:px-8 py-4">
+      <div className="flex-1 max-w-full px-4 sm:px-6 lg:px-8 py-4 pb-24 lg:pb-4">
         <AppHeader
           userProfile={userProfile}
           globalQuery={globalQuery} setGlobalQuery={setGlobalQuery}

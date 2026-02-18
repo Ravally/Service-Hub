@@ -99,7 +99,7 @@ const DashboardCards = ({ quotes = [], jobs = [], invoices = [], onNewQuote, onN
   return (
     <div className="space-y-4 mb-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold font-display text-slate-100">Home</h2>
+        <h2 className="text-2xl sm:text-3xl font-bold font-display text-slate-100">Home</h2>
         <div className="hidden md:flex items-center gap-2">
           <button className="px-3 py-1.5 text-sm font-semibold rounded-lg bg-scaffld-teal/10 text-scaffld-teal border border-scaffld-teal/30 hover:bg-scaffld-teal/20 transition-colors">View Insights</button>
           <button className="px-3 py-1.5 text-sm font-semibold rounded-lg bg-charcoal text-slate-300 border border-slate-700 hover:bg-slate-dark transition-colors">More Actions</button>

@@ -1,13 +1,16 @@
 // src/components/InvoicesList.jsx
 import React, { useMemo, useState } from 'react';
+import { STATUS_COLORS } from '../constants/statusConstants';
 import { formatCurrency } from '../utils';
 import { inRange, lastNDays, last30ExcludingToday, monthRange, yearRange } from '../utils/dateUtils';
-import { useBulkSelection } from '../hooks/ui';
+import { useBulkSelection, useIsMobile } from '../hooks/ui';
 import KpiCard from './common/KpiCard';
 import BulkActionBar from './common/BulkActionBar';
+import Pill from './common/Pill';
 
 export default function InvoicesList({ invoices=[], clients=[], onOpenInvoice, onNewInvoice, onBulkMarkPaid, onBulkArchiveInvoices, onBulkDeleteInvoices }) {
   const clientMap = useMemo(() => Object.fromEntries((clients||[]).map(c=>[c.id,c])), [clients]);
+  const isMobile = useIsMobile();
   const enhanced = useMemo(() => (invoices||[]).map(inv => {
     const paidSoFar = Array.isArray(inv.payments) ? inv.payments.reduce((s, p) => s + Number(p.amount || 0), 0) : 0;
     return {
@@ -170,6 +173,36 @@ export default function InvoicesList({ invoices=[], clients=[], onOpenInvoice, o
       <div className="bg-charcoal rounded-xl shadow-lg border border-slate-700/30 overflow-hidden min-h-[calc(100vh-26rem)]">
         {filtered.length === 0 ? (
           <div className="text-center p-10 text-slate-400">No invoices found.</div>
+        ) : isMobile ? (
+          <div>
+            {filtered.map(inv => {
+              const isPastDue = (inv.status === 'Unpaid' || inv.status === 'Sent') && inv.dueDate && new Date(inv.dueDate) < new Date();
+              const statusLabel = isPastDue ? 'Awaiting Payment: Past Due'
+                : ((inv.status === 'Unpaid' || inv.status === 'Sent') && inv.dueDate && new Date(inv.dueDate) >= new Date()) ? 'Awaiting Payment: Not Yet Due'
+                : inv.status;
+              const statusColor = STATUS_COLORS[statusLabel] || STATUS_COLORS[inv.status] || STATUS_COLORS.Draft;
+              return (
+                <div
+                  key={inv.id}
+                  className={`border-b border-slate-700/30 p-4 last:border-b-0 active:bg-slate-dark/50 transition-colors cursor-pointer${isPastDue ? ' border-l-2 border-l-signal-coral' : ''}`}
+                  onClick={() => onOpenInvoice && onOpenInvoice(inv)}
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-bold text-scaffld-teal truncate">{inv._clientName}</span>
+                    <span className="font-semibold text-slate-100 shrink-0">{formatCurrency(inv.total || 0)}</span>
+                  </div>
+                  <div className="flex items-center justify-between gap-2 mt-1">
+                    <span className="text-sm text-slate-400">{inv.invoiceNumber || `#${(inv.id || '').slice(0, 6)}`}</span>
+                    <span className={`text-sm shrink-0 ${isPastDue ? 'text-signal-coral' : 'text-slate-400'}`}>{formatCurrency(inv._balance || 0)}</span>
+                  </div>
+                  <div className="flex items-center justify-between gap-2 mt-1">
+                    <span className="text-sm text-slate-400">{inv.dueDate ? new Date(inv.dueDate).toLocaleDateString() : '-'}</span>
+                    <Pill className={statusColor}>{statusLabel}</Pill>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         ) : (
           <div className="overflow-x-auto">
           <table className="w-full min-w-[600px]">

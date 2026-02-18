@@ -3,7 +3,7 @@ import React, { useMemo, useState } from 'react';
 import { STATUS_COLORS } from '../constants/statusConstants';
 import { formatCurrency } from '../utils';
 import { periodRange, getPreviousRange, rangeLabel } from '../utils/dateUtils';
-import { useBulkSelection } from '../hooks/ui';
+import { useBulkSelection, useIsMobile } from '../hooks/ui';
 
 import KpiCard from './common/KpiCard';
 import BulkActionBar from './common/BulkActionBar';
@@ -94,6 +94,7 @@ export default function QuotesList({
   onSendQuote,
 }) {
   const clientMap = useMemo(() => Object.fromEntries((clients||[]).map(c=>[c.id,c])), [clients]);
+  const isMobile = useIsMobile();
 
   // Filters
   const [statusFilter, setStatusFilter] = useState([]); // multi
@@ -350,10 +351,35 @@ export default function QuotesList({
 
       <BulkActionBar selectedCount={selected.size} onDeselectAll={clearSelection} actions={bulkActions} />
 
-      {/* Table */}
+      {/* Table / Mobile Cards */}
       <div className="bg-charcoal rounded-xl shadow-lg border border-slate-700/30 overflow-hidden min-h-[calc(100vh-26rem)]">
         {filtered.length === 0 ? (
           <div className="text-center p-10 text-slate-400">No quotes.</div>
+        ) : isMobile ? (
+          <div>
+            {filtered.map(q => (
+              <div
+                key={q.id}
+                className="border-b border-slate-700/30 p-4 last:border-b-0 active:bg-slate-dark/50 transition-colors cursor-pointer"
+                onClick={() => onOpenQuote && onOpenQuote(q)}
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-bold text-scaffld-teal truncate">{q._clientName}</span>
+                  <span className="font-semibold text-slate-100 shrink-0">{formatCurrency(q.total || 0)}</span>
+                </div>
+                <div className="flex items-center justify-between gap-2 mt-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-slate-400">{q.quoteNumber || `#${(q.id || '').slice(0, 6)}`}</span>
+                    <Pill className={MERGED_STATUS_COLORS[q._status] || STATUS_COLORS.Draft}>{q._status}</Pill>
+                  </div>
+                  <span className="text-sm text-slate-400 shrink-0">{q.createdAt ? new Date(q.createdAt).toLocaleDateString() : 'N/A'}</span>
+                </div>
+                {q._address ? (
+                  <div className="text-xs text-slate-500 truncate mt-1">{q._address}</div>
+                ) : null}
+              </div>
+            ))}
+          </div>
         ) : (
           <div className="overflow-x-auto">
           <table className="w-full min-w-[600px]">

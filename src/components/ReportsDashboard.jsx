@@ -51,7 +51,7 @@ export default function ReportsDashboard() {
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
+            className={`min-h-[44px] px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
               activeTab === tab.key
                 ? 'bg-scaffld-teal text-white'
                 : 'bg-charcoal text-slate-400 hover:text-slate-200 border border-slate-700/30'

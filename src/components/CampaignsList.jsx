@@ -1,7 +1,9 @@
 import React, { useMemo, useState } from 'react';
 import { CAMPAIGN_FILTER_TABS, STATUS_COLORS } from '../constants';
+import { useIsMobile } from '../hooks/ui';
 
 export default function CampaignsList({ campaigns, onSelect, onCreate }) {
+  const isMobile = useIsMobile();
   const [filter, setFilter] = useState('all');
 
   const filtered = useMemo(() => {
@@ -65,11 +67,45 @@ export default function CampaignsList({ campaigns, onSelect, onCreate }) {
           </p>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className={isMobile ? 'bg-charcoal rounded-xl border border-slate-700/30 overflow-hidden' : 'space-y-3'}>
           {filtered.map((campaign) => {
             const date = campaign.createdAt
               ? new Date(campaign.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
               : '';
+
+            if (isMobile) {
+              return (
+                <div
+                  key={campaign.id}
+                  onClick={() => onSelect(campaign)}
+                  className="border-b border-slate-700/30 p-4 last:border-b-0 cursor-pointer"
+                >
+                  {/* Row 1: Campaign name + Status */}
+                  <div className="flex items-center justify-between gap-2 mb-1">
+                    <span className="text-slate-100 font-semibold truncate">
+                      {campaign.name || 'Untitled Campaign'}
+                    </span>
+                    {statusBadge(campaign.status || 'Draft')}
+                  </div>
+                  {/* Row 2: Subject or type */}
+                  <p className="text-sm text-slate-400 truncate">
+                    {campaign.subject || <span className="capitalize">{campaign.type || 'promotion'}</span>}
+                  </p>
+                  {/* Row 3: Date + Stats */}
+                  <div className="flex items-center justify-between gap-2 mt-2">
+                    <span className="text-xs text-slate-500">{date}</span>
+                    {campaign.status === 'Sent' && campaign.sentCount != null && (
+                      <div className="flex items-center gap-2 text-xs shrink-0">
+                        <span className="text-scaffld-teal font-medium">{campaign.sentCount} sent</span>
+                        {campaign.failedCount > 0 && (
+                          <span className="text-signal-coral">{campaign.failedCount} failed</span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            }
 
             return (
               <div

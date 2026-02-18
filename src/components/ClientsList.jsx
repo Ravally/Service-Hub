@@ -3,7 +3,7 @@ import React, { useMemo, useState } from 'react';
 import { STATUS_COLORS } from '../constants/statusConstants';
 import { inRange } from '../utils/dateUtils';
 import { computeClientSegments, SEGMENT_DEFINITIONS, getSegmentDef } from '../utils';
-import { useBulkSelection } from '../hooks/ui';
+import { useBulkSelection, useIsMobile } from '../hooks/ui';
 import KpiCard from './common/KpiCard';
 import BulkActionBar from './common/BulkActionBar';
 import Chip from './common/Chip';
@@ -49,6 +49,8 @@ export default function ClientsList({
   onBulkDeleteClients,
   onBulkTagClients,
 }) {
+  const isMobile = useIsMobile();
+
   // Local state for filters/search/sort
   const [search, setSearch] = useState('');
   const [tagPopover, setTagPopover] = useState(false);
@@ -316,11 +318,54 @@ export default function ClientsList({
         </div>
       )}
 
-      {/* Table */}
+      {/* Table / Mobile Cards */}
       <div className="bg-charcoal rounded-xl shadow-lg border border-slate-700/30 overflow-hidden min-h-[calc(100vh-26rem)]">
         {filtered.length === 0 ? (
           <div className="text-center p-10 text-slate-400">No matching clients.</div>
+        ) : isMobile ? (
+          /* ── Mobile card layout ── */
+          <div>
+            {filtered.map((c, idx) => (
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => onSelectClient && onSelectClient(c)}
+                className={`w-full text-left p-4 hover:bg-slate-dark/50 transition-colors${idx < filtered.length - 1 ? ' border-b border-slate-700/30' : ''}`}
+              >
+                {/* Row 1: Name + Status */}
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <span className="font-semibold text-scaffld-teal">{c.name}</span>
+                    {c.company && <div className="text-xs text-slate-400">{c.company}</div>}
+                  </div>
+                  <StatusPill label={c._status} />
+                </div>
+                {/* Row 2: Address */}
+                {(c.address || '').length > 0 && (
+                  <div className="mt-1 text-sm text-slate-400 truncate">{c.address}</div>
+                )}
+                {/* Row 3: Tags + Segments */}
+                {((c.tags || []).length > 0 || (clientSegments.get(c.id) || []).length > 0) && (
+                  <div className="mt-2 flex flex-wrap gap-1">
+                    {(c.tags || []).slice(0, 2).map((t, i) => (
+                      <span key={`${t}-${i}`} className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-slate-dark text-slate-100 border border-slate-700/30">{t}</span>
+                    ))}
+                    {(c.tags || []).length > 2 && (
+                      <span className="text-xs text-slate-400">+{(c.tags || []).length - 2}</span>
+                    )}
+                    {(clientSegments.get(c.id) || []).map(segKey => {
+                      const def = getSegmentDef(segKey);
+                      return def ? (
+                        <span key={segKey} className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${def.color}`}>{def.label}</span>
+                      ) : null;
+                    })}
+                  </div>
+                )}
+              </button>
+            ))}
+          </div>
         ) : (
+          /* ── Desktop table layout ── */
           <div className="overflow-x-auto">
           <table className="w-full min-w-[600px]">
             <thead className="bg-midnight text-sm border-b border-slate-700">

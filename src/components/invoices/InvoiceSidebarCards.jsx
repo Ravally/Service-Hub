@@ -9,17 +9,17 @@ export function InvoiceDetailsCard({ draft, canEdit, handleIssueDateChange, hand
       <div className="space-y-3 text-sm">
         <div className="flex items-center justify-between">
           <span>Issued date</span>
-          <input type="date" value={toDateInput(draft.issueDate || draft.createdAt)} onChange={(e) => handleIssueDateChange(e.target.value)} className="px-2 py-1 border border-slate-700/30 rounded-md text-sm" disabled={!canEdit} />
+          <input type="date" value={toDateInput(draft.issueDate || draft.createdAt)} onChange={(e) => handleIssueDateChange(e.target.value)} className="px-2 py-1 border border-slate-700/30 rounded-md text-sm bg-midnight text-slate-100" disabled={!canEdit} />
         </div>
         <div className="flex items-center justify-between">
           <span>Payment due</span>
-          <select value={draft.dueTerm || 'Due Today'} onChange={(e) => handleDueTermChange(e.target.value)} className="px-2 py-1 border border-slate-700/30 rounded-md text-sm" disabled={!canEdit}>
+          <select value={draft.dueTerm || 'Due Today'} onChange={(e) => handleDueTermChange(e.target.value)} className="px-2 py-1 border border-slate-700/30 rounded-md text-sm bg-midnight text-slate-100" disabled={!canEdit}>
             <option>Due Today</option><option>Due on receipt</option><option>Net 7</option><option>Net 9</option><option>Net 14</option><option>Net 15</option><option>Net 30</option><option>Net 60</option>
           </select>
         </div>
         <div className="flex items-center justify-between">
           <span>Ask client for review</span>
-          <select value={draft.askForReview ? 'Yes' : 'No'} onChange={(e) => updateDraft({ askForReview: e.target.value === 'Yes' })} className="px-2 py-1 border border-slate-700/30 rounded-md text-sm" disabled={!canEdit}>
+          <select value={draft.askForReview ? 'Yes' : 'No'} onChange={(e) => updateDraft({ askForReview: e.target.value === 'Yes' })} className="px-2 py-1 border border-slate-700/30 rounded-md text-sm bg-midnight text-slate-100" disabled={!canEdit}>
             <option value="Yes">Yes</option><option value="No">No</option>
           </select>
         </div>
@@ -44,7 +44,7 @@ export function ClientViewCard({ draft, canEdit, showClientView, setShowClientVi
           <div className="flex flex-wrap gap-4">
             {[['showQuantities', 'Quantities'], ['showUnitCosts', 'Unit costs'], ['showLineItemTotals', 'Line item totals'], ['showTotals', 'Totals'], ['showAccountBalance', 'Account balance'], ['showLateStamp', 'Late stamp']].map(([key, label]) => (
               <label key={key} className="flex items-center gap-2 text-sm">
-                <input type="checkbox" checked={draft.clientViewSettings?.[key] !== false} onChange={(e) => updateDraft({ clientViewSettings: { ...draft.clientViewSettings, [key]: e.target.checked } })} className="h-4 w-4 accent-green-600" disabled={!canEdit} />
+                <input type="checkbox" checked={draft.clientViewSettings?.[key] !== false} onChange={(e) => updateDraft({ clientViewSettings: { ...draft.clientViewSettings, [key]: e.target.checked } })} className="h-4 w-4 accent-scaffld-teal" disabled={!canEdit} />
                 {label}
               </label>
             ))}
@@ -80,7 +80,7 @@ export function InternalNotesCard({ draft, canEdit, updateDraft, onUploadAttachm
   return (
     <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-5 space-y-4">
       <h3 className="text-lg font-semibold text-slate-100">Internal notes & attachments</h3>
-      <textarea value={draft.internalNotes || ''} onChange={(e) => updateDraft({ internalNotes: e.target.value })} className="w-full px-3 py-2 border border-slate-700 rounded-md text-sm" rows={4} placeholder="Note details" disabled={!canEdit} />
+      <textarea value={draft.internalNotes || ''} onChange={(e) => updateDraft({ internalNotes: e.target.value })} className="w-full px-3 py-2 border border-slate-700 rounded-md text-sm bg-midnight text-slate-100 placeholder-slate-500" rows={4} placeholder="Note details" disabled={!canEdit} />
       {canEdit && (
         <ClampRewriteButtons text={draft.internalNotes} onApply={(text) => updateDraft({ internalNotes: text })} disabled={!canEdit} />
       )}
@@ -97,7 +97,7 @@ export function InternalNotesCard({ draft, canEdit, updateDraft, onUploadAttachm
         <ul className="space-y-2 text-sm">
           {(draft.attachments || []).map((file, idx) => (
             <li key={`${file.url}-${idx}`} className="flex items-center justify-between border border-slate-700/30 rounded-md px-3 py-2">
-              <a href={file.url} target="_blank" rel="noreferrer" className="text-blue-700 hover:underline truncate">{file.name}</a>
+              <a href={file.url} target="_blank" rel="noreferrer" className="text-scaffld-teal hover:underline truncate">{file.name}</a>
               {canEdit && <button onClick={() => onRemoveAttachment && onRemoveAttachment(draft, file.url)} className="text-xs text-signal-coral font-semibold">Remove</button>}
             </li>
           ))}

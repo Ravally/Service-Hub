@@ -135,7 +135,7 @@ export default function QuoteCreateForm({
                 value={quote.title || ''}
                 onChange={(e) => updateQuote({ title: e.target.value })}
                 placeholder="Title"
-                className="w-full px-4 py-4 border border-slate-700/30 rounded-2xl text-lg shadow-sm"
+                className="w-full px-4 py-4 border border-slate-700/30 rounded-2xl text-lg shadow-sm bg-midnight text-slate-100 placeholder-slate-500"
               />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
@@ -149,7 +149,7 @@ export default function QuoteCreateForm({
                       const nextPrimary = nextProps.find((p) => p.isPrimary) || nextProps[0] || null;
                       updateQuote({ clientId: nextClientId, propertyId: nextPrimary?.uid || nextPrimary?.id || '' });
                     }}
-                    className="w-full px-4 py-3 border border-slate-700/30 rounded-2xl text-base shadow-sm"
+                    className="w-full px-4 py-3 border border-slate-700/30 rounded-2xl text-base shadow-sm bg-midnight text-slate-100"
                   >
                     <option value="">Select a client</option>
                     {clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
@@ -161,7 +161,7 @@ export default function QuoteCreateForm({
                     <select
                       value={quote.propertyId || ''}
                       onChange={(e) => updateQuote({ propertyId: e.target.value })}
-                      className="w-full px-4 py-3 border border-slate-700/30 rounded-2xl text-base shadow-sm"
+                      className="w-full px-4 py-3 border border-slate-700/30 rounded-2xl text-base shadow-sm bg-midnight text-slate-100"
                     >
                       <option value="">Select property</option>
                       {propertyOptions.map((p, idx) => (
@@ -177,7 +177,7 @@ export default function QuoteCreateForm({
                   <select
                     value={quote.salesperson || ''}
                     onChange={(e) => updateQuote({ salesperson: e.target.value })}
-                    className="w-full px-4 py-3 border border-transparent rounded-full text-base bg-[#e9e4d9] text-slate-300 font-semibold shadow-sm"
+                    className="w-full px-4 py-3 border border-slate-700/30 rounded-2xl text-base bg-midnight text-slate-100 font-semibold shadow-sm"
                   >
                     <option value="">Salesperson</option>
                     {staff.map(s => <option key={s.id || s.email || s.name} value={s.name || s.email}>{s.name || s.email}</option>)}
@@ -200,11 +200,11 @@ export default function QuoteCreateForm({
               <h3 className="text-2xl font-bold text-slate-100">Product / Service</h3>
               <div className="flex items-center gap-2">
                 <ClampButton label="Ask Clamp" onClick={() => setShowAiPanel(v => !v)} loading={aiLoading} />
-                <select value={templateId} onChange={(e) => setTemplateId(e.target.value)} className="px-3 py-2 border border-slate-700/30 rounded-full text-sm shadow-sm">
+                <select value={templateId} onChange={(e) => setTemplateId(e.target.value)} className="px-3 py-2 border border-slate-700/30 rounded-full text-sm shadow-sm bg-midnight text-slate-100">
                   <option value="">Templates</option>
                   {quoteTemplates.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
                 </select>
-                <button type="button" onClick={addFromTemplate} className="px-3 py-2 rounded-full border border-slate-700/30 text-sm shadow-sm">Add</button>
+                <button type="button" onClick={addFromTemplate} className="px-3 py-2 rounded-full border border-slate-700/30 text-sm shadow-sm text-slate-200">Add</button>
               </div>
             </div>
 
@@ -257,7 +257,7 @@ export default function QuoteCreateForm({
                         value={item.description || ''}
                         onChange={(e) => updateLineItem(idx, 'description', e.target.value)}
                         placeholder="Text block"
-                        className="w-full px-3 py-2 border border-slate-700 rounded-md"
+                        className="w-full px-3 py-2 border border-slate-700 rounded-md bg-midnight text-slate-100 placeholder-slate-500"
                         rows={3}
                       />
                       <div className="text-right">
@@ -281,7 +281,7 @@ export default function QuoteCreateForm({
                           value={item.name || ''}
                           onChange={(e) => updateLineItem(idx, 'name', e.target.value)}
                           placeholder="Name"
-                          className="px-4 py-3 border border-slate-700/30 rounded-2xl shadow-sm"
+                          className="px-4 py-3 border border-slate-700/30 rounded-2xl shadow-sm bg-midnight text-slate-100 placeholder-slate-500"
                         />
                         <input
                           type="number"
@@ -289,7 +289,7 @@ export default function QuoteCreateForm({
                           value={item.qty || 0}
                           onChange={(e) => updateLineItem(idx, 'qty', e.target.value)}
                           placeholder="Quantity"
-                          className="px-4 py-3 border border-slate-700/30 rounded-2xl shadow-sm"
+                          className="px-4 py-3 border border-slate-700/30 rounded-2xl shadow-sm bg-midnight text-slate-100 placeholder-slate-500"
                         />
                         <input
                           type="number"
@@ -297,7 +297,7 @@ export default function QuoteCreateForm({
                           value={item.unitCost || 0}
                           onChange={(e) => updateLineItem(idx, 'unitCost', e.target.value)}
                           placeholder="Unit cost"
-                          className="px-4 py-3 border border-slate-700/30 rounded-2xl shadow-sm"
+                          className="px-4 py-3 border border-slate-700/30 rounded-2xl shadow-sm bg-midnight text-slate-100 placeholder-slate-500"
                         />
                         <input
                           type="number"
@@ -305,7 +305,7 @@ export default function QuoteCreateForm({
                           value={item.price || 0}
                           onChange={(e) => updateLineItem(idx, 'price', e.target.value)}
                           placeholder="Unit price"
-                          className="px-4 py-3 border border-slate-700/30 rounded-2xl shadow-sm"
+                          className="px-4 py-3 border border-slate-700/30 rounded-2xl shadow-sm bg-midnight text-slate-100 placeholder-slate-500"
                         />
                         <input
                           value={formatCurrency((item.qty || 0) * (item.price || 0))}
@@ -320,7 +320,7 @@ export default function QuoteCreateForm({
                           value={item.description || ''}
                           onChange={(e) => updateLineItem(idx, 'description', e.target.value)}
                           placeholder="Description"
-                          className="w-full px-4 py-3 border border-slate-700/30 rounded-2xl shadow-sm"
+                          className="w-full px-4 py-3 border border-slate-700/30 rounded-2xl shadow-sm bg-midnight text-slate-100 placeholder-slate-500"
                           rows={3}
                         />
                         <ClampRewriteButtons text={item.description} onApply={(text) => updateLineItem(idx, 'description', text)} />
@@ -351,9 +351,9 @@ export default function QuoteCreateForm({
             </div>
 
             <div className="flex flex-wrap gap-3 mt-6">
-              <button type="button" disabled={!canAddItems} onClick={() => addLineItem()} className="px-5 py-2.5 rounded-full bg-green-700 text-white text-sm font-semibold disabled:bg-slate-600 shadow-sm">New line item</button>
-              <button type="button" disabled={!canAddItems} onClick={() => addLineItem({ isOptional: true })} className="px-5 py-2.5 rounded-full border border-slate-700/30 text-green-700 text-sm font-semibold disabled:text-slate-600 shadow-sm">New optional line item</button>
-              <button type="button" disabled={!canAddItems} onClick={() => addLineItem({ type: 'text', description: '' })} className="px-5 py-2.5 rounded-full border border-slate-700/30 text-green-700 text-sm font-semibold disabled:text-slate-600 shadow-sm">New text</button>
+              <button type="button" disabled={!canAddItems} onClick={() => addLineItem()} className="px-5 py-2.5 rounded-full bg-scaffld-teal text-white text-sm font-semibold disabled:bg-slate-600 shadow-sm">New line item</button>
+              <button type="button" disabled={!canAddItems} onClick={() => addLineItem({ isOptional: true })} className="px-5 py-2.5 rounded-full border border-slate-700/30 text-scaffld-teal text-sm font-semibold disabled:text-slate-600 shadow-sm">New optional line item</button>
+              <button type="button" disabled={!canAddItems} onClick={() => addLineItem({ type: 'text', description: '' })} className="px-5 py-2.5 rounded-full border border-slate-700/30 text-scaffld-teal text-sm font-semibold disabled:text-slate-600 shadow-sm">New text</button>
               {!canAddItems && <span className="text-xs text-slate-400">Limit {MAX_LINE_ITEMS} items</span>}
             </div>
           </div>
@@ -362,7 +362,7 @@ export default function QuoteCreateForm({
             <div className="flex items-center gap-3">
               <span className="h-9 w-9 rounded-full border border-slate-700/30 flex items-center justify-center text-xs text-slate-400">CV</span>
               <span className="text-lg font-semibold text-slate-200">Client view</span>
-              <button type="button" onClick={() => setShowClientView(v => !v)} className="text-sm font-semibold text-green-700 underline">
+              <button type="button" onClick={() => setShowClientView(v => !v)} className="text-sm font-semibold text-scaffld-teal underline">
                 {showClientView ? 'Cancel' : 'Change'}
               </button>
             </div>
@@ -370,7 +370,7 @@ export default function QuoteCreateForm({
               <div className="mt-4 text-sm text-slate-300 space-y-3">
                 <div>
                   Adjust what your client will see on this quote. To change the default for all future quotes, visit the{' '}
-                  <span className="text-green-700 underline">PDF Style</span>.
+                  <span className="text-scaffld-teal underline">PDF Style</span>.
                 </div>
                 <div className="flex flex-wrap gap-6">
                   {['showQuantities','showUnitPrices','showLineItemTotals','showTotals'].map(key => (
@@ -379,7 +379,7 @@ export default function QuoteCreateForm({
                         type="checkbox"
                         checked={quote.clientViewSettings?.[key] !== false}
                         onChange={(e) => updateQuote({ clientViewSettings: { ...quote.clientViewSettings, [key]: e.target.checked } })}
-                        className="h-5 w-5 accent-green-600"
+                        className="h-5 w-5 accent-scaffld-teal"
                       />
                         {key === 'showQuantities' && 'Quantities'}
                         {key === 'showUnitPrices' && 'Unit prices'}
@@ -398,7 +398,7 @@ export default function QuoteCreateForm({
               value={quote.clientMessage || ''}
               onChange={(e) => updateQuote({ clientMessage: e.target.value })}
               placeholder="Message to the client"
-              className="w-full px-3 py-2 border border-slate-700 rounded-md"
+              className="w-full px-3 py-2 border border-slate-700 rounded-md bg-midnight text-slate-100 placeholder-slate-500"
               rows={4}
             />
             <ClampRewriteButtons text={quote.clientMessage} onApply={(text) => updateQuote({ clientMessage: text })} />
@@ -410,14 +410,14 @@ export default function QuoteCreateForm({
               value={quote.contractTerms || ''}
               onChange={(e) => updateQuote({ contractTerms: e.target.value })}
               placeholder="Contract terms"
-              className="w-full px-3 py-2 border border-slate-700 rounded-md"
+              className="w-full px-3 py-2 border border-slate-700 rounded-md bg-midnight text-slate-100 placeholder-slate-500"
               rows={4}
             />
             <textarea
               value={quote.disclaimers || ''}
               onChange={(e) => updateQuote({ disclaimers: e.target.value })}
               placeholder="Disclaimers"
-              className="w-full px-3 py-2 border border-slate-700 rounded-md"
+              className="w-full px-3 py-2 border border-slate-700 rounded-md bg-midnight text-slate-100 placeholder-slate-500"
               rows={3}
             />
             <label className="flex items-center gap-2 text-sm text-slate-300">
@@ -442,7 +442,7 @@ export default function QuoteCreateForm({
 
               <div className="flex items-center justify-between border-b border-slate-700/30 pb-4">
                 <span>Discount</span>
-                <button type="button" onClick={() => setShowDiscount(v => !v)} className="text-green-700 font-semibold underline">
+                <button type="button" onClick={() => setShowDiscount(v => !v)} className="text-scaffld-teal font-semibold underline">
                   {showDiscount ? 'Hide Discount' : 'Add Discount'}
                 </button>
               </div>
@@ -451,7 +451,7 @@ export default function QuoteCreateForm({
                   <select
                     value={quote.quoteDiscountType || 'amount'}
                     onChange={(e) => updateQuote({ quoteDiscountType: e.target.value })}
-                    className="px-2 py-2 border border-slate-700/30 rounded-xl"
+                    className="px-2 py-2 border border-slate-700/30 rounded-xl bg-midnight text-slate-100"
                   >
                     <option value="amount">Amount</option>
                     <option value="percent">Percent</option>
@@ -461,7 +461,7 @@ export default function QuoteCreateForm({
                     step="0.01"
                     value={quote.quoteDiscountValue ?? 0}
                     onChange={(e) => updateQuote({ quoteDiscountValue: e.target.value })}
-                    className="flex-1 px-2 py-2 border border-slate-700/30 rounded-xl"
+                    className="flex-1 px-2 py-2 border border-slate-700/30 rounded-xl bg-midnight text-slate-100"
                   />
                 </div>
               )}
@@ -474,7 +474,7 @@ export default function QuoteCreateForm({
                     step="0.01"
                     value={quote.taxRate ?? 0}
                     onChange={(e) => updateQuote({ taxRate: e.target.value })}
-                    className="w-24 px-3 py-2 border border-slate-700/30 rounded-xl text-right"
+                    className="w-24 px-3 py-2 border border-slate-700/30 rounded-xl text-right bg-midnight text-slate-100"
                   />
                   <span>%</span>
                   <span className="font-semibold">{formatCurrency(totals.taxAmount)}</span>
@@ -488,7 +488,7 @@ export default function QuoteCreateForm({
 
               <div className="flex items-center justify-between">
                 <span>Required deposit</span>
-                <button type="button" onClick={() => setShowDeposit(v => !v)} className="text-green-700 font-semibold underline">
+                <button type="button" onClick={() => setShowDeposit(v => !v)} className="text-scaffld-teal font-semibold underline">
                   {showDeposit ? 'Hide' : 'Add Required Deposit'}
                 </button>
               </div>
@@ -500,7 +500,7 @@ export default function QuoteCreateForm({
                     value={quote.depositRequiredAmount || ''}
                     onChange={(e) => updateQuote({ depositRequiredAmount: e.target.value })}
                     placeholder="Deposit amount"
-                    className="w-full px-3 py-2 border border-slate-700/30 rounded-xl"
+                    className="w-full px-3 py-2 border border-slate-700/30 rounded-xl bg-midnight text-slate-100 placeholder-slate-500"
                   />
                   <input
                     type="number"
@@ -508,7 +508,7 @@ export default function QuoteCreateForm({
                     value={quote.depositRequiredPercent || ''}
                     onChange={(e) => updateQuote({ depositRequiredPercent: e.target.value })}
                     placeholder="Deposit percent"
-                    className="w-full px-3 py-2 border border-slate-700/30 rounded-xl"
+                    className="w-full px-3 py-2 border border-slate-700/30 rounded-xl bg-midnight text-slate-100 placeholder-slate-500"
                   />
                   <div className="text-xs text-slate-400">Calculated deposit: {formatCurrency(requiredDeposit)}</div>
                 </div>
@@ -552,7 +552,7 @@ export default function QuoteCreateForm({
               <button
                 type="button"
                 onClick={() => onSave && onSave('save', { applyLegalDefaults })}
-                className="px-4 py-2 bg-green-600 text-white font-semibold rounded-l-lg hover:bg-green-700"
+                className="px-4 py-2 bg-scaffld-teal text-white font-semibold rounded-l-lg hover:bg-scaffld-teal/90"
               >
                 Save Quote
               </button>
@@ -560,12 +560,12 @@ export default function QuoteCreateForm({
                 <button
                   type="button"
                   onClick={() => setSaveMenuOpen(v => !v)}
-                  className="px-3 py-2 bg-green-600 text-white font-semibold rounded-r-lg hover:bg-green-700"
+                  className="px-3 py-2 bg-scaffld-teal text-white font-semibold rounded-r-lg hover:bg-scaffld-teal/90"
                 >
                   v
                 </button>
                 {saveMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-56 bg-charcoal border border-slate-700/30 rounded-xl shadow-lg z-20 text-sm">
+                  <div className="absolute right-0 mt-2 w-56 bg-charcoal border border-slate-700/30 rounded-xl shadow-lg z-20 text-sm text-slate-200">
                     <div className="px-4 py-2 text-xs text-slate-400">Save and...</div>
                     <button type="button" onClick={() => onSave && onSave('email', { applyLegalDefaults })} className="w-full text-left px-4 py-2 hover:bg-midnight/60">Send as Email</button>
                     <button type="button" onClick={() => onSave && onSave('text', { applyLegalDefaults })} className="w-full text-left px-4 py-2 hover:bg-midnight/60">Send as Text Message</button>

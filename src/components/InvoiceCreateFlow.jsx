@@ -168,7 +168,7 @@ export default function InvoiceCreateFlow({
     <div className="space-y-6 animate-fade-in">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <span className="h-10 w-10 rounded-full bg-green-50 text-green-700 flex items-center justify-center">
+          <span className="h-10 w-10 rounded-full bg-scaffld-teal/10 text-scaffld-teal flex items-center justify-center">
             <InvoiceIcon className="h-5 w-5" />
           </span>
           <div>
@@ -183,13 +183,13 @@ export default function InvoiceCreateFlow({
         <div className="flex flex-wrap items-center gap-3">
           <button
             onClick={() => setMode('job')}
-            className={`px-4 py-2 rounded-full text-sm font-semibold border ${mode === 'job' ? 'bg-green-600 text-white border-green-600' : 'bg-charcoal text-slate-300 border-slate-700/30'}`}
+            className={`px-4 py-2 rounded-full text-sm font-semibold border ${mode === 'job' ? 'bg-scaffld-teal text-white border-scaffld-teal' : 'bg-charcoal text-slate-300 border-slate-700/30'}`}
           >
             From jobs
           </button>
           <button
             onClick={() => setMode('ad_hoc')}
-            className={`px-4 py-2 rounded-full text-sm font-semibold border ${mode === 'ad_hoc' ? 'bg-green-600 text-white border-green-600' : 'bg-charcoal text-slate-300 border-slate-700/30'}`}
+            className={`px-4 py-2 rounded-full text-sm font-semibold border ${mode === 'ad_hoc' ? 'bg-scaffld-teal text-white border-scaffld-teal' : 'bg-charcoal text-slate-300 border-slate-700/30'}`}
           >
             Ad-hoc invoice
           </button>
@@ -201,7 +201,7 @@ export default function InvoiceCreateFlow({
             <select
               value={clientId}
               onChange={(e) => { setClientId(e.target.value); setSelectedJobIds([]); }}
-              className="w-full px-3 py-2 border border-slate-700/30 rounded-xl text-sm"
+              className="w-full px-3 py-2 border border-slate-700/30 rounded-xl text-sm bg-midnight text-slate-100"
             >
               <option value="">Select a client</option>
               {clients.map((c) => (
@@ -248,7 +248,7 @@ export default function InvoiceCreateFlow({
                           <div className="text-sm text-slate-400">{job.title || 'Service'}{job.start ? ` - ${formatDate(job.start)}` : ''}</div>
                           <div className="mt-2 flex items-center gap-3 text-xs text-slate-400">
                             <span>{completedVisits} completed visits</span>
-                            {requiresInvoicing && <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">Requires invoicing</span>}
+                            {requiresInvoicing && <span className="px-2 py-0.5 rounded-full bg-harvest-amber/10 text-harvest-amber">Requires invoicing</span>}
                             {hasInvoice && <span className="px-2 py-0.5 rounded-full bg-midnight text-slate-400">Invoiced</span>}
                           </div>
                         </div>
@@ -266,7 +266,7 @@ export default function InvoiceCreateFlow({
           <button
             onClick={handleNext}
             disabled={!clientId || (mode === 'job' && selectedJobIds.length === 0)}
-            className="px-4 py-2 rounded-md bg-green-700 text-white text-sm font-semibold disabled:bg-slate-600"
+            className="px-4 py-2 rounded-md bg-scaffld-teal text-white text-sm font-semibold disabled:bg-slate-600 hover:bg-scaffld-teal/90"
           >
             Next Step
           </button>

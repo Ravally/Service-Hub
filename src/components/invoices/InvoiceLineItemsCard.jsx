@@ -48,7 +48,7 @@ export default function InvoiceLineItemsCard({ draft, canEdit, updateLineItem, a
           {canEdit && hasDescriptions && (
             <ClampButton label="Clamp Improve" onClick={handleImproveDescriptions} loading={aiLoading} />
           )}
-          <button type="button" onClick={() => addLineItem()} className="px-4 py-2 rounded-full bg-green-700 text-white text-sm font-semibold" disabled={!canEdit}>
+          <button type="button" onClick={() => addLineItem()} className="px-4 py-2 rounded-full bg-scaffld-teal text-white text-sm font-semibold hover:bg-scaffld-teal/90" disabled={!canEdit}>
             Add Line Item
           </button>
         </div>
@@ -82,7 +82,7 @@ export default function InvoiceLineItemsCard({ draft, canEdit, updateLineItem, a
           if (itemType === 'text') {
             return (
               <div key={`text-${idx}`} className="border border-slate-700/30 rounded-xl p-3 space-y-2">
-                <textarea value={item.description || ''} onChange={(e) => updateLineItem(idx, 'description', e.target.value)} placeholder="Text block" className="w-full px-3 py-2 border border-slate-700 rounded-md text-sm" rows={3} disabled={!canEdit} />
+                <textarea value={item.description || ''} onChange={(e) => updateLineItem(idx, 'description', e.target.value)} placeholder="Text block" className="w-full px-3 py-2 border border-slate-700 rounded-md text-sm bg-midnight text-slate-100 placeholder-slate-500" rows={3} disabled={!canEdit} />
                 {canEdit && (
                   <div className="text-right"><button onClick={() => removeLineItem(idx)} className="text-xs font-semibold text-signal-coral">Remove</button></div>
                 )}
@@ -94,26 +94,26 @@ export default function InvoiceLineItemsCard({ draft, canEdit, updateLineItem, a
             <div key={`item-${idx}`} className="border border-slate-700/30 rounded-2xl p-4 space-y-3">
               <div className="grid grid-cols-1 lg:grid-cols-[1.8fr_0.4fr_0.6fr_0.6fr_auto] gap-3 items-start">
                 <div className="space-y-2">
-                  <input value={item.name || ''} onChange={(e) => updateLineItem(idx, 'name', e.target.value)} className="w-full px-3 py-2 border border-slate-700/30 rounded-xl text-sm" placeholder="Name" disabled={!canEdit} />
-                  <textarea value={item.description || ''} onChange={(e) => updateLineItem(idx, 'description', e.target.value)} className="w-full px-3 py-2 border border-slate-700/30 rounded-xl text-sm" rows={3} placeholder="Description" disabled={!canEdit} />
+                  <input value={item.name || ''} onChange={(e) => updateLineItem(idx, 'name', e.target.value)} className="w-full px-3 py-2 border border-slate-700/30 rounded-xl text-sm bg-midnight text-slate-100 placeholder-slate-500" placeholder="Name" disabled={!canEdit} />
+                  <textarea value={item.description || ''} onChange={(e) => updateLineItem(idx, 'description', e.target.value)} className="w-full px-3 py-2 border border-slate-700/30 rounded-xl text-sm bg-midnight text-slate-100 placeholder-slate-500" rows={3} placeholder="Description" disabled={!canEdit} />
                 </div>
-                <input type="number" min="0" value={item.qty || 0} onChange={(e) => updateLineItem(idx, 'qty', e.target.value)} className="px-3 py-2 border border-slate-700/30 rounded-xl text-sm text-right" disabled={!canEdit} />
+                <input type="number" min="0" value={item.qty || 0} onChange={(e) => updateLineItem(idx, 'qty', e.target.value)} className="px-3 py-2 border border-slate-700/30 rounded-xl text-sm text-right bg-midnight text-slate-100" disabled={!canEdit} />
                 <div className="flex items-center gap-2">
                   <span className="text-slate-400">$</span>
-                  <input type="number" min="0" value={item.price || 0} onChange={(e) => updateLineItem(idx, 'price', e.target.value)} className="w-full px-3 py-2 border border-slate-700/30 rounded-xl text-sm text-right" disabled={!canEdit} />
+                  <input type="number" min="0" value={item.price || 0} onChange={(e) => updateLineItem(idx, 'price', e.target.value)} className="w-full px-3 py-2 border border-slate-700/30 rounded-xl text-sm text-right bg-midnight text-slate-100" disabled={!canEdit} />
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-slate-400">$</span>
-                  <input value={lineTotal.toFixed(2)} className="w-full px-3 py-2 border border-slate-700/30 rounded-xl text-sm text-right bg-midnight" disabled />
+                  <input value={lineTotal.toFixed(2)} className="w-full px-3 py-2 border border-slate-700/30 rounded-xl text-sm text-right bg-midnight text-slate-400" disabled />
                 </div>
                 {canEdit && (
-                  <button onClick={() => removeLineItem(idx)} className="px-3 py-2 border border-red-200 rounded-lg text-signal-coral text-sm font-semibold">Delete</button>
+                  <button onClick={() => removeLineItem(idx)} className="px-3 py-2 border border-signal-coral/30 rounded-lg text-signal-coral text-sm font-semibold">Delete</button>
                 )}
               </div>
               <div className="flex flex-wrap items-center justify-between text-sm text-slate-400">
                 {item.serviceDate ? (
                   <div className="flex items-center gap-2">
-                    <input type="date" value={toDateInput(item.serviceDate)} onChange={(e) => updateLineItem(idx, 'serviceDate', toIsoDate(e.target.value))} className="px-2 py-1 border border-slate-700/30 rounded-md text-sm" disabled={!canEdit} />
+                    <input type="date" value={toDateInput(item.serviceDate)} onChange={(e) => updateLineItem(idx, 'serviceDate', toIsoDate(e.target.value))} className="px-2 py-1 border border-slate-700/30 rounded-md text-sm bg-midnight text-slate-100" disabled={!canEdit} />
                     {canEdit && <button onClick={() => updateLineItem(idx, 'serviceDate', '')} className="text-xs text-slate-400 underline">Clear</button>}
                   </div>
                 ) : (

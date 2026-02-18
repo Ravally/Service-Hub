@@ -215,7 +215,7 @@ export default function InvoiceDetailView({
             {!isCreate && stripeEnabled && canEdit && (
               <button
                 onClick={() => onGeneratePaymentLink && onGeneratePaymentLink(invoice)}
-                className="px-3 py-2 rounded-md border border-indigo-200 text-sm font-semibold text-indigo-700 hover:bg-indigo-50"
+                className="px-3 py-2 rounded-md border border-scaffld-teal/30 text-sm font-semibold text-scaffld-teal hover:bg-scaffld-teal/10"
               >
                 Get Payment Link
               </button>
@@ -255,7 +255,7 @@ export default function InvoiceDetailView({
                   value={draft.invoiceNumber || ''}
                   onChange={(e) => updateDraft({ invoiceNumber: e.target.value })}
                   onBlur={() => setEditingNumber(false)}
-                  className="px-2 py-1 border border-slate-700/30 rounded-md text-sm"
+                  className="px-2 py-1 border border-slate-700/30 rounded-md text-sm bg-midnight text-slate-100"
                   disabled={!canEdit}
                 />
               ) : (
@@ -323,7 +323,7 @@ export default function InvoiceDetailView({
           <input
             value={draft.subject || ''}
             onChange={(e) => updateDraft({ subject: e.target.value })}
-            className="w-full px-4 py-3 border border-slate-700/30 rounded-2xl text-base shadow-sm"
+            className="w-full px-4 py-3 border border-slate-700/30 rounded-2xl text-base shadow-sm bg-midnight text-slate-100 placeholder-slate-500"
             disabled={!canEdit}
             placeholder="Subject"
           />
@@ -364,7 +364,7 @@ export default function InvoiceDetailView({
                 <textarea
                   value={draft.billingAddress || ''}
                   onChange={(e) => updateDraft({ billingAddress: e.target.value })}
-                  className="w-full px-3 py-2 border border-slate-700/30 rounded-xl text-sm"
+                  className="w-full px-3 py-2 border border-slate-700/30 rounded-xl text-sm bg-midnight text-slate-100 placeholder-slate-500"
                   rows={3}
                   disabled={!canEdit || !editingContact}
                 />
@@ -374,7 +374,7 @@ export default function InvoiceDetailView({
                 <textarea
                   value={draft.serviceAddress || ''}
                   onChange={(e) => updateDraft({ serviceAddress: e.target.value })}
-                  className="w-full px-3 py-2 border border-slate-700/30 rounded-xl text-sm"
+                  className="w-full px-3 py-2 border border-slate-700/30 rounded-xl text-sm bg-midnight text-slate-100 placeholder-slate-500"
                   rows={3}
                   disabled={!canEdit || !editingContact}
                 />
@@ -388,14 +388,14 @@ export default function InvoiceDetailView({
                   <input
                     value={draft.contactPhone || ''}
                     onChange={(e) => updateDraft({ contactPhone: e.target.value })}
-                    className="w-full px-3 py-2 border border-slate-700/30 rounded-xl text-sm"
+                    className="w-full px-3 py-2 border border-slate-700/30 rounded-xl text-sm bg-midnight text-slate-100 placeholder-slate-500"
                     placeholder="Phone"
                     disabled={!canEdit || !editingContact}
                   />
                   <input
                     value={draft.contactEmail || ''}
                     onChange={(e) => updateDraft({ contactEmail: e.target.value })}
-                    className="w-full px-3 py-2 border border-slate-700/30 rounded-xl text-sm"
+                    className="w-full px-3 py-2 border border-slate-700/30 rounded-xl text-sm bg-midnight text-slate-100 placeholder-slate-500"
                     placeholder="Email"
                     disabled={!canEdit || !editingContact}
                   />
@@ -419,7 +419,7 @@ export default function InvoiceDetailView({
             <textarea
               value={draft.clientMessage || ''}
               onChange={(e) => updateDraft({ clientMessage: e.target.value })}
-              className="w-full px-3 py-2 border border-slate-700 rounded-md text-sm"
+              className="w-full px-3 py-2 border border-slate-700 rounded-md text-sm bg-midnight text-slate-100 placeholder-slate-500"
               rows={4}
               disabled={!canEdit}
             />
@@ -433,7 +433,7 @@ export default function InvoiceDetailView({
             <textarea
               value={draft.contractTerms || ''}
               onChange={(e) => updateDraft({ contractTerms: e.target.value })}
-              className="w-full px-3 py-2 border border-slate-700 rounded-md text-sm"
+              className="w-full px-3 py-2 border border-slate-700 rounded-md text-sm bg-midnight text-slate-100 placeholder-slate-500"
               rows={4}
               placeholder="Contract terms"
               disabled={!canEdit}
@@ -441,7 +441,7 @@ export default function InvoiceDetailView({
             <textarea
               value={draft.disclaimers || ''}
               onChange={(e) => updateDraft({ disclaimers: e.target.value })}
-              className="w-full px-3 py-2 border border-slate-700 rounded-md text-sm"
+              className="w-full px-3 py-2 border border-slate-700 rounded-md text-sm bg-midnight text-slate-100 placeholder-slate-500"
               rows={3}
               placeholder="Disclaimers"
               disabled={!canEdit}
@@ -487,7 +487,7 @@ export default function InvoiceDetailView({
               </button>
               <button
                 onClick={handleSave}
-                className="px-4 py-2 rounded-md bg-green-700 text-white text-sm font-semibold"
+                className="px-4 py-2 rounded-md bg-scaffld-teal text-white text-sm font-semibold hover:bg-scaffld-teal/90"
               >
                 {isCreate ? 'Create Invoice' : 'Save Invoice'}
               </button>

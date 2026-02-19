@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { initialCompanySettings, initialInvoiceSettings, initialQuoteState, initialJobState } from '../constants';
 
 const AppStateContext = createContext(null);
@@ -150,8 +150,11 @@ export function AppStateProvider({ children }) {
     try { localStorage.setItem('scheduleRange', range); } catch (e) {}
   };
 
+  // Track whether current navigation is from popstate (browser back/forward)
+  const isPopstateRef = useRef(false);
+
   // Navigation helper: reset all selections when switching views
-  const navigateToView = (view) => {
+  const navigateToView = useCallback((view) => {
     setActiveView(view);
     setSelectedClient(null);
     setSelectedProperty(null);
@@ -159,7 +162,28 @@ export function AppStateProvider({ children }) {
     setSelectedQuote(null);
     setSelectedInvoice(null);
     setSidebarOpen(false);
-  };
+
+    // Push browser history entry so swipe-back navigates within the app
+    if (!isPopstateRef.current) {
+      window.history.pushState({ view }, '', `#${view}`);
+    }
+    isPopstateRef.current = false;
+  }, []);
+
+  // Listen for browser back/forward (swipe gestures on mobile)
+  useEffect(() => {
+    // Replace initial history entry so the first view has state
+    window.history.replaceState({ view: 'dashboard' }, '', window.location.hash || '#dashboard');
+
+    const handlePopState = (e) => {
+      const view = e.state?.view || 'dashboard';
+      isPopstateRef.current = true;
+      navigateToView(view);
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [navigateToView]);
 
   const value = {
     // Data

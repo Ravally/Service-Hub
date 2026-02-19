@@ -66,6 +66,123 @@ export const aiService = {
       throw normalizeError(error);
     }
   },
+
+  async generateReviewResponse(review, context = {}) {
+    try {
+      const result = await scaffldAI({
+        action: 'reviewResponse',
+        input: JSON.stringify(review),
+        context,
+      });
+      return result.data.result;
+    } catch (error) {
+      throw normalizeError(error);
+    }
+  },
+
+  async draftCampaign(campaignInfo, context = {}) {
+    try {
+      const result = await scaffldAI({
+        action: 'campaignDraft',
+        input: JSON.stringify(campaignInfo),
+        context,
+      });
+      return JSON.parse(stripCodeFences(result.data.result));
+    } catch (error) {
+      throw normalizeError(error);
+    }
+  },
+
+  async draftInvoiceChaser(invoiceData, context = {}) {
+    try {
+      const result = await scaffldAI({
+        action: 'invoiceChaser',
+        input: JSON.stringify(invoiceData),
+        context,
+      });
+      return result.data.result;
+    } catch (error) {
+      throw normalizeError(error);
+    }
+  },
+
+  async parseClientNotes(rawText, context = {}) {
+    try {
+      const result = await scaffldAI({
+        action: 'clientIntake',
+        input: rawText,
+        context,
+      });
+      return JSON.parse(stripCodeFences(result.data.result));
+    } catch (error) {
+      throw normalizeError(error);
+    }
+  },
+
+  async categorizeExpenses(expenses, context = {}) {
+    try {
+      const result = await scaffldAI({
+        action: 'expenseCategorize',
+        input: JSON.stringify(expenses),
+        context,
+      });
+      return JSON.parse(stripCodeFences(result.data.result));
+    } catch (error) {
+      throw normalizeError(error);
+    }
+  },
+
+  async suggestCustomFields(businessContext = {}) {
+    try {
+      const result = await scaffldAI({
+        action: 'customFieldSuggestions',
+        input: JSON.stringify(businessContext),
+        context: businessContext,
+      });
+      return JSON.parse(stripCodeFences(result.data.result));
+    } catch (error) {
+      throw normalizeError(error);
+    }
+  },
+
+  async optimizeSchedule(scheduleData, context = {}) {
+    try {
+      const result = await scaffldAI({
+        action: 'scheduleOptimizer',
+        input: JSON.stringify(scheduleData),
+        context,
+      });
+      return result.data.result;
+    } catch (error) {
+      throw normalizeError(error);
+    }
+  },
+
+  async generateBriefing(dashboardData, context = {}) {
+    try {
+      const result = await scaffldAI({
+        action: 'dailyBriefing',
+        input: JSON.stringify(dashboardData),
+        context,
+      });
+      return result.data.result;
+    } catch (error) {
+      throw normalizeError(error);
+    }
+  },
+
+  async suggestFieldValues(clientHistory, context = {}) {
+    try {
+      const result = await scaffldAI({
+        action: 'fieldAutoComplete',
+        input: JSON.stringify(clientHistory),
+        context,
+      });
+      return JSON.parse(stripCodeFences(result.data.result));
+    } catch (error) {
+      throw normalizeError(error);
+    }
+  },
 };
 
 function normalizeError(error) {

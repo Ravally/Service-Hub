@@ -695,6 +695,7 @@ export default function AppContent({ auth, appState, handlers }) {
               reviews={reviews}
               getClientNameById={getClientNameById}
               onDelete={handleDeleteReview}
+              companyName={companySettings?.companyName || ''}
             />
           )}
 
@@ -775,6 +776,7 @@ export default function AppContent({ auth, appState, handlers }) {
                 clients={clients} staff={staff} quoteTemplates={quoteTemplates}
                 companySettings={companySettings} onSave={handleSaveQuoteAction}
                 onCancel={() => { setActiveView('quotes'); setNewQuote(initialQuoteState); }}
+                pastQuotes={quotes} pastJobs={jobs}
               />
             </div>
           )}

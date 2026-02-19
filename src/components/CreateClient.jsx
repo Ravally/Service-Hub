@@ -4,6 +4,9 @@ import { UsersIcon, MapPinIcon } from './icons';
 import Street1Input from './clients/Street1Input';
 import { CommSettingsModal, AddContactModal, PropContactModal } from './clients/CreateClientModals';
 import CustomFieldEditor from './common/CustomFieldEditor';
+import ClampButton from './clamp/ClampButton';
+import ClampIcon from './clamp/ClampIcon';
+import { aiService } from '../services/aiService';
 
 export default function CreateClient({ onBack, onSave, initialClient = null, autoAddProperty = false }) {
   // Primary client fields
@@ -69,6 +72,33 @@ export default function CreateClient({ onBack, onSave, initialClient = null, aut
   const dragIndexRef = useRef(null);
   const [errors, setErrors] = useState({ phones: '', emails: '' });
   const autoAddedRef = useRef(false);
+  // Clamp client intake
+  const [showIntake, setShowIntake] = useState(false);
+  const [intakeText, setIntakeText] = useState('');
+  const [intakeLoading, setIntakeLoading] = useState(false);
+
+  const handleIntakeParse = async () => {
+    if (!intakeText.trim()) return;
+    setIntakeLoading(true);
+    try {
+      const parsed = await aiService.parseClientNotes(intakeText);
+      if (parsed.name) {
+        const parts = String(parsed.name).trim().split(/\s+/);
+        setClient((prev) => ({ ...prev, firstName: parts[0] || prev.firstName, lastName: parts.slice(1).join(' ') || prev.lastName }));
+      }
+      if (parsed.email) setEmails([{ label: 'Main', address: parsed.email }]);
+      if (parsed.phone) setPhones([{ label: 'Main', number: parsed.phone }]);
+      if (parsed.address) {
+        setProperties((prev) => prev.map((p, i) => i === 0 ? { ...p, street1: parsed.address } : p));
+      }
+      setShowIntake(false);
+      setIntakeText('');
+    } catch (err) {
+      console.error('Client intake failed:', err);
+    } finally {
+      setIntakeLoading(false);
+    }
+  };
 
   // Prefill from initialClient when editing
   useEffect(() => {
@@ -275,6 +305,27 @@ export default function CreateClient({ onBack, onSave, initialClient = null, aut
     <div className="animate-fade-in">
       <button onClick={onBack} className="text-sm text-blue-700 hover:underline">Back to Clients</button>
       <h1 className="mt-2 text-3xl font-extrabold tracking-tight">{initialClient ? 'Edit Client' : 'New Client'}</h1>
+
+      {!initialClient && (
+        <div className="mt-4 rounded-xl border border-clamp-border/30 bg-clamp-soft/30 p-4">
+          <button type="button" onClick={() => setShowIntake((v) => !v)} className="flex items-center gap-2 text-sm font-semibold text-clamp">
+            <ClampIcon size={14} />
+            {showIntake ? 'Hide' : 'Paste notes to auto-fill'}
+          </button>
+          {showIntake && (
+            <div className="mt-3 space-y-2">
+              <textarea
+                value={intakeText}
+                onChange={(e) => setIntakeText(e.target.value)}
+                rows={4}
+                placeholder="Paste phone call notes, text messages, or emails here and Clamp will extract client details..."
+                className="w-full px-3 py-2 border border-slate-700 rounded-lg bg-midnight text-slate-100 placeholder-slate-500 text-sm focus:ring-2 focus:ring-clamp/50 focus:border-clamp"
+              />
+              <ClampButton label="Extract Details" onClick={handleIntakeParse} loading={intakeLoading} disabled={!intakeText.trim()} size="md" />
+            </div>
+          )}
+        </div>
+      )}
 
       <form onSubmit={(e)=>submit(e)} autoComplete="off" className="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Client details */}

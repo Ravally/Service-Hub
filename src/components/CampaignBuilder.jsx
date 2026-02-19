@@ -4,6 +4,8 @@ import {
   CLIENT_STATUSES, initialCampaignState,
 } from '../constants';
 import { SEGMENT_DEFINITIONS } from '../utils';
+import ClampButton from './clamp/ClampButton';
+import { aiService } from '../services/aiService';
 
 export default function CampaignBuilder({
   campaign, clients, allTags, computeRecipientCount,
@@ -34,8 +36,27 @@ export default function CampaignBuilder({
     });
   };
 
+  const [aiLoading, setAiLoading] = useState(false);
+
   const insertPlaceholder = (token) => {
     set('body', form.body + token);
+  };
+
+  const handleAiDraft = async () => {
+    setAiLoading(true);
+    try {
+      const result = await aiService.draftCampaign({
+        type: form.type,
+        name: form.name,
+        recipientType: form.recipientType,
+      });
+      if (result.subject) set('subject', result.subject);
+      if (result.body) set('body', result.body);
+    } catch (err) {
+      console.error('Campaign draft failed:', err);
+    } finally {
+      setAiLoading(false);
+    }
   };
 
   const handleSaveDraft = async () => {
@@ -90,7 +111,10 @@ export default function CampaignBuilder({
 
       {/* Email Content */}
       <div className={sectionCls}>
-        <p className="text-sm font-semibold text-slate-200 mb-3">Email Content</p>
+        <div className="flex items-center justify-between mb-3">
+          <p className="text-sm font-semibold text-slate-200">Email Content</p>
+          <ClampButton label="Clamp Draft" onClick={handleAiDraft} loading={aiLoading} />
+        </div>
         <div className="space-y-3">
           <div>
             <label className={labelCls}>Subject</label>

@@ -22,4 +22,16 @@ export const clampChatService = {
       throw normalizeError(error);
     }
   },
+
+  async quickSearch(query) {
+    try {
+      const result = await clampChatFn({
+        messages: [{ role: 'user', content: query }],
+        mode: 'search',
+      });
+      return result.data;
+    } catch (error) {
+      throw normalizeError(error);
+    }
+  },
 };

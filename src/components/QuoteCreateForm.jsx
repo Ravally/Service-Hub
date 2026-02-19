@@ -24,6 +24,8 @@ export default function QuoteCreateForm({
   companySettings,
   onSave,
   onCancel,
+  pastQuotes = [],
+  pastJobs = [],
 }) {
   const [templateId, setTemplateId] = useState('');
   const [showClientView, setShowClientView] = useState(false);
@@ -87,9 +89,13 @@ export default function QuoteCreateForm({
     setAiError(null);
     setAiResults(null);
     try {
+      const selectedProperty = propertyOptions.find((p) => p.id === quote.propertyId || p.address === quote.propertyAddress);
       const items = await aiService.generateQuote(aiPrompt, {
         clientName: activeClient?.name || '',
         businessType: companySettings?.industry || '',
+        propertyType: selectedProperty?.type || '',
+        propertyAddress: selectedProperty?.address || quote.propertyAddress || '',
+        quoteNotes: quote.notes || '',
       });
       setAiResults(items);
     } catch (err) {
@@ -110,6 +116,37 @@ export default function QuoteCreateForm({
     setAiResults(null);
     setShowAiPanel(false);
     setAiPrompt('');
+  };
+
+  // AI Auto-Complete state
+  const [acLoading, setAcLoading] = useState(false);
+  const [acSuggestions, setAcSuggestions] = useState(null);
+
+  const handleAutoComplete = async () => {
+    if (!quote.clientId) return;
+    setAcLoading(true);
+    try {
+      const clientQuotes = pastQuotes.filter(q => q.clientId === quote.clientId).slice(0, 5);
+      const clientJobs = pastJobs.filter(j => j.clientId === quote.clientId).slice(0, 5);
+      const history = {
+        clientName: activeClient?.name || '',
+        pastQuotes: clientQuotes.map(q => ({ title: q.title, lineItems: (q.lineItems || []).map(li => li.name || li.description).filter(Boolean).slice(0, 5), total: q.total })),
+        pastJobs: clientJobs.map(j => ({ title: j.title, status: j.status })),
+      };
+      const result = await aiService.suggestFieldValues(history);
+      setAcSuggestions(result?.suggestions || []);
+    } catch {
+      setAcSuggestions([]);
+    } finally {
+      setAcLoading(false);
+    }
+  };
+
+  const applyAcSuggestion = (s) => {
+    if (s.field === 'title') updateQuote({ title: s.value });
+    else if (s.field === 'description') updateQuote({ clientMessage: s.value });
+    else if (s.field === 'notes') updateQuote({ clientMessage: s.value });
+    setAcSuggestions(prev => (prev || []).filter(x => x !== s));
   };
 
   const customFields = Array.isArray(quote.customFields) ? quote.customFields : [];
@@ -192,6 +229,30 @@ export default function QuoteCreateForm({
                   onChange={(updated) => updateQuote({ customFields: updated })}
                 />
               </div>
+
+              {quote.clientId && (
+                <div className="flex items-center gap-2 pt-1">
+                  <ClampButton label="Suggest Fields" onClick={handleAutoComplete} loading={acLoading} />
+                  {acSuggestions && acSuggestions.length > 0 && (
+                    <button type="button" onClick={() => setAcSuggestions(null)} className="text-xs text-slate-400 hover:text-slate-200">Dismiss</button>
+                  )}
+                </div>
+              )}
+              {acSuggestions && acSuggestions.length > 0 && (
+                <div className="bg-clamp-soft/30 border border-clamp-border/30 rounded-xl p-3 space-y-2">
+                  <span className="text-xs font-semibold text-clamp">Suggested values</span>
+                  {acSuggestions.map((s, i) => (
+                    <button key={i} type="button" onClick={() => applyAcSuggestion(s)}
+                      className="w-full text-left flex items-center justify-between gap-2 px-3 py-2 bg-midnight/40 rounded-lg hover:bg-midnight/60 transition-colors min-h-[44px]">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase bg-clamp-soft text-clamp border border-clamp-border shrink-0">{s.field}</span>
+                        <span className="text-sm text-slate-200 truncate">{s.value}</span>
+                      </div>
+                      <span className="text-xs text-scaffld-teal shrink-0">Apply</span>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 

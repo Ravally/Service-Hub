@@ -11,6 +11,9 @@ import { InvoiceDetailsCard, ClientViewCard, PaymentSettingsCard, InternalNotesC
 import PaymentPlanCard from './invoices/PaymentPlanCard';
 import CustomFieldEditor from './common/CustomFieldEditor';
 import ClampRewriteButtons from './clamp/ClampRewriteButtons';
+import ClampButton from './clamp/ClampButton';
+import ClampResultPreview from './clamp/ClampResultPreview';
+import { aiService } from '../services/aiService';
 
 const buildLineItem = (opts = {}) => ({
   type: 'line_item',
@@ -58,6 +61,8 @@ export default function InvoiceDetailView({
   const [editingNumber, setEditingNumber] = useState(false);
   const [editingContact, setEditingContact] = useState(false);
   const [contactSnapshot, setContactSnapshot] = useState(null);
+  const [chaserLoading, setChaserLoading] = useState(false);
+  const [chaserResult, setChaserResult] = useState(null);
 
   useEffect(() => {
     setDraft({
@@ -195,6 +200,26 @@ export default function InvoiceDetailView({
     }
   };
 
+  const handleDraftChaser = async () => {
+    setChaserLoading(true);
+    try {
+      const dueDate = draft.dueDate || invoice.dueDate;
+      const daysOverdue = dueDate ? Math.max(0, Math.floor((Date.now() - new Date(dueDate).getTime()) / 86400000)) : 0;
+      const result = await aiService.draftInvoiceChaser({
+        invoiceNumber: draft.invoiceNumber || invoice.invoiceNumber || '',
+        clientName: client?.name || '',
+        amount: draft.total ?? computeTotals(draft).total,
+        daysOverdue,
+        dueDate: dueDate || '',
+      });
+      setChaserResult(result);
+    } catch (err) {
+      setChaserResult('Clamp ran into a problem. Try again.');
+    } finally {
+      setChaserLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-6 animate-fade-in">
         <div className="flex flex-wrap items-center justify-between gap-3">
@@ -220,6 +245,9 @@ export default function InvoiceDetailView({
                 Get Payment Link
               </button>
             )}
+            {!isCreate && canEdit && (draft.status === 'Unpaid' || draft.status === 'Sent' || draft.status === 'Overdue') && (
+              <ClampButton label="Clamp Draft Chaser" onClick={handleDraftChaser} loading={chaserLoading} />
+            )}
             {!isCreate && canEdit && (
               <button
                 onClick={() => onSend && onSend(invoice)}
@@ -238,6 +266,17 @@ export default function InvoiceDetailView({
             )}
           </div>
         </div>
+
+      {chaserResult && (
+        <ClampResultPreview
+          result={chaserResult}
+          loading={chaserLoading}
+          label="Payment Reminder Draft"
+          onAccept={() => { navigator.clipboard.writeText(chaserResult).catch(() => {}); setChaserResult(null); }}
+          onReject={() => setChaserResult(null)}
+          onRetry={handleDraftChaser}
+        />
+      )}
 
       <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-4 sm:p-6">
         <div className="flex flex-wrap items-start justify-between gap-4 sm:gap-6">

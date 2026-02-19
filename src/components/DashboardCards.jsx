@@ -1,6 +1,9 @@
 // src/components/DashboardCards.jsx
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { UsersIcon, FileTextIcon, BriefcaseIcon, InvoiceIcon } from './icons';
+import ClampButton from './clamp/ClampButton';
+import ClampResultPreview from './clamp/ClampResultPreview';
+import { aiService } from '../services/aiService';
 
 const Header = ({ icon, title, action, accent }) => (
   <div className="px-4 py-3 border-b border-slate-700/30 flex items-center justify-between">
@@ -34,6 +37,58 @@ const StatRow = ({ label, value, sub, pill }) => (
 );
 
 const DashboardCards = ({ quotes = [], jobs = [], invoices = [], onNewQuote, onNewJob }) => {
+  const [briefingLoading, setBriefingLoading] = useState(false);
+  const [briefingResult, setBriefingResult] = useState(null);
+  const [optimizerLoading, setOptimizerLoading] = useState(false);
+  const [optimizerResult, setOptimizerResult] = useState(null);
+
+  const handleBriefing = async () => {
+    setBriefingLoading(true);
+    try {
+      const now = new Date();
+      const todayJobs = jobs.filter((j) => {
+        const start = j.start || j.scheduledDate;
+        return start && new Date(start).toDateString() === now.toDateString();
+      });
+      const overdueInvoices = invoices.filter((i) => (i.status === 'Unpaid' || i.status === 'Sent') && i.dueDate && new Date(i.dueDate) < now);
+      const pendingQuotes = quotes.filter((q) => q.status === 'Awaiting Response' || q.status === 'Sent');
+      const result = await aiService.generateBriefing({
+        todayJobs: todayJobs.map((j) => ({ title: j.title, status: j.status, start: j.start })),
+        overdueInvoices: overdueInvoices.map((i) => ({ number: i.invoiceNumber, total: i.total, dueDate: i.dueDate })),
+        pendingQuotes: pendingQuotes.map((q) => ({ number: q.quoteNumber, total: q.total })),
+        totalJobs: jobs.length,
+        totalInvoices: invoices.length,
+      });
+      setBriefingResult(result);
+    } catch (err) {
+      setBriefingResult('Clamp ran into a problem. Try again.');
+    } finally {
+      setBriefingLoading(false);
+    }
+  };
+
+  const handleOptimize = async () => {
+    setOptimizerLoading(true);
+    try {
+      const scheduledJobs = jobs.filter((j) => j.status === 'Scheduled' || j.status === 'In Progress');
+      const result = await aiService.optimizeSchedule({
+        jobs: scheduledJobs.map((j) => ({
+          title: j.title,
+          status: j.status,
+          start: j.start,
+          end: j.end,
+          assignees: j.assignees || [],
+          address: j.address || j.propertyAddress || '',
+        })),
+      });
+      setOptimizerResult(result);
+    } catch (err) {
+      setOptimizerResult('Clamp ran into a problem. Try again.');
+    } finally {
+      setOptimizerLoading(false);
+    }
+  };
+
   const data = useMemo(() => {
     const now = new Date();
     const fmt = (n) => `$${(Number(n || 0)).toFixed(2)}`;
@@ -100,11 +155,31 @@ const DashboardCards = ({ quotes = [], jobs = [], invoices = [], onNewQuote, onN
     <div className="space-y-4 mb-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl sm:text-3xl font-bold font-display text-slate-100">Home</h2>
-        <div className="hidden md:flex items-center gap-2">
-          <button className="px-3 py-1.5 text-sm font-semibold rounded-lg bg-scaffld-teal/10 text-scaffld-teal border border-scaffld-teal/30 hover:bg-scaffld-teal/20 transition-colors">View Insights</button>
-          <button className="px-3 py-1.5 text-sm font-semibold rounded-lg bg-charcoal text-slate-300 border border-slate-700 hover:bg-slate-dark transition-colors">More Actions</button>
+        <div className="flex items-center gap-2">
+          <ClampButton label="Morning Briefing" onClick={handleBriefing} loading={briefingLoading} />
+          <ClampButton label="Optimize Schedule" onClick={handleOptimize} loading={optimizerLoading} />
         </div>
       </div>
+
+      {briefingResult && (
+        <ClampResultPreview
+          result={briefingResult}
+          loading={briefingLoading}
+          label="Morning Briefing"
+          onAccept={() => setBriefingResult(null)}
+          onReject={() => setBriefingResult(null)}
+        />
+      )}
+
+      {optimizerResult && (
+        <ClampResultPreview
+          result={optimizerResult}
+          loading={optimizerLoading}
+          label="Schedule Suggestions"
+          onAccept={() => setOptimizerResult(null)}
+          onReject={() => setOptimizerResult(null)}
+        />
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
         <Card

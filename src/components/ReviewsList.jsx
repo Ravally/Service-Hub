@@ -1,5 +1,8 @@
 import React, { useMemo, useState } from 'react';
 import { useIsMobile } from '../hooks/ui';
+import ClampButton from './clamp/ClampButton';
+import ClampResultPreview from './clamp/ClampResultPreview';
+import { aiService } from '../services/aiService';
 
 const FILTER_TABS = [
   { key: 'all', label: 'All' },
@@ -23,10 +26,38 @@ const Stars = ({ rating, size = 'h-4 w-4' }) => (
   </div>
 );
 
-export default function ReviewsList({ reviews, getClientNameById, onDelete }) {
+export default function ReviewsList({ reviews, getClientNameById, onDelete, companyName }) {
   const isMobile = useIsMobile();
   const [filter, setFilter] = useState('all');
   const [expandedId, setExpandedId] = useState(null);
+  const [aiLoadingId, setAiLoadingId] = useState(null);
+  const [aiResults, setAiResults] = useState({});
+
+  const handleGenerateResponse = async (review) => {
+    setAiLoadingId(review.id);
+    try {
+      const result = await aiService.generateReviewResponse(
+        { rating: review.rating, comment: review.comment, clientName: review.clientName },
+        { companyName: companyName || '' },
+      );
+      setAiResults((prev) => ({ ...prev, [review.id]: result }));
+    } catch (err) {
+      setAiResults((prev) => ({ ...prev, [review.id]: 'Clamp ran into a problem. Try again.' }));
+    } finally {
+      setAiLoadingId(null);
+    }
+  };
+
+  const handleCopyResponse = async (reviewId) => {
+    try {
+      await navigator.clipboard.writeText(aiResults[reviewId]);
+    } catch { /* clipboard not available */ }
+    setAiResults((prev) => { const next = { ...prev }; delete next[reviewId]; return next; });
+  };
+
+  const handleDismissResponse = (reviewId) => {
+    setAiResults((prev) => { const next = { ...prev }; delete next[reviewId]; return next; });
+  };
 
   const filtered = useMemo(() => {
     if (filter === 'all') return reviews;
@@ -119,18 +150,37 @@ export default function ReviewsList({ reviews, getClientNameById, onDelete }) {
                   {review.comment && expanded && (
                     <p className="text-sm text-slate-300 whitespace-pre-wrap">{review.comment}</p>
                   )}
-                  {/* Row 3: Date + Delete */}
+                  {/* Row 3: Date + Actions */}
                   <div className="flex items-center justify-between gap-2 mt-2">
                     <span className="text-xs text-slate-500">{date}</span>
-                    {onDelete && expanded && (
-                      <button
-                        onClick={(e) => { e.stopPropagation(); onDelete(review.id); }}
-                        className="text-xs text-signal-coral hover:text-signal-coral/80 font-medium px-2 py-1 rounded shrink-0 min-h-[44px] flex items-center"
-                      >
-                        Delete
-                      </button>
-                    )}
+                    <div className="flex items-center gap-2">
+                      {expanded && review.comment && (
+                        <span onClick={(e) => e.stopPropagation()}>
+                          <ClampButton label="Clamp Draft" onClick={() => handleGenerateResponse(review)} loading={aiLoadingId === review.id} />
+                        </span>
+                      )}
+                      {onDelete && expanded && (
+                        <button
+                          onClick={(e) => { e.stopPropagation(); onDelete(review.id); }}
+                          className="text-xs text-signal-coral hover:text-signal-coral/80 font-medium px-2 py-1 rounded shrink-0 min-h-[44px] flex items-center"
+                        >
+                          Delete
+                        </button>
+                      )}
+                    </div>
                   </div>
+                  {expanded && aiResults[review.id] !== undefined && (
+                    <div onClick={(e) => e.stopPropagation()}>
+                      <ClampResultPreview
+                        result={aiResults[review.id]}
+                        loading={aiLoadingId === review.id}
+                        label="Draft Reply"
+                        onAccept={() => handleCopyResponse(review.id)}
+                        onReject={() => handleDismissResponse(review.id)}
+                        onRetry={() => handleGenerateResponse(review)}
+                      />
+                    </div>
+                  )}
                 </div>
               );
             }
@@ -165,15 +215,34 @@ export default function ReviewsList({ reviews, getClientNameById, onDelete }) {
                       <p className="text-sm text-slate-300 mt-2 whitespace-pre-wrap">{review.comment}</p>
                     )}
                   </div>
-                  {onDelete && expanded && (
-                    <button
-                      onClick={(e) => { e.stopPropagation(); onDelete(review.id); }}
-                      className="text-xs text-signal-coral hover:text-signal-coral/80 font-medium px-2 py-1 rounded shrink-0"
-                    >
-                      Delete
-                    </button>
-                  )}
+                  <div className="flex items-center gap-2 shrink-0">
+                    {expanded && review.comment && (
+                      <span onClick={(e) => e.stopPropagation()}>
+                        <ClampButton label="Clamp Draft" onClick={() => handleGenerateResponse(review)} loading={aiLoadingId === review.id} />
+                      </span>
+                    )}
+                    {onDelete && expanded && (
+                      <button
+                        onClick={(e) => { e.stopPropagation(); onDelete(review.id); }}
+                        className="text-xs text-signal-coral hover:text-signal-coral/80 font-medium px-2 py-1 rounded shrink-0"
+                      >
+                        Delete
+                      </button>
+                    )}
+                  </div>
                 </div>
+                {expanded && aiResults[review.id] !== undefined && (
+                  <div onClick={(e) => e.stopPropagation()}>
+                    <ClampResultPreview
+                      result={aiResults[review.id]}
+                      loading={aiLoadingId === review.id}
+                      label="Draft Reply"
+                      onAccept={() => handleCopyResponse(review.id)}
+                      onReject={() => handleDismissResponse(review.id)}
+                      onRetry={() => handleGenerateResponse(review)}
+                    />
+                  </div>
+                )}
               </div>
             );
           })}

@@ -6,6 +6,22 @@ const { CLAMP_TOOLS, executeTool } = require('./clampTools');
 
 const MAX_MESSAGES = 50;
 const MAX_TOOL_ITERATIONS = 8;
+const SEARCH_ONLY_TOOLS = [
+  'search_clients', 'search_jobs', 'search_quotes', 'search_invoices', 'get_schedule',
+];
+
+/**
+ * Build a terse system prompt for search mode.
+ */
+function buildSearchPrompt() {
+  return (
+    'You are Clamp, Scaffld\'s search engine. Given a natural language query, ' +
+    'use the available search tools to find matching results. Return a one-line ' +
+    'summary of what was found (e.g. "Found 3 unpaid invoices for Smith Residence"). ' +
+    'Be terse — this is a search result, not a conversation. No emoji. No first person. ' +
+    'Do not ask follow-up questions. Just search and summarise.'
+  );
+}
 
 /**
  * Build the system prompt with today's date injected.
@@ -46,6 +62,28 @@ function parseResponse(response, toolResults) {
 }
 
 /**
+ * Flatten tool-call results into a normalised array for search mode.
+ */
+function flattenSearchResults(allToolResults) {
+  const items = [];
+  for (const tr of allToolResults) {
+    if (!Array.isArray(tr.result)) continue;
+    for (const item of tr.result) {
+      if (tr.toolName === 'search_clients') {
+        items.push({ type: 'client', id: item.id, title: item.name, subtitle: item.email || item.phone || '', view: 'clients' });
+      } else if (tr.toolName === 'search_jobs' || tr.toolName === 'get_schedule') {
+        items.push({ type: 'job', id: item.id, title: item.title || item.jobNumber, subtitle: item.status || '', view: 'schedule' });
+      } else if (tr.toolName === 'search_quotes') {
+        items.push({ type: 'quote', id: item.id, title: item.quoteNumber, subtitle: item.status || '', view: 'quotes' });
+      } else if (tr.toolName === 'search_invoices') {
+        items.push({ type: 'invoice', id: item.id, title: item.invoiceNumber, subtitle: item.status || '', view: 'invoices' });
+      }
+    }
+  }
+  return items;
+}
+
+/**
  * clampChat — Callable Cloud Function.
  * Receives { messages: [{role, content}] } and returns { reply, actionCards, quickReplies }.
  */
@@ -57,6 +95,7 @@ exports.clampChat = functions
     }
 
     const userId = context.auth.uid;
+    const mode = data.mode || 'chat';
     const messages = data.messages;
 
     if (!Array.isArray(messages) || messages.length === 0) {
@@ -79,7 +118,10 @@ exports.clampChat = functions
     }
 
     const client = new Anthropic({ apiKey });
-    const systemPrompt = buildSystemPrompt();
+    const systemPrompt = mode === 'search' ? buildSearchPrompt() : buildSystemPrompt();
+    const toolSet = mode === 'search'
+      ? CLAMP_TOOLS.filter(t => SEARCH_ONLY_TOOLS.includes(t.name))
+      : CLAMP_TOOLS;
 
     // Sanitize messages to only include role + content
     let conversationMessages = messages.map(m => ({
@@ -97,7 +139,7 @@ exports.clampChat = functions
           model: 'claude-sonnet-4-20250514',
           max_tokens: 1024,
           system: systemPrompt,
-          tools: CLAMP_TOOLS,
+          tools: toolSet,
           messages: conversationMessages,
         });
 
@@ -128,6 +170,12 @@ exports.clampChat = functions
       }
 
       const { reply, actionCards } = parseResponse(response, allToolResults);
+
+      if (mode === 'search') {
+        const searchResults = flattenSearchResults(allToolResults);
+        return { reply, actionCards, searchResults, quickReplies: [] };
+      }
+
       return { reply, actionCards, quickReplies: [] };
     } catch (error) {
       console.error('Clamp chat error:', error);

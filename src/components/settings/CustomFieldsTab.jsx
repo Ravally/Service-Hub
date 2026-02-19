@@ -4,6 +4,8 @@ import { inputCls, labelCls, sectionCls, sectionTitle, saveBtnCls, Toggle } from
 import { useCustomFieldDefinitions } from '../../hooks/data';
 import { CUSTOM_FIELD_TYPES, CUSTOM_FIELD_ENTITIES } from '../../constants';
 import ClampHelpCard from '../clamp/ClampHelpCard';
+import ClampButton from '../clamp/ClampButton';
+import { aiService } from '../../services/aiService';
 
 const emptyForm = { name: '', type: 'text', appliesTo: [], options: [], required: false };
 
@@ -13,6 +15,8 @@ export default function CustomFieldsTab({ userId }) {
   const [editingId, setEditingId] = useState(null);
   const [saving, setSaving] = useState(false);
   const [dropdownInput, setDropdownInput] = useState('');
+  const [suggestLoading, setSuggestLoading] = useState(false);
+  const [suggestions, setSuggestions] = useState(null);
 
   const toggleEntity = (entity) => {
     setForm(prev => ({
@@ -67,10 +71,73 @@ export default function CustomFieldsTab({ userId }) {
     setEditingId(null);
   };
 
+  const handleSuggestFields = async () => {
+    setSuggestLoading(true);
+    try {
+      const result = await aiService.suggestCustomFields({ trade: 'field service' });
+      setSuggestions(result);
+    } catch (err) {
+      console.error('Suggest fields failed:', err);
+    } finally {
+      setSuggestLoading(false);
+    }
+  };
+
+  const handleAddSuggestion = async (suggestion) => {
+    try {
+      await addDefinition({
+        name: suggestion.name,
+        type: suggestion.type || 'text',
+        appliesTo: suggestion.appliesTo || [],
+        options: suggestion.options || [],
+        required: !!suggestion.required,
+      });
+      setSuggestions((prev) => prev.filter((s) => s.name !== suggestion.name));
+    } catch (err) {
+      console.error('Failed to add suggestion:', err);
+    }
+  };
+
   return (
     <div>
-      <h2 className="text-xl font-bold mb-4 text-slate-100">Custom Fields</h2>
+      <div className="flex items-center justify-between gap-3 mb-4">
+        <h2 className="text-xl font-bold text-slate-100">Custom Fields</h2>
+        <ClampButton label="Clamp Suggest" onClick={handleSuggestFields} loading={suggestLoading} />
+      </div>
       <p className="text-sm text-slate-400 mb-6">Define typed fields that appear on client, property, quote, job, and invoice forms.</p>
+
+      {suggestions && suggestions.length > 0 && (
+        <div className="mb-6 bg-clamp-soft/30 border border-clamp-border/30 rounded-xl p-4">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-sm font-semibold text-clamp">Suggested Fields</span>
+            <button type="button" onClick={() => setSuggestions(null)} className="text-xs text-slate-400 hover:text-slate-200">Dismiss</button>
+          </div>
+          <div className="space-y-2">
+            {suggestions.map((s, i) => (
+              <div key={s.name || i} className="flex items-center justify-between gap-3 bg-midnight/40 rounded-lg px-3 py-2">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium text-slate-200 truncate">{s.name}</span>
+                    <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-clamp-soft text-clamp border border-clamp-border uppercase">{s.type}</span>
+                  </div>
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    {(s.appliesTo || []).map((ent) => (
+                      <span key={ent} className="px-1.5 py-0.5 rounded text-[10px] bg-midnight text-slate-400 border border-slate-700/30">{ent}</span>
+                    ))}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleAddSuggestion(s)}
+                  className="px-3 py-1.5 rounded-md text-xs font-semibold bg-scaffld-teal/20 text-scaffld-teal border border-scaffld-teal/30 hover:bg-scaffld-teal/30 min-h-[44px] shrink-0"
+                >
+                  Add
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Left: Create/Edit Form */}

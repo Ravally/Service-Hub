@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { formatCurrency, formatDate, hasPermission } from '../../utils';
 import { EXPENSE_CATEGORIES } from '../../constants';
+import ClampButton from '../clamp/ClampButton';
+import ClampResultPreview from '../clamp/ClampResultPreview';
+import { aiService } from '../../services/aiService';
 
 export default function JobActivityCards({ job, userRole, onUpdate, onUploadAttachment, onRemoveAttachment }) {
   const [showExpenseForm, setShowExpenseForm] = useState(false);
@@ -9,6 +12,8 @@ export default function JobActivityCards({ job, userRole, onUpdate, onUploadAtta
   const [chemicalDraft, setChemicalDraft] = useState({ date: '', name: '', notes: '' });
   const [notes, setNotes] = useState(job.notes || '');
   const [checklistItem, setChecklistItem] = useState('');
+  const [aiSummaryLoading, setAiSummaryLoading] = useState(false);
+  const [aiSummaryResult, setAiSummaryResult] = useState(null);
 
   useEffect(() => {
     setNotes(job.notes || '');
@@ -60,6 +65,26 @@ export default function JobActivityCards({ job, userRole, onUpdate, onUploadAtta
     const newChecklist = [...(job.checklist || [])];
     newChecklist[index].completed = !newChecklist[index].completed;
     onUpdate(job.id, { checklist: newChecklist });
+  };
+
+  const handleGenerateSummary = async () => {
+    setAiSummaryLoading(true);
+    try {
+      const result = await aiService.generateJobSummary({
+        title: job.title || '',
+        status: job.status || '',
+        notes: job.notes || '',
+        expenses: expenseEntries,
+        timeEntries: job.laborEntries || job.labor || job.timeEntries || [],
+        checklist: job.checklist || [],
+        chemicalTreatments,
+      });
+      setAiSummaryResult(result);
+    } catch (err) {
+      setAiSummaryResult('Clamp ran into a problem. Try again.');
+    } finally {
+      setAiSummaryLoading(false);
+    }
   };
 
   return (
@@ -142,10 +167,23 @@ export default function JobActivityCards({ job, userRole, onUpdate, onUploadAtta
 
       {/* Notes */}
       <div className="bg-charcoal rounded-2xl border border-slate-700/30 shadow-sm p-4 sm:p-6">
-        <h3 className="text-xl font-semibold text-slate-100 mb-4">Notes</h3>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-xl font-semibold text-slate-100">Notes</h3>
+          <ClampButton label="Clamp Summary" onClick={handleGenerateSummary} loading={aiSummaryLoading} />
+        </div>
         <div className="border-2 border-dashed border-slate-700/30 rounded-2xl p-6 text-center">
           <textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Leave an internal note for yourself or a team member" className="w-full h-40 bg-transparent text-sm text-slate-100 focus:outline-none" />
         </div>
+        {aiSummaryResult && (
+          <ClampResultPreview
+            result={aiSummaryResult}
+            loading={aiSummaryLoading}
+            label="Job Summary"
+            onAccept={() => { setNotes(aiSummaryResult); setAiSummaryResult(null); }}
+            onReject={() => setAiSummaryResult(null)}
+            onRetry={handleGenerateSummary}
+          />
+        )}
         <div className="mt-4 flex items-center justify-end gap-2">
           <button onClick={() => setNotes(job.notes || '')} className="min-h-[44px] px-4 py-2 rounded-lg border border-slate-700 text-sm font-semibold text-slate-100 hover:bg-midnight">Cancel</button>
           <button onClick={() => onUpdate(job.id, { notes })} className="min-h-[44px] px-4 py-2 rounded-lg bg-scaffld-teal text-white text-sm font-semibold hover:bg-scaffld-teal/90">Save Job</button>

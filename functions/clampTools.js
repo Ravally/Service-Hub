@@ -33,12 +33,22 @@ async function searchClients(input, userId) {
     .filter(c => !c.archived)
     .filter(c => {
       if (!query) return true;
-      return (c.name || '').toLowerCase().includes(query) ||
-        (c.email || '').toLowerCase().includes(query) ||
-        (c.phone || '').includes(query);
+      if ((c.name || '').toLowerCase().includes(query)) return true;
+      if ((c.email || '').toLowerCase().includes(query)) return true;
+      if ((c.phone || '').includes(query)) return true;
+      if ((c.address || '').toLowerCase().includes(query)) return true;
+      const props = c.properties || [];
+      return props.some(p =>
+        (p.street1 || '').toLowerCase().includes(query) ||
+        (p.city || '').toLowerCase().includes(query) ||
+        (p.label || '').toLowerCase().includes(query)
+      );
     })
     .slice(0, 10)
-    .map(c => ({ id: c.id, name: c.name, email: c.email, phone: c.phone, status: c.status || 'Active' }));
+    .map(c => ({
+      id: c.id, name: c.name, email: c.email, phone: c.phone,
+      address: c.address || '', status: c.status || 'Active',
+    }));
   return results;
 }
 
@@ -278,11 +288,11 @@ function navigateUser(input) {
 const CLAMP_TOOLS = [
   {
     name: 'search_clients',
-    description: 'Search for clients by name, email, or phone. Returns up to 10 matching clients.',
+    description: 'Search for clients by name, email, phone, or address/suburb. Returns up to 10 matching clients.',
     input_schema: {
       type: 'object',
       properties: {
-        query: { type: 'string', description: 'Search term — client name, email, or phone number' },
+        query: { type: 'string', description: 'Search term — client name, email, phone number, address, or suburb' },
       },
       required: ['query'],
     },
